@@ -188,13 +188,20 @@ class AlbumGridCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final title = album.unknownAlbum ? l10n.albumUnknown : album.title;
     final artist = album.unknownArtist ? l10n.trackUnknownArtist : album.artist;
-    final subtitle = album.unknownAlbum
-        ? '$artist · ${l10n.groupTracks(album.trackCount)}'
-        : [if (showArtist) artist, ?album.year?.toString()].join(' · ');
-    final label = '$title, $subtitle';
+    final subtitle = [
+      if (showArtist) artist,
+      ?album.year?.toString(),
+    ].join(' · ');
+    final detail = l10n.groupTracks(album.trackCount);
+    final label = [
+      title,
+      subtitle,
+      detail,
+    ].where((t) => t.isNotEmpty).join(', ');
     return AlbumCard(
       title: title,
       subtitle: subtitle,
+      detail: detail,
       size: size,
       artwork: artwork,
       marks: showArtist ? marks : const [],

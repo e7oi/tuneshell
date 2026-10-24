@@ -9,6 +9,7 @@ final class AlbumGroup {
   const new({
     required this.key,
     required this.artistKey,
+    required this.titleKey,
     required this.title,
     required this.artist,
     required this.unknownAlbum,
@@ -28,6 +29,9 @@ final class AlbumGroup {
 
   /// The folded artist alone, the identity of the artist (empty: unknown).
   final String artistKey;
+
+  /// The folded title alone, what the albums are sorted by.
+  final String titleKey;
 
   /// The most frequent spelling; empty when [unknownAlbum].
   final String title;
@@ -139,7 +143,10 @@ final class LibraryGroups {
       for (final entry in byArtist.entries) _artist(entry.key, entry.value),
     ]..sort((a, b) => _artistSort(a).compareTo(_artistSort(b)));
 
-    final albumNames = [for (final a in albums) a.artist];
+    final albumNames = [
+      for (final a in albums)
+        if (a.unknownAlbum) '' else a.title,
+    ];
     final artistNames = [for (final a in artists) a.name];
     return LibraryGroups._(
       albums: albums,
@@ -213,6 +220,7 @@ AlbumGroup _album(
   return AlbumGroup(
     key: key,
     artistKey: artistKey,
+    titleKey: key.substring(artistKey.length + 1),
     title: title ?? '',
     artist: artist ?? '',
     unknownAlbum: title == null,
@@ -228,7 +236,8 @@ AlbumGroup _album(
   );
 }
 
-ArtistGroup _artist(String key, List<AlbumGroup> albums) {
+ArtistGroup _artist(String key, List<AlbumGroup> found) {
+  final albums = [...found]..sort(_compareInArtist);
   final names = <String>[
     for (final album in albums)
       if (!album.unknownArtist)
@@ -295,20 +304,35 @@ int _compareKeyed(_Keyed a, _Keyed b) {
 /// The unknown artist leads: its key is shorter than any other.
 String _artistSort(ArtistGroup artist) => artist.unknown ? '0' : artist.key;
 
-/// BR-010, rule 7: artist, then year (none last), then title (an unknown
-/// album last).
+/// BR-010, rule 7: the albums by title (the unknown album leads, in the "#"
+/// group), then artist, then year (none last).
 int _compareAlbums(AlbumGroup a, AlbumGroup b) {
+  if (a.unknownAlbum != b.unknownAlbum) return a.unknownAlbum ? -1 : 1;
+  final byTitle = a.titleKey.compareTo(b.titleKey);
+  if (byTitle != 0) return byTitle;
   final byArtist = _artistKey(a).compareTo(_artistKey(b));
   if (byArtist != 0) return byArtist;
-  final ay = a.year;
-  final by = b.year;
-  if (ay != by) {
-    if (ay == null) return 1;
-    if (by == null) return -1;
-    return ay.compareTo(by);
-  }
-  if (a.unknownAlbum != b.unknownAlbum) return a.unknownAlbum ? 1 : -1;
+  final byYear = _compareYears(a.year, b.year);
+  if (byYear != 0) return byYear;
   return a.key.compareTo(b.key);
+}
+
+/// BR-010, rule 7: the albums of one artist by year (none last), then title
+/// (the unknown album last).
+int _compareInArtist(AlbumGroup a, AlbumGroup b) {
+  final byYear = _compareYears(a.year, b.year);
+  if (byYear != 0) return byYear;
+  if (a.unknownAlbum != b.unknownAlbum) return a.unknownAlbum ? 1 : -1;
+  final byTitle = a.titleKey.compareTo(b.titleKey);
+  if (byTitle != 0) return byTitle;
+  return a.key.compareTo(b.key);
+}
+
+int _compareYears(int? a, int? b) {
+  if (a == b) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  return a.compareTo(b);
 }
 
 String _artistKey(AlbumGroup album) =>

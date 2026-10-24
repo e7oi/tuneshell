@@ -357,6 +357,8 @@ Consigner le résultat (OK / KO + détails) de chaque étape, sans titre de pist
 
 ## 17. Tester la lecture : mini-lecteur, lecteur, file d'attente (MPL-047)
 
+> Les essais TalkBack et texte à 200 % de cette section sont reportés à MPL-049 (décision du 2026-10-24) : ne pas les faire ici.
+
 Build release (D14) installée par-dessus la précédente. Bibliothèque réelle (plus de 5 000 pistes) déjà indexée, SSD branché pour les étapes 9 et 10. Chaque étape se fait en clair puis en sombre si le temps le permet. La notification et l'écran verrouillé ne changent pas : les rejouer avec `HOWTO.md` §12 (étapes 1, 2, 4 et 5), car le contrôleur de lecture a changé.
 
 1. **Mini-lecteur :** lancer une piste. Attendu : un mini-lecteur de 64 dp au-dessus de la navigation, avec pochette, titre, repère de source puis artiste, trois boutons, une fine barre qui avance ; il reste en changeant d'onglet. « Pause » et « Lecture » alternent au même endroit.
@@ -379,9 +381,11 @@ Consigner le résultat (OK / KO + détails) de chaque étape, sans titre de pist
 
 ## 18. Tester les albums et les artistes (MPL-048)
 
+> Les essais TalkBack et texte à 200 % de cette section sont reportés à MPL-049 (décision du 2026-10-24) : ne pas les faire ici.
+
 Build release (D14) installée par-dessus la précédente. Bibliothèque réelle (plus de 5 000 pistes) déjà indexée, SSD branché pour les étapes 4 et 11. Chaque étape se fait en clair puis en sombre si le temps le permet. Consigner les comptes (albums, artistes) sans noms (D27).
 
-1. **Grille d'albums :** ouvrir « Albums ». Attendu : « N albums » et « Artiste de l'album » ; une grille de pochettes sur deux colonnes (plus en paysage), chaque carte avec titre, repère de source puis « artiste · année » ; les pistes sans étiquette d'artiste sont les premières, sous « Artiste inconnu ».
+1. **Grille d'albums :** ouvrir « Albums ». Attendu : « N albums » et « Album A→Z » ; une grille de pochettes sur deux colonnes (plus en paysage), triée par titre ; chaque carte avec titre, repère de source puis « artiste · année » et « N pistes » sur une troisième ligne ; l'album inconnu est en tête.
 2. **Regroupement :** un album du téléphone et du SSD n'a qu'une carte avec ses repères ; un même titre chez deux artistes fait deux cartes ; une compilation sans artiste d'album se découpe par artiste de piste (limite connue, BR-010) : noter combien de cartes d'une piste cela donne.
 3. **Détail d'un album :** toucher une carte. Attendu : le détail s'ouvre dans l'onglet, la navigation et le mini-lecteur restent ; pochette, titre, artiste en couleur, « année · genre », « N disques · N pistes · durée » ; pistes numérotées, sous « Disque 1 », « Disque 2 » seulement s'il y a plusieurs disques. **Vérifier l'ordre disque puis piste** sur un album qui a des numéros dans le désordre dans ses fichiers.
 4. **Disque absent :** débrancher le SSD. Attendu : ses albums et artistes sont grisés avec l'icône de prise ; leur détail s'ouvre ; toucher une piste dit « Branche … pour lire cette piste » et ne lance rien.

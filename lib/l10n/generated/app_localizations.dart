@@ -959,7 +959,7 @@ abstract class AppLocalizations {
   /// Label of the only sort of the Albums view (FR-020.1).
   ///
   /// In en, this message translates to:
-  /// **'Album artist'**
+  /// **'Album A→Z'**
   String get albumsSort;
 
   /// Title of the tracks without an album tag (BR-010, rule 2).

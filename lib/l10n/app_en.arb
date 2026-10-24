@@ -792,7 +792,7 @@
       }
     }
   },
-  "albumsSort": "Album artist",
+  "albumsSort": "Album A→Z",
   "@albumsSort": {
     "description": "Label of the only sort of the Albums view (FR-020.1)."
   },

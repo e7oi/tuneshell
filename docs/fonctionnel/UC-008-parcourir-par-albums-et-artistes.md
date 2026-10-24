@@ -12,7 +12,7 @@ L'utilisateur veut retrouver sa musique autrement que par titre : un album préc
 
 ## Scénario nominal
 
-1. L'utilisateur touche l'onglet **Albums** : une grille de pochettes triée par artiste de l'album, avec l'index alphabétique (FR-020).
+1. L'utilisateur touche l'onglet **Albums** : une grille de pochettes triée par titre d'album, avec l'index alphabétique (FR-020).
 2. Il touche un album : le **détail** s'ouvre dans l'onglet, la navigation et le mini-lecteur restent visibles ; les pistes sont groupées par disque (FR-020).
 3. Il touche « Lire » : l'album se lit dans l'ordre ; ou une piste : la lecture démarre sur elle, avec l'album pour file (FR-022).
 4. Il revient (flèche ou geste Retour) à la grille, au même endroit.

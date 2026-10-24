@@ -143,7 +143,7 @@
   "menuPlayNextDone": "Lecture ensuite : {title}",
   "menuAddedDone": "Ajouté à la file : {title}",
   "albumsCount": "{count, plural, one{{count} album} other{{count} albums}}",
-  "albumsSort": "Artiste de l'album",
+  "albumsSort": "Album A→Z",
   "albumUnknown": "Album inconnu",
   "groupTracks": "{count, plural, one{{count} piste} other{{count} pistes}}",
   "albumDiscs": "{count, plural, one{{count} disque} other{{count} disques}}",

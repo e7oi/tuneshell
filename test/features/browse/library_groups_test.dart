@@ -234,22 +234,65 @@ void main() {
 
   /// @verifies BR-010
   group('rules 7 and 8: order and data of albums', () {
-    test('albums by artist, then year with none last, then title', () {
+    /// @verifies FR-020.1
+    test('albums by title, then artist, then year', () {
       final groups = build([
         t('1', albumArtist: 'Nodal', album: 'Z', year: 2000),
         t('2', albumArtist: 'Clara', album: 'Late', year: 2020),
-        t('3', albumArtist: 'Clara', album: 'Early', year: 2010),
+        t('3', albumArtist: 'Clara', album: 'écrin', year: 2010),
         t('4', albumArtist: 'Clara', album: 'Undated'),
         t('5', albumArtist: 'Clara', album: 'Alpha'),
+        t('6', albumArtist: 'Anouk', album: 'Alpha'),
       ]);
 
-      expect(groups.albums.map((a) => a.title), [
-        'Early',
-        'Late',
-        'Alpha',
-        'Undated',
-        'Z',
+      expect(groups.albums.map((a) => '${a.title}/${a.artist}'), [
+        'Alpha/Anouk',
+        'Alpha/Clara',
+        'écrin/Clara',
+        'Late/Clara',
+        'Undated/Clara',
+        'Z/Nodal',
       ]);
+    });
+
+    test('the same title and artist split by year only inside one group', () {
+      final groups = build([
+        t('1', albumArtist: 'Clara', album: 'Hits', year: 2020),
+        t('2', albumArtist: 'Nodal', album: 'Hits', year: 2000),
+      ]);
+
+      expect(groups.albums.map((a) => a.artist), ['Clara', 'Nodal']);
+    });
+
+    test('the unknown album leads, under #', () {
+      final groups = build([
+        t('1', albumArtist: 'Clara', album: 'Azur'),
+        t('2', albumArtist: 'Clara'),
+        t('3', albumArtist: 'Nodal', album: '10 ans'),
+      ]);
+
+      expect(groups.albums.map((a) => a.unknownAlbum ? '?' : a.title), [
+        '?',
+        '10 ans',
+        'Azur',
+      ]);
+      expect(groups.albumFirstIndex['#'], 0);
+      expect(groups.albumLetters.first.count, 2);
+    });
+
+    test('the albums of one artist by year, none last, the unknown last', () {
+      final groups = build([
+        t('1', albumArtist: 'Clara', album: 'Late', year: 2020),
+        t('2', albumArtist: 'Clara', album: 'Early', year: 2010),
+        t('3', albumArtist: 'Clara', album: 'Undated'),
+        t('4', albumArtist: 'Clara', album: 'Alpha'),
+        t('5', albumArtist: 'Clara'),
+      ]);
+
+      expect(
+        groups.artists.single.albums.map((a) => a.unknownAlbum ? '?' : a.title),
+        ['Early', 'Late', 'Alpha', 'Undated', '?'],
+      );
     });
 
     test('the unknown artist and digits lead, in the # group', () {
@@ -345,12 +388,12 @@ void main() {
   /// @verifies FR-020.6
   /// @verifies FR-021.4
   group('index letters', () {
-    test('albums by the letter of their artist', () {
+    test('albums by the letter of their title', () {
       final groups = build([
-        t('1', albumArtist: 'Anouk', album: 'A'),
-        t('2', albumArtist: 'Anouk', album: 'B'),
-        t('3', albumArtist: 'Émile', album: 'C'),
-        t('4', albumArtist: 'Zed', album: 'D'),
+        t('1', albumArtist: 'Zed', album: 'Abbey'),
+        t('2', albumArtist: 'Zed', album: 'Azur'),
+        t('3', albumArtist: 'Anouk', album: 'Écrin'),
+        t('4', albumArtist: 'Anouk', album: 'Zénith'),
       ]);
 
       expect(groups.albumFirstIndex['A'], 0);

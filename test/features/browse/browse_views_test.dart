@@ -214,13 +214,13 @@ void main() {
       await tab(tester, 'Albums');
 
       expect(find.text('4 albums'), findsOneWidget);
-      expect(find.text('Album artist'), findsOneWidget);
+      expect(find.text('Album A→Z'), findsOneWidget);
       expect(find.byType(AlbumCard), findsNWidgets(4));
       expect(find.text('Littoral'), findsOneWidget);
       expect(find.text('Clara · 2019'), findsWidgets);
     });
 
-    flow('sorted by artist, then year', (tester) async {
+    flow('sorted by title', (tester) async {
       await pump(tester);
       await tab(tester, 'Albums');
 
@@ -228,14 +228,17 @@ void main() {
         for (final card in tester.widgetList<AlbumCard>(find.byType(AlbumCard)))
           card.title,
       ];
-      expect(titles, ['Unknown album', 'Azur', 'Littoral', 'Champs']);
+      expect(titles, ['Unknown album', 'Azur', 'Champs', 'Littoral']);
     });
 
-    flow('the unknown album says its artist and its tracks', (tester) async {
+    /// @verifies FR-020.2
+    flow('every card says its number of tracks', (tester) async {
       await pump(tester);
       await tab(tester, 'Albums');
 
-      expect(find.text('Unknown artist · 1 track'), findsOneWidget);
+      expect(find.text('3 tracks'), findsOneWidget);
+      expect(find.text('1 track'), findsNWidgets(3));
+      expect(find.text('Unknown artist'), findsOneWidget);
     });
 
     /// @verifies FR-020.5

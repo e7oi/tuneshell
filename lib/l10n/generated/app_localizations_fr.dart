@@ -681,7 +681,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get albumsSort => 'Artiste de l\'album';
+  String get albumsSort => 'Album A→Z';
 
   @override
   String get albumUnknown => 'Album inconnu';

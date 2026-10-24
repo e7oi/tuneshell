@@ -15,6 +15,7 @@ class AlbumCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.size,
+    this.detail,
     this.artwork,
     this.marks = const [],
     this.unavailable = false,
@@ -27,6 +28,9 @@ class AlbumCard extends StatelessWidget {
 
   final String title;
   final String subtitle;
+
+  /// A third line, such as the number of tracks (FR-020.2).
+  final String? detail;
 
   /// Side of the cover, in dp.
   final double size;
@@ -52,7 +56,7 @@ class AlbumCard extends StatelessWidget {
     final titleColor = unavailable ? colors.unavailable : scheme.onSurface;
     final subColor = unavailable ? colors.unavailable : scheme.onSurfaceVariant;
     return Semantics(
-      label: semanticsLabel ?? '$title, $subtitle',
+      label: semanticsLabel ?? [title, subtitle, ?detail].join(', '),
       button: onTap != null,
       onTap: onTap,
       onLongPress: onLongPress,
@@ -93,6 +97,13 @@ class AlbumCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (detail != null)
+              Text(
+                detail!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: text.bodyMedium?.copyWith(color: subColor),
+              ),
           ],
         ),
       ),
