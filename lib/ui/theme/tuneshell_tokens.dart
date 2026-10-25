@@ -60,6 +60,13 @@ abstract final class TsSize {
   static const double closeFlingVelocity =
       700; // swipe down to close the player
   static const double transportIcon = 32; // previous, play and next
+  static const double albumCardMinWidth = 160; // grid of albums
+  static const double albumCardTextHeight =
+      76; // title, subtitle and track count below a cover
+  static const double albumTrackRow = 56; // track of an album detail
+  static const double letterHeader = 40; // letter of the artists list
+  static const int albumColumnsMax = 6;
+  static const double carouselCard = 120; // album card of an artist detail
   static const double queueSheetInitial = 0.6; // share of the screen
   static const double queueSheetMin = 0.3;
   static const double bannerMin = 56; // status banner

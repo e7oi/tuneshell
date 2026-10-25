@@ -1,0 +1,46 @@
+# FR-020 — Vue Albums et détail d'un album
+
+**Statut :** Active (validée le 2026-10-23) · **Créée le :** 2026-10-23 · **Ticket :** MPL-048 · **Lié :** UC-008, FR-009, FR-010, FR-012, FR-013, FR-022, BR-007, BR-008, BR-010, ADR-016 · **Source :** `docs/design/HANDOFF.md` §5 (écran 8, 8a et 8b), `Albums.dc.html`
+
+## Besoin
+
+Parcourir la bibliothèque par albums, sous forme de pochettes, et voir un album piste par piste.
+
+## Exigences
+
+1. **Grille (8a), en-tête.** Titre « Albums » ; ligne « {n} albums » et, à droite, le libellé de tri « Album A→Z » (non interactif, comme FR-011.5). Les albums sont triés par titre (BR-010, règle 7) ; la conception disait « Artiste de l'album » : changé à la demande du propriétaire le 2026-10-24.
+2. **Grille.** Cartes de pochette carrée (rayon 16), titre en une ligne, « {artiste} · {année} » (sans année : « {artiste} »), puis une troisième ligne « {n} pistes » (demande du propriétaire du 2026-10-24). Deux colonnes en portrait ; plus de colonnes quand la largeur le permet (une carte d'au moins 160 dp, jusqu'à six colonnes).
+3. **Repères.** Les repères de source de l'album (BR-010, règle 4) sont avant l'artiste, jusqu'à trois côte à côte.
+4. **Sans pochette** : tuile neutre avec une note (FR-010). **Album inconnu** : sous-titre « Artiste inconnu · {n} pistes » comme la maquette.
+5. **Indisponible** (BR-010, règle 9) : pochette à 35 %, titre et sous-titre grisés, icône de prise, et libellé TalkBack « …, indisponible : {disque} non connecté ». Toucher ouvre quand même le détail.
+6. **Index alphabétique** (`AlphabetScroller`, FR-013.1) sur la première lettre du titre de l'album (« # » pour l'album inconnu et les titres qui commencent par un chiffre) ; la poignée n'existe que si la grille dépasse environ 100 albums ; son rectangle est exclu du geste Retour (ADR-016).
+7. **États.** Chargement (indicateur) tant que la bibliothèque n'est pas lue ; bibliothèque vide : « Aucun album » et « Choisis des dossiers dans l'onglet Pistes. » (voir À valider).
+8. **Détail (8b), ouverture.** Toucher une carte ouvre le détail dans l'onglet : la barre de navigation et le mini-lecteur restent. Retour par la flèche de l'en-tête ou le geste Retour ; la grille retrouve sa position.
+9. **En-tête.** Pochette de 152 dp, titre, artiste de l'album (`primary`), « {année} · {genre} » puis « {n} disques · {n} pistes · {durée} » (disques seulement s'il y en a plusieurs ; genre le plus fréquent). Boutons « Lire » et « Aléatoire » (FR-022).
+10. **Pistes**, triées par numéro de disque puis numéro de piste (BR-010, règle 6). Groupées sous « Disque 1 », « Disque 2 »… quand l'album compte plusieurs disques, sans intercalaire sinon. Chaque ligne : numéro (▶ pour la piste en cours, sinon le numéro de piste, ou la position si absent), titre, repère de source si l'album a plusieurs sources, durée. Ligne en cours surlignée (`nowPlayingRow`).
+11. **Toucher une piste** lit l'album en commençant par elle (FR-022). Une piste indisponible est grisée ; la toucher explique (BR-008, règle 5).
+12. **Accessibilité.** Libellés de carte « {titre}, {artiste · année} » ; ligne « Piste 3, {titre}, 4:18, en lecture » ; boutons de 48 dp ; texte à 200 % sans coupure (les lignes grandissent).
+13. **Règles d'interface.** Jetons seulement, clair et sombre, animations réduites respectées (BR-007) ; pochettes en miniatures décodées à la taille d'affichage.
+14. **Textes.** Dans les fichiers ARB, en français mot pour mot des maquettes (« Albums », « {n} albums », « Album A→Z », « Lire », « Aléatoire », « Disque {n} », « {n} disques · {n} pistes · {durée} »), avec la version anglaise.
+
+## Hors périmètre
+
+Recherche, autre tri, filtre, modification des étiquettes, pochette d'album choisie à la main, retrait d'un album, partage.
+
+## À valider (PO)
+
+- Exigence 2 : nombre de colonnes selon la largeur (la conception ne montre que deux colonnes).
+- Exigence 7 : textes de l'état vide, absents de la conception.
+- Exigence 9 : « {année} · {genre} » omet ce qui manque ; l'en-tête ne montre « disques » qu'au-delà d'un disque.
+- Exigence 10 : pas d'intercalaire « Disque 1 » pour un album d'un seul disque (la maquette n'en montre qu'avec deux).
+- Détail dans l'onglet (et non en plein écran) : choix de ADR-016.
+
+## As-built
+
+MPL-048, 2026-10-23, test appareil partiel (D14). `AlbumsView` (`albums_view.dart`), `AlbumCard` (`lib/ui/widgets/album_card.dart`), `AlbumDetailPage` (`album_detail_page.dart`). Tests : `browse_views_test.dart`, `album_card_test.dart`.
+
+- Grille : `GridView.builder` à `mainAxisExtent` fixe (couverture + 56 dp de texte, grandit avec le texte) ; colonnes = largeur utile / 160 dp, de 2 à 6. L'index saute à `(indice ÷ colonnes) × (hauteur de ligne + espace)`.
+- Le détail est une route du navigateur imbriqué de l'onglet (FR-009, ADR-016).
+- Une carte d'album d'une piste « inconnu » dit « artiste · N piste(s) ».
+- Les pistes sont numérotées par leur numéro d'étiquette, à défaut par leur position.
+- MPL-048, 2026-10-24 (retour du propriétaire) : albums triés par titre (`_compareAlbums`, `titleKey`), index sur la première lettre du titre (l'album inconnu sous « # », en tête), troisième ligne « N pistes » sur chaque carte (`AlbumCard.detail`), libellé de tri « Album A→Z ».

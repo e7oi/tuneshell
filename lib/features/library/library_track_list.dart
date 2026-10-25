@@ -34,6 +34,9 @@ class LibraryTrackList extends ConsumerStatefulWidget {
 }
 
 class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
+  /// The key of this view in the rectangles kept out of the Back gesture.
+  static const _owner = 'library-tracks';
+
   final ScrollController _scroll = ScrollController();
 
   /// Bumped when the size of the list or of its content changes, so that the
@@ -51,15 +54,17 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
   bool _inFront = true;
 
   /// Kept apart: a ref cannot be read in dispose.
-  late final Future<void> Function(List<Rect>) _setRects = ref
-      .read(gestureExclusionProvider)
-      .setRects;
+  late final GestureRegions _regions = ref.read(gestureRegionsProvider);
+
+  Future<void> _setRects(List<Rect> rects) => _regions.set(_owner, rects);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _ratio = View.of(context).devicePixelRatio;
-    _inFront = TickerMode.valuesOf(context).enabled;
+    // IndexedStack does not stop the tickers of the tabs it hides, but it
+    // says which one is visible (ADR-016).
+    _inFront = TickerMode.valuesOf(context).enabled && Visibility.of(context);
     _sendExclusion();
   }
 
