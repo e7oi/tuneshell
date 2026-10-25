@@ -135,6 +135,54 @@ void main() {
     }
   });
 
+  /// @verifies FR-023.3
+  testWidgets('a page opened in Settings closes on Back, then Tracks shows', (
+    tester,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(412, 915)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: TsTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: HomeShell(
+            tracks: const _Probe(),
+            playerBar: const SizedBox(height: 10),
+            settings: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => const Scaffold(body: Text('A sub page')),
+                  ),
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(find.text('A sub page'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
+
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await tester.pumpAndSettle();
+    expect(find.text('A sub page'), findsNothing);
+    expect(find.text('Open'), findsOneWidget);
+
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await tester.pumpAndSettle();
+    expect(find.text('taps 0'), findsOneWidget);
+  });
+
   /// @verifies FR-009.4
   group('state', () {
     testWidgets('a tab keeps its state when another is shown', (tester) async {
