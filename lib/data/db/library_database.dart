@@ -4,7 +4,8 @@ import 'package:tuneshell/data/db/library_database.steps.dart';
 
 part 'library_database.g.dart';
 
-/// Schema of ADR-004, version 2 of ADR-008. Every change bumps
+/// Schema of ADR-004; version 2 is ADR-008's, version 4 ADR-017's. Every
+/// change bumps
 /// [LibraryDatabase.schemaVersion], adds a dump with
 /// `dart run drift_dev make-migrations` and a migration test (CLAUDE.md,
 /// Tests).
@@ -81,12 +82,27 @@ class Tracks extends Table {
   ];
 }
 
-@DriftDatabase(tables: [Disks, DiskFolders, Tracks])
+/// One setting as a text under its key (ADR-017); the domain reads and
+/// writes the values (`AppSettings`).
+@DataClassName('SettingRow')
+class SettingEntries extends Table {
+  @override
+  String get tableName => 'app_settings';
+
+  TextColumn get key => text()();
+
+  TextColumn get value => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {key};
+}
+
+@DriftDatabase(tables: [Disks, DiskFolders, Tracks, SettingEntries])
 class LibraryDatabase extends _$LibraryDatabase {
   new([QueryExecutor? executor]) : super(executor ?? _open());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -107,6 +123,9 @@ class LibraryDatabase extends _$LibraryDatabase {
           'WHERE kind = 1',
         );
         await migrator.createIndex(schema.disksMarkIndex);
+      },
+      from3To4: (migrator, schema) async {
+        await migrator.createTable(schema.appSettings);
       },
     ),
     beforeOpen: (details) async {
