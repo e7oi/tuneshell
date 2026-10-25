@@ -294,7 +294,7 @@ Fonctionnalité: Réglages
 **Fiches liées.** UC-009, FR-023, FR-024, FR-025, FR-026 ; ADR-017 (toutes `Active`, validées par le propriétaire le 2026-10-25, `dynamic_color` 2.1.0 compris). Utilise UC-003, UC-004, FR-003, FR-006, FR-008, FR-009, FR-010, FR-011, FR-013, FR-014, FR-015, FR-020, FR-021, BR-005, BR-007, BR-008 et ADR-004, ADR-010, ADR-016 (`Active`). Complétées à la livraison sans changer leurs règles : FR-008 (réglages livrés), FR-009 (Réglages), FR-011 (pastilles), FR-003 (démarrage), BR-005 (règle 5), FR-013 (côté gauche).
 
 **À valider (PO).**
-- Nouvelle dépendance `dynamic_color` 2.1.0 (D30) (FR-024, ADR-017).
+- Nouvelle dépendance `dynamic_color` (D30) (FR-024, ADR-017) : **1.9.0 et non 2.1.0** (la 2.1.0 vise `material_ui`, incompatible avec le Material du SDK utilisé ; écart noté dans l'as-built de ADR-017).
 - Stockage dans la base (schéma v4) et lecture avant le premier écran (ADR-017).
 - Choix des dossiers en page poussée depuis Réglages, qui supprime la branche « annulable » du contrôleur (refonte d'un écran de MPL-044) (ADR-017).
 - Trois écarts à des fiches `Active`, par décision du propriétaire ou par réglage : pastilles de Pistes (FR-011.2), indexation au démarrage (FR-003.7), pause au débranchement (BR-005 règle 5) (FR-025).

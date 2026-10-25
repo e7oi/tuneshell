@@ -45,4 +45,7 @@ L'application n'a aucun réglage retenu : le thème suit le système, l'index es
 
 ## As-built
 
-À écrire à la livraison.
+MPL-051, 2026-10-25 (en cours).
+
+- **Écart : `dynamic_color` 1.9.0, pas 2.1.0.** La 2.1.0 est écrite pour le paquet `material_ui` (la bibliothèque Material sortie du SDK) : son `ColorScheme` n'est pas celui de `package:flutter/material.dart`, que l'application utilise, et le thème refuse de le recevoir (erreur de type constatée à l'analyse). Elle tire aussi `material_ui` et `cupertino_ui`. La 1.9.0 (Apache-2.0, `material_color_utilities` 0.13.0) est celle d'avant cette séparation, et n'ajoute aucun paquet de plus. À reprendre quand l'application passera à `material_ui`.
+- `DynamicColorBuilder` renvoie des schémas nuls quand Android n'en fournit pas ; son canal est optionnel, donc sans plugin (tests) il ne lève rien.
