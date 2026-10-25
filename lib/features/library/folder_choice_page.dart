@@ -3,9 +3,24 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/features/library/folder_choice_view.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
+
+/// Opens the choice of the phone's music folders from the settings or from an
+/// empty library: as a page, or, without access to the phone's audio, as the
+/// explanation of the access (FR-025.1, FR-014.5).
+Future<void> openFolderChoice(BuildContext context, WidgetRef ref) async {
+  final controller = ref.read(libraryControllerProvider.notifier);
+  if (controller.withoutPhoneAccess) {
+    await controller.openFolderChoice();
+    return;
+  }
+  await Navigator.of(context)
+      .push<void>(MaterialPageRoute(builder: (_) => const FolderChoicePage()));
+  ref.invalidate(chosenFoldersProvider);
+}
 
 /// The choice of the phone's music folders, as a page opened from the
 /// settings (FR-025.1, ADR-017). "Confirm" or Back closes it; confirming

@@ -7,6 +7,7 @@ import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/playback/model/playback_notice.dart';
 import 'package:tuneshell/features/library/first_launch_pages.dart';
+import 'package:tuneshell/features/library/folder_choice_page.dart';
 import 'package:tuneshell/features/library/folder_choice_view.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_header.dart';
@@ -78,38 +79,17 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
       );
       ref.read(removableControllerProvider.notifier).clearMessage();
     });
-    final cancelable = switch (state) {
-      LibraryFolderChoice(:final cancelable) => cancelable,
-      LibraryLoadFailed(:final cancelable) => cancelable,
-      _ => false,
-    };
     // The first-launch screens have their own full-screen design (FR-014).
     final withBar = state is LibraryFolderChoice || state is LibraryLoadFailed;
-    // FR-003.4: Back leaves the folder choice before it leaves the app.
+    // Back leaves the explanation of the access before it leaves the app.
     final explaining = state is LibraryWelcome && state.explaining;
     return PopScope(
-      canPop: !cancelable && !explaining,
+      canPop: !explaining,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        if (explaining) {
-          _controller.backToWelcome();
-        } else {
-          _controller.cancelFolderChoice();
-        }
+        if (!didPop) _controller.backToWelcome();
       },
       child: Scaffold(
-        appBar: withBar
-            ? AppBar(
-                leading: cancelable
-                    ? IconButton(
-                        tooltip: l10n.foldersBack,
-                        icon: const Icon(Icons.arrow_back_rounded),
-                        onPressed: _controller.cancelFolderChoice,
-                      )
-                    : null,
-                title: Text(l10n.foldersTitle),
-              )
-            : null,
+        appBar: withBar ? AppBar(title: Text(l10n.foldersTitle)) : null,
         body: switch (state) {
           LibraryStarting() => const Center(child: CircularProgressIndicator()),
           LibraryWelcome(:final explaining) =>
@@ -150,7 +130,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
           LibraryReady() => _ReadyView(
             state: state,
             onRefresh: () => unawaited(_controller.refresh()),
-            onFolders: () => unawaited(_controller.openFolderChoice()),
+            onFolders: () => unawaited(openFolderChoice(context, ref)),
           ),
         },
       ),
@@ -176,7 +156,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
   }
 }
 
-/// The ready library: header, chips, banners, count and list, in the flow
+/// The ready library: title, banners, count and list, in the flow
 /// from top to bottom, nothing over the list (FR-011.3, BR-007 rule 2).
 class _ReadyView extends ConsumerWidget {
   const new({
@@ -194,9 +174,6 @@ class _ReadyView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final model = ref.watch(libraryListModelProvider);
     final tagProgress = ref.watch(tagProgressProvider).value;
-    final absent = ref.watch(
-      unavailableDisksProvider.select((disks) => disks.length),
-    );
     final searching = state.indexing && (model == null || model.total == 0);
     final empty = model != null && model.total == 0 && !state.indexing;
     final banner = model?.banner;
@@ -206,15 +183,6 @@ class _ReadyView extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const LibraryTitleBar(),
-          LibraryActionChips(
-            busy: state.indexing,
-            absentDisks: absent,
-            onRefresh: onRefresh,
-            onFolders: onFolders,
-            onDisks: () => Navigator.of(context).push<void>(
-              MaterialPageRoute(builder: (_) => const RemovablePage()),
-            ),
-          ),
           if (searching)
             ProgressBanner(label: l10n.libraryScanning)
           else if (tagProgress != null && tagProgress.running)

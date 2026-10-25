@@ -205,17 +205,7 @@ class _FoldersTile extends ConsumerWidget {
     return SettingsNavTile(
       title: l10n.foldersTitle,
       subtitle: summary,
-      onTap: () async {
-        final controller = ref.read(libraryControllerProvider.notifier);
-        if (controller.withoutPhoneAccess) {
-          unawaited(controller.openFolderChoice());
-          return;
-        }
-        await Navigator.of(context).push<void>(
-          MaterialPageRoute(builder: (_) => const FolderChoicePage()),
-        );
-        ref.invalidate(chosenFoldersProvider);
-      },
+      onTap: () => unawaited(openFolderChoice(context, ref)),
     );
   }
 }
