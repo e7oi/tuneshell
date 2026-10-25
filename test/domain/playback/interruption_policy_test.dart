@@ -257,6 +257,62 @@ void main() {
       expect(state().status, PlayerStatus.ready);
     });
 
+    /// @verifies FR-025.7
+    test('with the setting off, unplugged headphones do not pause', () async {
+      await policy.dispose();
+      policy = InterruptionPolicy(
+        controller: controller,
+        interruptions: system,
+        pauseOnUnplug: () => false,
+        stopGrace: const Duration(milliseconds: 20),
+      )..start();
+      await playing();
+
+      system.emit(const BecameNoisy());
+      await settle();
+
+      expect(state().playing, isTrue);
+    });
+
+    /// @verifies FR-025.7
+    test('the setting is read at each unplugging', () async {
+      var pause = false;
+      await policy.dispose();
+      policy = InterruptionPolicy(
+        controller: controller,
+        interruptions: system,
+        pauseOnUnplug: () => pause,
+        stopGrace: const Duration(milliseconds: 20),
+      )..start();
+      await playing();
+      system.emit(const BecameNoisy());
+      await settle();
+      expect(state().playing, isTrue);
+
+      pause = true;
+      system.emit(const BecameNoisy());
+      await settle();
+
+      expect(state().playing, isFalse);
+    });
+
+    /// @verifies FR-025.7
+    test('with the setting off, other interruptions still pause', () async {
+      await policy.dispose();
+      policy = InterruptionPolicy(
+        controller: controller,
+        interruptions: system,
+        pauseOnUnplug: () => false,
+        stopGrace: const Duration(milliseconds: 20),
+      )..start();
+      await playing();
+
+      system.emit(const InterruptionBegan(InterruptionKind.permanent));
+      await settle();
+
+      expect(state().playing, isFalse);
+    });
+
     /// @verifies BR-005
     test(
       'a transient loss after headphones were unplugged does not resume',
