@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tuneshell/app/app_info.dart';
+import 'package:tuneshell/domain/settings/app_info.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 import 'package:tuneshell/ui/widgets/settings_tiles.dart';
