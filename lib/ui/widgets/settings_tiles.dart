@@ -249,6 +249,9 @@ class SettingsSegmentedTile<T> extends StatelessWidget {
           width: double.infinity,
           child: SegmentedButton<T>(
             showSelectedIcon: false,
+            style: const ButtonStyle(
+              minimumSize: WidgetStatePropertyAll(Size(0, TsSize.touchTarget)),
+            ),
             segments: [
               for (final (value, label) in choices)
                 ButtonSegment<T>(value: value, label: Text(label)),

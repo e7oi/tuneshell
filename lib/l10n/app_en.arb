@@ -20,10 +20,6 @@
   "@libraryRefresh": {
     "description": "Action that reindexes the library."
   },
-  "libraryFolders": "Folders",
-  "@libraryFolders": {
-    "description": "Action that reopens the folder choice."
-  },
   "libraryIndexFailed": "The library could not be refreshed.",
   "@libraryIndexFailed": {
     "description": "Shown when indexing failed; the stored library stays visible."
@@ -86,10 +82,6 @@
   },
   "@notificationChannelDescription": {
     "description": "Description of the playback notification channel, shown in the Android settings."
-  },
-  "libraryDisks": "Removable disks",
-  "@libraryDisks": {
-    "description": "Tooltip of the button that opens the removable disks (FR-006)"
   },
   "removableTitle": "Removable disks",
   "@removableTitle": {
@@ -183,17 +175,9 @@
   "@demoGallery": {
     "description": "Entry of the settings tab that opens the component demo page (debug and profile builds only, FR-010)."
   },
-  "foldersBack": "Back",
-  "@foldersBack": {
-    "description": "Tooltip of the back arrow of the folder choice when it was opened from the library (FR-003)."
-  },
   "searchSoon": "Search (soon)",
   "@searchSoon": {
     "description": "Tooltip of the disabled search button of the Tracks header (FR-011.1)."
-  },
-  "chipDisks": "Disks",
-  "@chipDisks": {
-    "description": "Label of the Disks action chip of the Tracks view (FR-011.2)."
   },
   "disksAbsentBadge": "{count} missing",
   "@disksAbsentBadge": {
@@ -1153,6 +1137,10 @@
   },
   "privacyAskFolders": "Access to a folder of a removable disk, only the ones you choose.",
   "@privacyAskFolders": {
+    "description": "Permission explained on the privacy page (FR-026.4)."
+  },
+  "privacyAskBackground": "Keeping the music going when the screen is off.",
+  "@privacyAskBackground": {
     "description": "Permission explained on the privacy page (FR-026.4)."
   }
 }

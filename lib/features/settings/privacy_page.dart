@@ -45,6 +45,7 @@ class PrivacyPage extends StatelessWidget {
               heading(l10n.privacyAsksTitle),
               bullet(l10n.privacyAskFiles),
               bullet(l10n.privacyAskNotification),
+              bullet(l10n.privacyAskBackground),
               bullet(l10n.privacyAskFolders),
             ],
           ),

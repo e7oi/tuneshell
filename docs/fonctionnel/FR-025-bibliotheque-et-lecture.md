@@ -23,7 +23,7 @@ Choisir ou modifier le repère d'un disque, désactiver un disque et ses dossier
 
 ## À valider (PO)
 
-Cette fiche s'écarte de trois fiches `Active` : elles ne sont pas modifiées, leur écart est ici.
+Cette fiche s'écarte de trois fiches `Active` : leurs règles ne sont pas modifiées (seule leur section as-built l'est), l'écart est ici.
 - FR-011, exigence 2 : les pastilles quittent Pistes (décision du propriétaire du 2026-10-24).
 - FR-003, exigence 7 : l'indexation « à chaque démarrage » devient un réglage, activé par défaut (exigence 6).
 - BR-005, règle 5 : le débranchement du casque met en pause « toujours » ; elle devient un réglage, activé par défaut (exigence 7).

@@ -273,6 +273,16 @@ void main() {
       expect(library.confirmed, 0);
     });
 
+    testWidgets('waits while the library is being indexed', (tester) async {
+      await pump(tester, indexing: true);
+
+      await tester.tap(find.text('Music folders'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Confirm'), findsNothing);
+      expect(library.choiceOpened, 0);
+    });
+
     testWidgets('without access to the audio, the explanation comes first', (
       tester,
     ) async {
@@ -296,15 +306,15 @@ void main() {
     });
 
     testWidgets('one connected disk', (tester) async {
-      await pump(tester, disks: [disk('T7 Shield', RemovableStatus.available)]);
+      await pump(tester, disks: [disk('Disk A', RemovableStatus.available)]);
 
-      expect(find.text('T7 Shield · Connected'), findsOneWidget);
+      expect(find.text('Disk A · Connected'), findsOneWidget);
     });
 
     testWidgets('one absent disk shows a badge in words', (tester) async {
-      await pump(tester, disks: [disk('T7 Shield', RemovableStatus.absent)]);
+      await pump(tester, disks: [disk('Disk A', RemovableStatus.absent)]);
 
-      expect(find.text('T7 Shield · Not connected'), findsOneWidget);
+      expect(find.text('Disk A · Not connected'), findsOneWidget);
       expect(find.text('1 missing'), findsOneWidget);
     });
 

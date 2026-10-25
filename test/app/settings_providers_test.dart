@@ -1,8 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tuneshell/app/providers/library_providers.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/settings/app_settings.dart';
+import 'package:tuneshell/features/library/library_controller.dart';
 
+import '../fakes/fake_library.dart';
+import '../fakes/fake_library_controller.dart';
 import '../fakes/fake_settings_store.dart';
 
 void main() {
@@ -25,6 +29,39 @@ void main() {
   AppSettings settings() => container.read(appSettingsProvider);
   AppSettingsNotifier notifier() =>
       container.read(appSettingsProvider.notifier);
+
+  /// @verifies FR-025.1
+  test(
+    'the folders line is read again when the library state changes',
+    () async {
+      final repository = FakeLibraryRepository();
+      final calls = LibraryCalls();
+      final c = ProviderContainer(
+        overrides: [
+          libraryRepositoryProvider.overrideWithValue(repository),
+          internalAudioSourceProvider.overrideWithValue(
+            FakeInternalAudioSource(),
+          ),
+          libraryControllerProvider.overrideWith(
+            () => FakeLibraryController(
+              const LibraryReady(hasFolders: false),
+              calls,
+            ),
+          ),
+        ],
+      );
+      addTearDown(c.dispose);
+      final listener = c.listen(chosenFoldersProvider, (_, _) {});
+      addTearDown(listener.close);
+      expect(await c.read(chosenFoldersProvider.future), isEmpty);
+
+      await c.read(libraryIndexerProvider).chooseFolders({'Music'});
+      (c.read(libraryControllerProvider.notifier) as FakeLibraryController)
+          .emit(const LibraryReady(hasFolders: true, indexing: true));
+
+      expect(await c.read(chosenFoldersProvider.future), {'Music'});
+    },
+  );
 
   /// @verifies FR-023.6
   group('loading', () {

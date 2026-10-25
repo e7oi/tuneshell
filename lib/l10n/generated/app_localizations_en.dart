@@ -25,9 +25,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get libraryRefresh => 'Refresh';
 
   @override
-  String get libraryFolders => 'Folders';
-
-  @override
   String get libraryIndexFailed => 'The library could not be refreshed.';
 
   @override
@@ -75,9 +72,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationChannelDescription =>
       'Playback controls: previous, pause, next.';
-
-  @override
-  String get libraryDisks => 'Removable disks';
 
   @override
   String get removableTitle => 'Removable disks';
@@ -149,13 +143,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get demoGallery => 'Component gallery';
 
   @override
-  String get foldersBack => 'Back';
-
-  @override
   String get searchSoon => 'Search (soon)';
-
-  @override
-  String get chipDisks => 'Disks';
 
   @override
   String disksAbsentBadge(int count) {
@@ -967,4 +955,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get privacyAskFolders =>
       'Access to a folder of a removable disk, only the ones you choose.';
+
+  @override
+  String get privacyAskBackground =>
+      'Keeping the music going when the screen is off.';
 }

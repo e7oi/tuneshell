@@ -25,9 +25,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get libraryRefresh => 'Actualiser';
 
   @override
-  String get libraryFolders => 'Dossiers';
-
-  @override
   String get libraryIndexFailed =>
       'L\'actualisation de la bibliothèque a échoué.';
 
@@ -76,9 +73,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get notificationChannelDescription =>
       'Commandes de lecture : précédent, pause, suivant.';
-
-  @override
-  String get libraryDisks => 'Disques amovibles';
 
   @override
   String get removableTitle => 'Disques amovibles';
@@ -151,13 +145,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get demoGallery => 'Galerie de composants';
 
   @override
-  String get foldersBack => 'Retour';
-
-  @override
   String get searchSoon => 'Rechercher (bientôt)';
-
-  @override
-  String get chipDisks => 'Disques';
 
   @override
   String disksAbsentBadge(int count) {
@@ -979,4 +967,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get privacyAskFolders =>
       'L\'accès au dossier d\'un disque amovible, seulement ceux que tu choisis.';
+
+  @override
+  String get privacyAskBackground =>
+      'Maintenir la musique quand l\'écran est éteint.';
 }

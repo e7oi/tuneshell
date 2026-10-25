@@ -128,12 +128,6 @@ abstract class AppLocalizations {
   /// **'Refresh'**
   String get libraryRefresh;
 
-  /// Action that reopens the folder choice.
-  ///
-  /// In en, this message translates to:
-  /// **'Folders'**
-  String get libraryFolders;
-
   /// Shown when indexing failed; the stored library stays visible.
   ///
   /// In en, this message translates to:
@@ -205,12 +199,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Playback controls: previous, pause, next.'**
   String get notificationChannelDescription;
-
-  /// Tooltip of the button that opens the removable disks (FR-006)
-  ///
-  /// In en, this message translates to:
-  /// **'Removable disks'**
-  String get libraryDisks;
 
   /// Title of the removable disks screen
   ///
@@ -338,23 +326,11 @@ abstract class AppLocalizations {
   /// **'Component gallery'**
   String get demoGallery;
 
-  /// Tooltip of the back arrow of the folder choice when it was opened from the library (FR-003).
-  ///
-  /// In en, this message translates to:
-  /// **'Back'**
-  String get foldersBack;
-
   /// Tooltip of the disabled search button of the Tracks header (FR-011.1).
   ///
   /// In en, this message translates to:
   /// **'Search (soon)'**
   String get searchSoon;
-
-  /// Label of the Disks action chip of the Tracks view (FR-011.2).
-  ///
-  /// In en, this message translates to:
-  /// **'Disks'**
-  String get chipDisks;
 
   /// Badge on the Disks chip when disks are absent or need access (FR-011.2).
   ///
@@ -1333,6 +1309,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access to a folder of a removable disk, only the ones you choose.'**
   String get privacyAskFolders;
+
+  /// Permission explained on the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Keeping the music going when the screen is off.'**
+  String get privacyAskBackground;
 }
 
 class _AppLocalizationsDelegate

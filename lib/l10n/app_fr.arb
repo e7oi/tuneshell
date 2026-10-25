@@ -5,7 +5,6 @@
   "foldersRoot": "Racine du stockage",
   "foldersConfirm": "Valider",
   "libraryRefresh": "Actualiser",
-  "libraryFolders": "Dossiers",
   "libraryIndexFailed": "L'actualisation de la bibliothèque a échoué.",
   "playerPlay": "Lecture",
   "playerPause": "Pause",
@@ -18,7 +17,6 @@
   "libraryRetry": "Réessayer",
   "notificationChannelName": "Lecture",
   "notificationChannelDescription": "Commandes de lecture : précédent, pause, suivant.",
-  "libraryDisks": "Disques amovibles",
   "removableTitle": "Disques amovibles",
   "removableNone": "Aucun disque amovible pour l'instant. Branchez votre disque, puis ajoutez l'un de ses dossiers.",
   "removableAddFolder": "Ajouter un dossier",
@@ -40,9 +38,7 @@
   "navSettings": "Réglages",
   "comingSoon": "Cette vue arrive bientôt.",
   "demoGallery": "Galerie de composants",
-  "foldersBack": "Retour",
   "searchSoon": "Rechercher (bientôt)",
-  "chipDisks": "Disques",
   "disksAbsentBadge": "{count, plural, one{{count} absent} other{{count} absents}}",
   "libraryScanning": "Recherche des fichiers audio…",
   "libraryCountSearching": "Recherche en cours…",
@@ -205,5 +201,6 @@
   "privacyAsksTitle": "Ce que TuneShell demande à Android",
   "privacyAskFiles": "Lire tes fichiers audio, pour construire ta bibliothèque.",
   "privacyAskNotification": "Afficher la notification de lecture, pour commander la musique depuis l'écran verrouillé.",
-  "privacyAskFolders": "L'accès au dossier d'un disque amovible, seulement ceux que tu choisis."
+  "privacyAskFolders": "L'accès au dossier d'un disque amovible, seulement ceux que tu choisis.",
+  "privacyAskBackground": "Maintenir la musique quand l'écran est éteint."
 }
