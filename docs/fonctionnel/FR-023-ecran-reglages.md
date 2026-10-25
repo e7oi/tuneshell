@@ -1,6 +1,6 @@
 # FR-023 — Écran Réglages et stockage des réglages
 
-**Statut :** Brouillon · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D15, D30 · **Lié :** UC-009, FR-009, FR-010, FR-024, FR-025, FR-026, BR-007, ADR-016, ADR-017 · **Source :** `docs/design/HANDOFF.md` §5 (écran 8, 8e), `Reglages.dc.html`
+**Statut :** Active (validée le 2026-10-25) · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D15, D30 · **Lié :** UC-009, FR-009, FR-010, FR-024, FR-025, FR-026, BR-007, ADR-016, ADR-017 · **Source :** `docs/design/HANDOFF.md` §5 (écran 8, 8e), `Reglages.dc.html`
 
 ## Besoin
 

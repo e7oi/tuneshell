@@ -1,6 +1,6 @@
 # FR-024 — Apparence : thème, couleurs du fond d'écran, index à gauche
 
-**Statut :** Brouillon · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D15, D30 · **Lié :** UC-009, FR-008, FR-010, FR-013, FR-023, ADR-010, ADR-017 · **Source :** `docs/design/HANDOFF.md` §2.1, §6.1 (point 8), §5 (8e)
+**Statut :** Active (validée le 2026-10-25) · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D15, D30 · **Lié :** UC-009, FR-008, FR-010, FR-013, FR-023, ADR-010, ADR-017 · **Source :** `docs/design/HANDOFF.md` §2.1, §6.1 (point 8), §5 (8e)
 
 ## Besoin
 

@@ -1,6 +1,6 @@
 # ADR-017 — Architecture des réglages : table dans la base, lecture avant le premier écran, `dynamic_color`, choix des dossiers en page
 
-**Statut :** Brouillon · **Date :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D15, D30 · **Fiches :** UC-009, FR-023, FR-024, FR-025, FR-026 · **Complète :** ADR-004, ADR-010, ADR-016
+**Statut :** Active (validée le 2026-10-25) · **Date :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D15, D30 · **Fiches :** UC-009, FR-023, FR-024, FR-025, FR-026 · **Complète :** ADR-004, ADR-010, ADR-016
 
 ## Contexte
 

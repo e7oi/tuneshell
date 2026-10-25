@@ -1,6 +1,6 @@
 # FR-025 — Réglages de la bibliothèque et de la lecture
 
-**Statut :** Brouillon · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D23, D25 · **Lié :** UC-003, UC-009, FR-003, FR-006, FR-011, FR-014, FR-015, FR-023, BR-005, BR-008, ADR-017 · **Source :** `docs/design/HANDOFF.md` §5 (8e), décisions du propriétaire du 2026-10-24
+**Statut :** Active (validée le 2026-10-25) · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D23, D25 · **Lié :** UC-003, UC-009, FR-003, FR-006, FR-011, FR-014, FR-015, FR-023, BR-005, BR-008, ADR-017 · **Source :** `docs/design/HANDOFF.md` §5 (8e), décisions du propriétaire du 2026-10-24
 
 ## Besoin
 

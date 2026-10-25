@@ -1,6 +1,6 @@
 # UC-009 — Régler l'application
 
-**Statut :** Brouillon · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Lié :** UC-003, UC-004, UC-006, FR-023, FR-024, FR-025, FR-026, ADR-017 · **Source :** `docs/design/HANDOFF.md` §5 (écran 8, état 8e)
+**Statut :** Active (validée le 2026-10-25) · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Lié :** UC-003, UC-004, UC-006, FR-023, FR-024, FR-025, FR-026, ADR-017 · **Source :** `docs/design/HANDOFF.md` §5 (écran 8, état 8e)
 
 ## Acteur et but
 

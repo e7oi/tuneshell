@@ -1,6 +1,6 @@
 # FR-026 — À propos et Confidentialité
 
-**Statut :** Brouillon · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D1, D15, D26 · **Lié :** UC-009, FR-023, BR-007, ADR-011, ADR-017 · **Source :** `docs/design/HANDOFF.md` §5 (8e), §9
+**Statut :** Active (validée le 2026-10-25) · **Créée le :** 2026-10-25 · **Ticket :** MPL-051 · **Décisions :** D1, D15, D26 · **Lié :** UC-009, FR-023, BR-007, ADR-011, ADR-017 · **Source :** `docs/design/HANDOFF.md` §5 (8e), §9
 
 ## Besoin
 
