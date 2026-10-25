@@ -156,6 +156,11 @@ class LibraryController extends Notifier<LibraryViewState> {
   /// access to the phone's audio (FR-014.5).
   bool _withoutAccess = false;
 
+  /// True while the library holds only what a disk folder gave, without
+  /// access to the phone's audio (FR-014.5); the settings then lead back to
+  /// the explanation instead of the folder choice (FR-025.1).
+  bool get withoutPhoneAccess => _withoutAccess;
+
   /// "Choisir un dossier à la place" (FR-014.5): the Android picker for a
   /// folder of a removable disk; the phone's own folders stay with
   /// MediaStore (D25). From the blocked screen only: a folder that gives

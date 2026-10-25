@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
@@ -70,3 +71,16 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>(
   AppSettingsNotifier.new,
 );
+
+/// Whether Android gives dynamic colours here (Android 12 and later); asked
+/// once. Without them the wallpaper colours line is greyed (FR-024.3).
+final dynamicColorsSupportedProvider = FutureProvider<bool>(
+  (ref) async => await DynamicColorPlugin.getCorePalette() != null,
+);
+
+/// The folders of the phone chosen for the library (FR-003), for the
+/// subtitle of the settings line; invalidated when the choice changes.
+final FutureProvider<Set<String>> chosenFoldersProvider =
+    FutureProvider.autoDispose<Set<String>>(
+      (ref) => ref.watch(libraryIndexerProvider).chosenFolders(),
+    );

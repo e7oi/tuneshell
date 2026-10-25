@@ -8,6 +8,7 @@ import 'package:tuneshell/features/browse/artists_view.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_page.dart';
 import 'package:tuneshell/features/player/mini_player_bar.dart';
+import 'package:tuneshell/features/settings/settings_page.dart';
 import 'package:tuneshell/features/shell/home_shell.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
@@ -68,6 +69,7 @@ class TuneShellApp extends ConsumerWidget {
         tracks: const LibraryPage(),
         albums: const AlbumsView(),
         artists: const ArtistsView(),
+        settings: const SettingsPage(),
         playerBar: const MiniPlayerBar(),
       ),
     ),

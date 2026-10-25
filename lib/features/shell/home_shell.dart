@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tuneshell/features/shell/coming_soon_page.dart';
-import 'package:tuneshell/features/shell/settings_page.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 
@@ -15,6 +14,7 @@ class HomeShell extends StatefulWidget {
     required this.playerBar,
     this.albums,
     this.artists,
+    this.settings,
     this.immersive = false,
     super.key,
   });
@@ -27,6 +27,9 @@ class HomeShell extends StatefulWidget {
   /// view says "coming soon".
   final Widget? albums;
   final Widget? artists;
+
+  /// The Settings view; it too has a navigator of its own (FR-023.3).
+  final Widget? settings;
 
   /// Shown above the navigation in every view; empty when nothing plays.
   final Widget playerBar;
@@ -54,6 +57,7 @@ class _HomeShellState extends State<HomeShell> {
   /// into them before it leaves the tab (ADR-016).
   final GlobalKey<NavigatorState> _albumsNavigator = GlobalKey();
   final GlobalKey<NavigatorState> _artistsNavigator = GlobalKey();
+  final GlobalKey<NavigatorState> _settingsNavigator = GlobalKey();
 
   void _select(int index) => setState(() => _index = index);
 
@@ -84,7 +88,12 @@ class _HomeShellState extends State<HomeShell> {
                   root:
                       widget.artists ?? ComingSoonPage(title: l10n.navArtists),
                 ),
-                const SettingsPage(),
+                _TabNavigator(
+                  navigatorKey: _settingsNavigator,
+                  root:
+                      widget.settings ??
+                      ComingSoonPage(title: l10n.navSettings),
+                ),
               ],
             ),
           ),
@@ -102,6 +111,7 @@ class _HomeShellState extends State<HomeShell> {
         final navigator = switch (_index) {
           1 => _albumsNavigator.currentState,
           2 => _artistsNavigator.currentState,
+          3 => _settingsNavigator.currentState,
           _ => null,
         };
         if (navigator != null && navigator.canPop()) {
