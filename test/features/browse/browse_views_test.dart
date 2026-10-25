@@ -13,6 +13,7 @@ import 'package:tuneshell/domain/playback/services/player_controller.dart';
 import 'package:tuneshell/features/browse/albums_view.dart';
 import 'package:tuneshell/features/browse/artists_view.dart';
 import 'package:tuneshell/features/browse/browse_providers.dart';
+import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_list_providers.dart';
 import 'package:tuneshell/features/player/mini_player_bar.dart';
 import 'package:tuneshell/features/player/player_session.dart';
@@ -24,6 +25,7 @@ import 'package:tuneshell/ui/widgets/artist_tile.dart';
 import 'package:tuneshell/ui/widgets/source_mark.dart';
 
 import '../../fakes/fake_audio_engine.dart';
+import '../../fakes/fake_library_controller.dart';
 import '../../fakes/fake_settings_store.dart';
 import '../../fakes/fake_storage.dart';
 
@@ -74,6 +76,7 @@ void main() {
   late FakeAudioEngine engine;
   late PlayerController player;
   late List<List<Rect>> rects;
+  late FakeLibraryController library;
 
   // An album of two discs given in disorder, one of one track, a second
   // artist, and tracks without tags.
@@ -128,11 +131,13 @@ void main() {
     await player.start();
     addTearDown(player.dispose);
     rects = [];
+    library = FakeLibraryController(const LibraryReady(hasFolders: true));
     final all = tracks ?? lib;
     final container = ProviderContainer(
       overrides: [
         playerControllerProvider.overrideWithValue(player),
         settingsStoreProvider.overrideWithValue(FakeSettingsStore()),
+        libraryControllerProvider.overrideWith(() => library),
         listedTracksProvider.overrideWith(
           (ref) => tracksStream ?? Stream.value(all),
         ),
@@ -813,6 +818,26 @@ void main() {
             .setIndexOnLeft(enabled: false);
         await tester.pumpAndSettle();
         expect(rects.last.single.left, greaterThan(300));
+      });
+    }
+  });
+
+  /// @verifies FR-025.4
+  group('pull to refresh', () {
+    for (final tabName in ['Albums', 'Artists']) {
+      flow('$tabName: pulling the list refreshes the library', (tester) async {
+        await pump(tester);
+        await tab(tester, tabName);
+
+        await tester.fling(
+          find.byType(Scrollable).first,
+          const Offset(0, 400),
+          1000,
+        );
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 2));
+
+        expect(library.refreshes, 1);
       });
     }
   });

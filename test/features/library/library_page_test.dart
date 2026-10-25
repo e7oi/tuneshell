@@ -479,6 +479,38 @@ void main() {
     );
   });
 
+  /// @verifies FR-025.4
+  testWidgets('pulling the list down indexes the library again', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    source.files = [...source.files, info('Music/new.mp3', title: 'Zulu')];
+    final before = source.queries;
+
+    await tester.fling(find.text('Alpha'), const Offset(0, 400), 1000);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    expect(source.queries, before + 1);
+    expect(find.text('Zulu'), findsWidgets);
+  });
+
+  /// @verifies FR-025.3
+  testWidgets('the Tracks header keeps its title and search, no chips', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ActionChip), findsNothing);
+    expect(find.text('Refresh'), findsNothing);
+    expect(find.byTooltip('Search (soon)'), findsOneWidget);
+  });
+
   /// @verifies FR-024.4
   testWidgets('the index handle moves to the left with the setting', (
     tester,

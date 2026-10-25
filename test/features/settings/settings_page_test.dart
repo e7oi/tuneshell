@@ -14,36 +14,8 @@ import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 
 import '../../fakes/fake_library.dart';
+import '../../fakes/fake_library_controller.dart';
 import '../../fakes/fake_settings_store.dart';
-
-class _Library extends LibraryController {
-  new(this._initial, {this.withoutAccess = false});
-
-  final LibraryViewState _initial;
-  final bool withoutAccess;
-  int refreshes = 0;
-  int confirmed = 0;
-  Set<String>? confirmedFolders;
-  int choiceOpened = 0;
-
-  @override
-  LibraryViewState build() => _initial;
-
-  @override
-  bool get withoutPhoneAccess => withoutAccess;
-
-  @override
-  Future<void> refresh() async => refreshes++;
-
-  @override
-  Future<void> confirmFolders(Set<String> folders) async {
-    confirmed++;
-    confirmedFolders = folders;
-  }
-
-  @override
-  Future<void> openFolderChoice() async => choiceOpened++;
-}
 
 class _Removable extends RemovableController {
   new(this._disks);
@@ -70,7 +42,7 @@ RemovableDisk disk(String label, RemovableStatus status) => RemovableDisk(
 
 void main() {
   late FakeSettingsStore store;
-  late _Library library;
+  late FakeLibraryController library;
   late FakeInternalAudioSource source;
   late ProviderContainer container;
 
@@ -88,7 +60,7 @@ void main() {
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     store = FakeSettingsStore();
-    library = _Library(
+    library = FakeLibraryController(
       LibraryReady(hasFolders: true, indexing: indexing),
       withoutAccess: withoutAccess,
     );

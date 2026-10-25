@@ -11,6 +11,7 @@ import 'package:tuneshell/features/browse/album_detail_page.dart';
 import 'package:tuneshell/features/browse/browse_providers.dart';
 import 'package:tuneshell/features/browse/browse_widgets.dart';
 import 'package:tuneshell/features/browse/library_groups.dart';
+import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/features/player/track_menu.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
@@ -125,32 +126,37 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
               l10n.indexLetterItems(letter, l10n.albumsCount(count)),
           gridTitle: l10n.indexGoToLetter,
           onHandleRect: _exclusion.handle,
-          child: GridView.builder(
-            controller: _scroll,
-            padding: const EdgeInsets.fromLTRB(
-              margin,
-              TsSpace.xs,
-              margin,
-              TsSize.listBottomInset,
+          child: RefreshIndicator(
+            onRefresh: () =>
+                ref.read(libraryControllerProvider.notifier).refresh(),
+            child: GridView.builder(
+              controller: _scroll,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(
+                margin,
+                TsSpace.xs,
+                margin,
+                TsSize.listBottomInset,
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: _columns,
+                mainAxisSpacing: gap,
+                crossAxisSpacing: gap,
+                mainAxisExtent: extent,
+              ),
+              itemCount: groups.albums.length,
+              itemBuilder: (context, i) {
+                final album = groups.albums[i];
+                return _AlbumGridCard(
+                  album: album,
+                  size: card,
+                  marks: albumMarks(album, disks, colors),
+                  diskName: album.available
+                      ? null
+                      : absentDiskName(album.disks, unavailable, disks, l10n),
+                );
+              },
             ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: _columns,
-              mainAxisSpacing: gap,
-              crossAxisSpacing: gap,
-              mainAxisExtent: extent,
-            ),
-            itemCount: groups.albums.length,
-            itemBuilder: (context, i) {
-              final album = groups.albums[i];
-              return _AlbumGridCard(
-                album: album,
-                size: card,
-                marks: albumMarks(album, disks, colors),
-                diskName: album.available
-                    ? null
-                    : absentDiskName(album.disks, unavailable, disks, l10n),
-              );
-            },
           ),
         );
       },
