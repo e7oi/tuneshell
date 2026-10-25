@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-057 · Dernière MAJ : 2026-10-24
+Préfixe : MPL · Prochaine clé : MPL-057 · Dernière MAJ : 2026-10-25
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -15,7 +15,7 @@ Préfixe : MPL · Prochaine clé : MPL-057 · Dernière MAJ : 2026-10-24
 | MPL-015 | Tâche technique | P2 | Revoir dialogue et bandeau de permission ⚠️ un seul appareil testé | À faire | — | — |
 | MPL-046 | Récit | P1 | Design lot 3 — Disques amovibles : écran 4 refait (4a–4e), repère de source modifiable, détection du branchement en direct, parcours dans un service au premier plan avec notification et « Arrêter » ; recoupe MPL-035 et MPL-038. À cadrer après MPL-016 | À faire | MPL-001 | MPL-045 |
 | MPL-048 | Récit | P2 | Design lot 5 — Vues secondaires : onglets Albums et Artistes (grille et liste, détails dans l'onglet, index alphabétique, lire / aléatoire, ajout à la file d'un album ou d'un artiste ; regroupés par artiste de l'album). Cadré et validé le 2026-10-23 ; le reste du lot 5 est dans MPL-051 (Réglages), MPL-052 (panneau lecteur), MPL-053 et MPL-054 | À tester | MPL-001 | — |
-| MPL-051 | Récit | P2 | Design lot 5 — Réglages (écran 8e) : stockage persisté des réglages (schéma ou paquet, à décider au cadrage), thème Système / Clair / Sombre, couleurs du fond d'écran (Material You par `dynamic_color`, dépendance à justifier : D30), index alphabétique à gauche (poignée et colonne), pause si le casque est débranché, actualiser au démarrage, liens « Dossiers de musique » et « Disques amovibles » ; **décidé le 2026-10-24 :** les pastilles « Dossiers » et « Disques » quittent l'onglet Pistes pour Réglages, « Actualiser » devient un tirer-pour-actualiser sur les listes (et « Actualiser maintenant » dans Réglages), le bandeau « Voir » vers les disques reste dans Pistes, l'en-tête de Pistes ne garde que le titre et la loupe (voir Décisions ; FR-011 et FR-003 `Active` à ajuster au cadrage), À propos (version, licence GPL-3.0-or-later, code source) et Confidentialité ; n'affiche que les réglages qui fonctionnent. Découpé de MPL-048 le 2026-10-23. À cadrer | À faire | MPL-001 | — |
+| MPL-051 | Récit | P2 | Design lot 5 — Réglages (écran 8e) : écran Réglages à quatre sections, réglages retenus (table de la base, schéma v4), thème Système / Clair / Sombre, couleurs du fond d'écran (`dynamic_color`, D30), index à gauche, pause si le casque est débranché, actualiser au démarrage ; « Dossiers de musique » et « Disques amovibles » quittent les pastilles de Pistes pour Réglages (choix des dossiers en page), « Actualiser » devient un tirer-pour-actualiser ; À propos, licences et Confidentialité. Cadré le 2026-10-25, fiches en Brouillon. Découpé de MPL-048 | À faire | MPL-001 | — |
 | MPL-052 | Récit | P2 | Design lot 5 — Paysage et écrans larges (écran 6e) : panneau lecteur permanent de 280 dp à droite (pochette, contrôles, file d'attente) à partir de 840 dp, liste au centre, sans mini-lecteur ; panneau repliable de 600 à 839 dp ; réutilise les éléments du lecteur plein écran (FR-017). Découpé de MPL-048 le 2026-10-23. À cadrer | À faire | MPL-001 | MPL-048 |
 | MPL-053 | Récit | P2 | « Reprendre là où j'en étais » : mémoriser la file, la piste, la position et les modes (aléatoire, répétition) entre deux lancements et les restaurer à l'ouverture, en pause et sans service au premier plan ; réglage dans MPL-051 ; à cadrer (BR-004 : pistes disparues, disque absent, FR-005 : pas de notification avant un « Lecture »). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
 | MPL-054 | Récit | P2 | Ignorer les fichiers courts (moins de 30 s : sonneries, notes vocales) : réglage de l'indexation ; à cadrer (durée connue tout de suite pour MediaStore, seulement après la lecture des étiquettes sur un disque ; pistes déjà indexées ; effet sur les listes et les compteurs ; seuil réglable ou fixe). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
@@ -149,6 +149,159 @@ Revue QA : ✅ (1 tour, sous-agent à contexte neuf ; aucun bloquant). Majeurs c
 Description de PR : titre `feat(ui): add the design foundations: theme, navigation and components (MPL-016)`. What: the Claude Design handoff enters the repository (specification, mock-up sources, four reduced captures, six OFL fonts); TuneShell tokens and light/dark themes that follow the system; four-tab shell with a bottom bar under 600 dp and a rail beyond, keeping each view's state on rotation, with the player bar in the shell; eight reusable components (ArtworkTile, SourceMark, TrackTile, StatusBanner, ProgressBanner, DiskCard, JumpToCurrentFab, AlphabetScroller) with a debug and profile gallery; a native channel that keeps the index handle out of the Back gesture; the current screens moved to the tokens with persistent states in the flow; `lib/ui/` rules in CLAUDE.md and the architecture tests, plus a no-literal style test; backlog MPL-044 to MPL-049 for the next design lots. Why: the owner chose to build the design lot by lot (lot 0 first), and the existing screens must keep working while the new ones arrive (ADR-010, ADR-011). How tested: format, analyses and 385 unit and widget tests green; release APK built (79.7 MB, no INTERNET); one review round without blocker; device: Pixel 10 Pro through adb in release and profile (see delivery block), owner confirmation pending. Known gaps: dark theme, landscape, TalkBack and fluidity not tested on the device; column fade-in and teardrop bubble of the index not done; the style test misses some literals; the gesture-exclusion rectangle is last-writer-wins; `playerStateProvider` now subscribes before it reads the state (out of scope, found by the page tests).
 Décisions prises en route : `playerStateProvider` corrigé (hors périmètre, trouvé par les tests de page) ; barre de lecture montée dans la coquille ; jetons `coverDetail`, `bannerMin` et `fixedRowMaxTextScale` ajoutés ; captures versionnées en JPEG ; galerie ouverte depuis Réglages en debug et profile ; courbe de l'effet loupe ajustée sur les valeurs de Design.
 À valider (PO) : écarts du dossier de conception consignés dans les As-built de FR-010 (fondu, bulle, échelle de texte) et BR-007 (test des jetons) ; sortir `ClaudeDesign/` de l'arbre de travail (il gêne `flutter analyze`) ; passer le ticket à « Terminé » après le test sur le Pixel (`HOWTO.md` §14, avec une build profile pour les étapes 7 à 11).
+
+### MPL-051
+**Description.** Donner à l'onglet Réglages son contenu (écran 8e du lot 5 de la conception, `docs/design/HANDOFF.md`), avec les réglages qui fonctionnent, retenus d'un lancement à l'autre ; y ranger les pastilles « Dossiers » et « Disques » de l'onglet Pistes ; remplacer « Actualiser » par le tirer-pour-actualiser (décisions du propriétaire du 2026-10-24) ; dire ce qu'est l'application (version, licence, données). Cadrage du 2026-10-25. « Reprendre là où j'en étais » (MPL-053) et « Ignorer les fichiers courts » (MPL-054) de la maquette sont absents tant qu'ils ne sont pas faits.
+
+**Inclus.**
+- Stockage des réglages : table `app_settings` dans la base, schéma v4 et sa migration testée, domaine `AppSettings` et port, lecture avant le premier écran (FR-023, ADR-017).
+- Écran Réglages dans l'onglet (navigateur d'onglet, Retour du système) : sections Bibliothèque, Apparence, Lecture, À propos ; lignes de navigation, interrupteurs, bouton segmenté ; galerie de composants en debug et profile (FR-023).
+- Apparence : thème Système / Clair / Sombre, couleurs du fond d'écran par `dynamic_color` (grisées avant Android 12), index à gauche pour Pistes, Albums et Artistes (FR-024).
+- Bibliothèque : « Dossiers de musique » (choix des dossiers en page poussée), « Disques amovibles » (écran des disques, badge « N absent »), « Actualiser maintenant », « Actualiser au démarrage » ; tirer-pour-actualiser sur Pistes, Albums et Artistes ; l'en-tête de Pistes ne garde que le titre et la loupe, le bandeau « Voir » reste (FR-025).
+- Lecture : « Pause si le casque est débranché » (BR-005 règle 5 devient réglable) (FR-025).
+- À propos (version testée contre `pubspec.yaml`, licence, licences de tiers, adresse du code), Confidentialité (FR-026).
+- Textes en français (mot pour mot des maquettes) et en anglais dans les ARB ; clair et sombre ; HOWTO §19 à écrire à la livraison.
+
+**Exclusions.** « Reprendre là où j'en étais » (MPL-053), « Ignorer les fichiers courts » (MPL-054), recherche (MPL-055), désactiver un disque (MPL-056), écran des disques refait et détection du branchement en direct (MPL-046), panneau lecteur permanent (MPL-052), lien web ouvrable, langue de l'interface, import et export des réglages, essais TalkBack et texte à 200 % (MPL-049).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Réglages
+
+  Scénario: Écran Réglages
+    Soit l'application lancée
+    Quand l'utilisateur ouvre l'onglet Réglages
+    Alors il voit les sections "Bibliothèque", "Apparence", "Lecture" et "À propos"
+    Et "Reprendre là où j'en étais" et "Ignorer les fichiers courts" n'y sont pas
+
+  Scénario: Valeurs par défaut
+    Soit une première installation
+    Quand l'utilisateur ouvre Réglages
+    Alors le thème est "Système", les couleurs du fond d'écran et l'index à gauche sont éteints
+    Et "Pause si le casque est débranché" et "Actualiser au démarrage" sont allumés
+
+  Scénario: Thème sombre retenu
+    Soit le téléphone en thème clair
+    Quand l'utilisateur choisit "Sombre" puis relance l'application
+    Alors l'application s'ouvre en sombre, sans passer un instant par le clair
+
+  Scénario: Thème qui suit le système
+    Soit le réglage "Système"
+    Quand le téléphone passe du clair au sombre
+    Alors l'application change aussitôt
+
+  Scénario: Couleurs du fond d'écran
+    Soit Android 12 ou plus
+    Quand l'utilisateur allume "Couleurs du fond d'écran"
+    Alors les couleurs de l'application suivent celles du fond d'écran
+    Et les repères de source gardent leurs couleurs
+
+  Scénario: Couleurs dynamiques absentes
+    Soit Android 11
+    Quand l'utilisateur ouvre Réglages
+    Alors la ligne "Couleurs du fond d'écran" est grisée et dit "Android 12 ou plus"
+
+  Scénario: Index à gauche
+    Soit les listes Pistes, Albums et Artistes de plus de 100 éléments
+    Quand l'utilisateur allume "Index alphabétique à gauche"
+    Alors la poignée et la colonne sont à gauche dans les trois vues
+    Et le geste Retour reste exclu sur la poignée de gauche seulement
+
+  Scénario: Dossiers de musique
+    Soit l'onglet Réglages
+    Quand l'utilisateur touche "Dossiers de musique", change la case d'un dossier et valide
+    Alors la page se ferme sur Réglages et la bibliothèque se réindexe
+    Et le geste Retour depuis la page ramène à Réglages sans rien changer
+
+  Scénario: Dossiers sans accès
+    Soit l'accès aux fichiers audio du téléphone refusé
+    Quand l'utilisateur touche "Dossiers de musique"
+    Alors l'explication d'accès s'affiche
+
+  Scénario: Disques amovibles
+    Soit un disque absent
+    Quand l'utilisateur ouvre Réglages
+    Alors la ligne "Disques amovibles" dit le nom du disque et "non connecté" avec un badge "1 absent"
+    Et la toucher ouvre l'écran des disques dans l'onglet
+
+  Scénario: Pistes sans pastilles
+    Soit l'onglet Pistes
+    Quand il s'affiche
+    Alors l'en-tête ne montre que le titre et la loupe grisée
+    Et le bandeau "Voir" d'un disque absent ouvre toujours l'écran des disques
+
+  Scénario: Tirer pour actualiser
+    Soit un nouveau fichier audio ajouté au téléphone
+    Quand l'utilisateur tire la liste des pistes vers le bas
+    Alors la bibliothèque se réindexe et le fichier apparaît
+    Et un second geste pendant l'indexation ne relance rien
+
+  Scénario: Actualiser maintenant
+    Soit l'onglet Réglages
+    Quand l'utilisateur touche "Actualiser maintenant"
+    Alors la bibliothèque se réindexe, la ligne est grisée pendant l'indexation
+
+  Scénario: Pas d'actualisation au démarrage
+    Soit "Actualiser au démarrage" éteint et un nouveau fichier ajouté
+    Quand l'utilisateur relance l'application
+    Alors le fichier n'est pas encore dans la liste
+    Et il y est après "Actualiser maintenant"
+
+  Scénario: Casque débranché
+    Soit une musique dans un casque et "Pause si le casque est débranché" allumé
+    Quand le casque est débranché
+    Alors la lecture se met en pause
+
+  Scénario: Casque débranché sans pause
+    Soit "Pause si le casque est débranché" éteint
+    Quand le casque est débranché
+    Alors la lecture continue
+
+  Scénario: Réglages retenus
+    Soit des réglages changés
+    Quand Android arrête l'application puis qu'elle est relancée
+    Alors les réglages sont ceux qui avaient été choisis
+
+  Scénario: Valeur abîmée
+    Soit une valeur de réglage illisible dans la base
+    Quand l'application démarre
+    Alors la valeur par défaut s'applique sans message
+
+  Scénario: À propos
+    Soit l'onglet Réglages
+    Quand l'utilisateur touche "TuneShell 0.1.0"
+    Alors il voit la version, "GPL-3.0-or-later", "© 2026 Eloi BERTIN" et l'adresse du code source
+    Et "Licences" ouvre la liste des licences, polices et paquets compris
+
+  Scénario: Confidentialité
+    Soit l'onglet Réglages
+    Quand l'utilisateur touche "Confidentialité"
+    Alors il lit qu'aucune donnée n'est collectée, qu'il n'y a ni compte ni réseau, et ce que l'application garde
+
+  Scénario: Retour dans l'onglet
+    Soit la page "Disques amovibles" ouverte depuis Réglages
+    Quand l'utilisateur fait le geste Retour deux fois
+    Alors il revient sur Réglages puis sur Pistes
+
+  Scénario: Version juste
+    Soit le fichier pubspec.yaml
+    Quand les tests tournent
+    Alors la version affichée est celle du pubspec
+```
+
+**Test appareil (Pixel, release).** Thèmes (clair, sombre, système en direct) et couleurs dynamiques sur l'Android 17 du Pixel ; relance après arrêt par le système ; index à gauche et geste Retour au bord gauche ; choix des dossiers depuis Réglages avec le SSD branché ; tirer-pour-actualiser avec un fichier ajouté ; casque filaire et Bluetooth débranchés avec le réglage allumé puis éteint ; migration de la base v3 vers v4 en installant par-dessus l'ancienne ; fluidité de l'ouverture au démarrage. HOWTO §19 à écrire à la livraison. Les essais TalkBack et 200 % sont reportés à MPL-049.
+
+**Fiches liées.** UC-009, FR-023, FR-024, FR-025, FR-026 ; ADR-017 (toutes en `Brouillon`, en attente de validation). Utilise UC-003, UC-004, FR-003, FR-006, FR-008, FR-009, FR-010, FR-011, FR-013, FR-014, FR-015, FR-020, FR-021, BR-005, BR-007, BR-008 et ADR-004, ADR-010, ADR-016 (`Active`). Complétées à la livraison sans changer leurs règles : FR-008 (réglages livrés), FR-009 (Réglages), FR-011 (pastilles), FR-003 (démarrage), BR-005 (règle 5), FR-013 (côté gauche).
+
+**À valider (PO).**
+- Nouvelle dépendance `dynamic_color` 2.1.0 (D30) (FR-024, ADR-017).
+- Stockage dans la base (schéma v4) et lecture avant le premier écran (ADR-017).
+- Choix des dossiers en page poussée depuis Réglages, qui supprime la branche « annulable » du contrôleur (refonte d'un écran de MPL-044) (ADR-017).
+- Trois écarts à des fiches `Active`, par décision du propriétaire ou par réglage : pastilles de Pistes (FR-011.2), indexation au démarrage (FR-003.7), pause au débranchement (BR-005 règle 5) (FR-025).
+- Adresse du code source en texte, sans lien ; page Confidentialité écrite par moi (FR-026).
+- Réglages retirés de l'écran tant qu'ils n'ont pas d'effet ; largeur de 600 dp ; « Actualiser maintenant » et ses textes (FR-023, FR-025).
+- Licence des ressources de marque : toujours à trancher avant publication (ADR-011).
 
 ### MPL-048
 **Description.** Faire des onglets Albums et Artistes de vraies vues, selon le lot 5 de la conception Claude Design (`docs/design/HANDOFF.md`, écran 8, états 8a à 8d) : une grille d'albums, une liste d'artistes regroupés par artiste de l'album, leurs détails dans l'onglet, l'index alphabétique, et la possibilité de lire ou d'ajouter à la file un album ou un artiste en entier. Cadrage du 2026-10-23. Le lot 5 de Design est découpé (choix du propriétaire) : Réglages dans MPL-051, panneau lecteur permanent dans MPL-052, « Reprendre » dans MPL-053 et fichiers courts dans MPL-054.
