@@ -42,7 +42,7 @@ RemovableDisk disk(String label, RemovableStatus status) => RemovableDisk(
 
 void main() {
   late FakeSettingsStore store;
-  late FakeLibraryController library;
+  late LibraryCalls library;
   late FakeInternalAudioSource source;
   late ProviderContainer container;
 
@@ -60,10 +60,7 @@ void main() {
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     store = FakeSettingsStore();
-    library = FakeLibraryController(
-      LibraryReady(hasFolders: true, indexing: indexing),
-      withoutAccess: withoutAccess,
-    );
+    library = LibraryCalls();
     source = FakeInternalAudioSource()
       ..files = [
         info('Music/a.mp3', title: 'A'),
@@ -74,7 +71,13 @@ void main() {
         settingsStoreProvider.overrideWithValue(store),
         chosenFoldersProvider.overrideWith((ref) => folders),
         dynamicColorsSupportedProvider.overrideWith((ref) => dynamicSupported),
-        libraryControllerProvider.overrideWith(() => library),
+        libraryControllerProvider.overrideWith(
+          () => FakeLibraryController(
+            LibraryReady(hasFolders: true, indexing: indexing),
+            library,
+            withoutAccess: withoutAccess,
+          ),
+        ),
         removableControllerProvider.overrideWith(() => _Removable(disks)),
         libraryRepositoryProvider.overrideWithValue(FakeLibraryRepository()),
         internalAudioSourceProvider.overrideWithValue(source),

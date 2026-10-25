@@ -35,8 +35,7 @@ class SettingsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final settings = ref.watch(appSettingsProvider);
     final notifier = ref.read(appSettingsProvider.notifier);
-    final dynamicSupported =
-        ref.watch(dynamicColorsSupportedProvider).value ?? false;
+    final dynamicSupported = ref.watch(dynamicColorsSupportedProvider);
     final indexing = ref.watch(
       libraryControllerProvider.select(
         (state) => state is LibraryReady && state.indexing,
@@ -202,9 +201,15 @@ class _FoldersTile extends ConsumerWidget {
               if (names.length > 2) '…',
             ].join(', '),
           );
+    final indexing = ref.watch(
+      libraryControllerProvider.select(
+        (state) => state is LibraryReady && state.indexing,
+      ),
+    );
     return SettingsNavTile(
       title: l10n.foldersTitle,
       subtitle: summary,
+      enabled: !indexing,
       onTap: () => unawaited(openFolderChoice(context, ref)),
     );
   }

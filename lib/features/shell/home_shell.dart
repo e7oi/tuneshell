@@ -62,6 +62,15 @@ class _HomeShellState extends State<HomeShell> {
   void _select(int index) => setState(() => _index = index);
 
   @override
+  void didUpdateWidget(HomeShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The explanation of the access, or the first-launch screens, live in the
+    // Tracks view: from another tab (the settings lead there without access)
+    // the window would otherwise stay on a tab that has lost its navigation.
+    if (widget.immersive && !oldWidget.immersive) _index = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final destinations = [

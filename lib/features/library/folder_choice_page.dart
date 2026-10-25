@@ -13,7 +13,11 @@ import 'package:tuneshell/l10n/generated/app_localizations.dart';
 /// explanation of the access (FR-025.1, FR-014.5).
 Future<void> openFolderChoice(BuildContext context, WidgetRef ref) async {
   final controller = ref.read(libraryControllerProvider.notifier);
-  if (controller.withoutPhoneAccess) {
+  final state = ref.read(libraryControllerProvider);
+  // A choice made while the library is indexed would only queue a second
+  // index behind the first one (FR-025.1).
+  if (state is LibraryReady && state.indexing) return;
+  if (controller.withoutPhoneAccess()) {
     await controller.openFolderChoice();
     return;
   }

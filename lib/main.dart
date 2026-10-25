@@ -15,6 +15,8 @@ Future<void> main() async {
   // Read before the first screen, so that the chosen theme never flashes
   // (FR-023.6).
   await container.read(appSettingsProvider.notifier).load();
+  // The wallpaper colours too: asked once, before the first frame.
+  await container.read(systemSchemesProvider.future);
   await startSystemPlayback(container);
   runApp(
     UncontrolledProviderScope(

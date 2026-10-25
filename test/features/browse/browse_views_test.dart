@@ -76,7 +76,7 @@ void main() {
   late FakeAudioEngine engine;
   late PlayerController player;
   late List<List<Rect>> rects;
-  late FakeLibraryController library;
+  late LibraryCalls library;
 
   // An album of two discs given in disorder, one of one track, a second
   // artist, and tracks without tags.
@@ -131,13 +131,18 @@ void main() {
     await player.start();
     addTearDown(player.dispose);
     rects = [];
-    library = FakeLibraryController(const LibraryReady(hasFolders: true));
+    library = LibraryCalls();
     final all = tracks ?? lib;
     final container = ProviderContainer(
       overrides: [
         playerControllerProvider.overrideWithValue(player),
         settingsStoreProvider.overrideWithValue(FakeSettingsStore()),
-        libraryControllerProvider.overrideWith(() => library),
+        libraryControllerProvider.overrideWith(
+          () => FakeLibraryController(
+            const LibraryReady(hasFolders: true),
+            library,
+          ),
+        ),
         listedTracksProvider.overrideWith(
           (ref) => tracksStream ?? Stream.value(all),
         ),

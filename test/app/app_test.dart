@@ -24,7 +24,7 @@ void main() {
     WidgetTester tester,
     Locale locale, {
     AppSettings? settings,
-    DynamicSchemesBuilder? schemes,
+    SystemSchemes? schemes,
   }) async {
     tester.platformDispatcher.localesTestValue = [locale];
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
@@ -42,10 +42,11 @@ void main() {
           trackSourceOpenerProvider.overrideWithValue(FakeTrackSourceOpener()),
           volumeEventsProvider.overrideWithValue(InternalVolumeEvents()),
           settingsStoreProvider.overrideWithValue(settingsStore),
+          systemSchemesProvider.overrideWith(
+            (ref) async => schemes ?? (light: null, dark: null),
+          ),
         ],
-        child: schemes == null
-            ? const TuneShellApp()
-            : TuneShellApp(dynamicSchemes: schemes),
+        child: const TuneShellApp(),
       ),
     );
     if (settings != null) {
@@ -168,10 +169,7 @@ void main() {
   group('the system colours', () {
     final wallpaper = ColorScheme.fromSeed(seedColor: const Color(0xFFAA3366));
 
-    Widget Function(Widget Function(ColorScheme?, ColorScheme?)) with_(
-      ColorScheme? light,
-    ) =>
-        (builder) => builder(light, light);
+    SystemSchemes with_(ColorScheme? light) => (light: light, dark: light);
 
     Color primary(WidgetTester tester) => tester
         .widget<MaterialApp>(find.byType(MaterialApp))

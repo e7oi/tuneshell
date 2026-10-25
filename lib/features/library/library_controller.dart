@@ -154,7 +154,9 @@ class LibraryController extends Notifier<LibraryViewState> {
   /// True while the library holds only what a disk folder gave, without
   /// access to the phone's audio (FR-014.5); the settings then lead back to
   /// the explanation instead of the folder choice (FR-025.1).
-  bool get withoutPhoneAccess => _withoutAccess;
+  ///
+  /// @implements FR-025
+  bool withoutPhoneAccess() => _withoutAccess;
 
   /// "Choisir un dossier à la place" (FR-014.5): the Android picker for a
   /// folder of a removable disk; the phone's own folders stay with
@@ -248,6 +250,8 @@ class LibraryController extends Notifier<LibraryViewState> {
   /// The user's refresh, by pulling a list or from the settings: unreadable
   /// files get another chance (FR-007.3). While one runs, another does
   /// nothing (FR-025.4).
+  ///
+  /// @implements FR-025
   Future<void> refresh() async {
     final current = state;
     if (_refreshing || (current is LibraryReady && current.indexing)) return;
