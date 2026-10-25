@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
@@ -23,6 +24,7 @@ import 'package:tuneshell/ui/widgets/artist_tile.dart';
 import 'package:tuneshell/ui/widgets/source_mark.dart';
 
 import '../../fakes/fake_audio_engine.dart';
+import '../../fakes/fake_settings_store.dart';
 import '../../fakes/fake_storage.dart';
 
 const ssd = DiskId('ssd');
@@ -130,6 +132,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         playerControllerProvider.overrideWithValue(player),
+        settingsStoreProvider.overrideWithValue(FakeSettingsStore()),
         listedTracksProvider.overrideWith(
           (ref) => tracksStream ?? Stream.value(all),
         ),
@@ -774,6 +777,44 @@ void main() {
     await tab(tester, 'Albums');
     await tester.pump();
     expect(rects.every((list) => list.isEmpty), isTrue);
+  });
+
+  /// @verifies FR-024.4
+  group('the index on the left', () {
+    final many = [
+      for (var i = 0; i < 150; i++)
+        t(
+          't$i',
+          albumArtist: 'Artist ${String.fromCharCode(65 + i % 26)}$i',
+          album: 'Album ${String.fromCharCode(65 + i % 26)}$i',
+          number: 1,
+        ),
+    ];
+
+    for (final tabName in ['Albums', 'Artists']) {
+      flow('$tabName: right by default, left when the setting says so', (
+        tester,
+      ) async {
+        await pump(tester, tracks: many);
+        await tab(tester, tabName);
+        await tester.pump();
+        expect(rects.last.single.left, greaterThan(300));
+
+        _container!
+            .read(appSettingsProvider.notifier)
+            .setIndexOnLeft(enabled: true);
+        await tester.pumpAndSettle();
+
+        expect(rects.last.single.left, lessThan(100));
+        expect(rects.last, hasLength(1));
+
+        _container!
+            .read(appSettingsProvider.notifier)
+            .setIndexOnLeft(enabled: false);
+        await tester.pumpAndSettle();
+        expect(rects.last.single.left, greaterThan(300));
+      });
+    }
   });
 
   /// @verifies FR-020.12

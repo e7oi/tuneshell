@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
@@ -21,6 +22,7 @@ import 'package:tuneshell/ui/widgets/track_tile.dart';
 
 import '../../fakes/fake_audio_engine.dart';
 import '../../fakes/fake_library.dart';
+import '../../fakes/fake_settings_store.dart';
 import '../../fakes/fake_storage.dart';
 
 void main() {
@@ -53,6 +55,7 @@ void main() {
           internalAudioSourceProvider.overrideWithValue(source),
           audioPermissionProvider.overrideWithValue(permission),
           audioEngineProvider.overrideWithValue(engine),
+          settingsStoreProvider.overrideWithValue(FakeSettingsStore()),
           trackSourceOpenerProvider.overrideWithValue(FakeTrackSourceOpener()),
           volumeEventsProvider.overrideWithValue(InternalVolumeEvents()),
           removableAudioSourceProvider.overrideWithValue(
@@ -515,6 +518,34 @@ void main() {
       tester.getSize(find.byType(TrackTile).first).height,
       TsSize.trackRow * 2,
     );
+  });
+
+  /// @verifies FR-024.4
+  testWidgets('the index handle moves to the left with the setting', (
+    tester,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(412, 915)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    source.files = [
+      for (var i = 0; i < 150; i++)
+        info('Music/a$i.mp3', title: 'A${i.toString().padLeft(3, '0')}'),
+    ];
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    final handle = find.byWidgetPredicate(
+      (w) => w is GestureDetector && w.onVerticalDragStart != null,
+    );
+    expect(tester.getCenter(handle).dx, greaterThan(300));
+
+    ProviderScope.containerOf(tester.element(find.byType(LibraryPage)))
+        .read(appSettingsProvider.notifier)
+        .setIndexOnLeft(enabled: true);
+    await tester.pumpAndSettle();
+
+    expect(tester.getCenter(handle).dx, lessThan(100));
   });
 
   /// @verifies FR-013.1

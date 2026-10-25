@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/features/browse/album_detail_page.dart';
 import 'package:tuneshell/features/browse/browse_providers.dart';
@@ -114,6 +115,9 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
         _rowExtent = extent + gap;
         return AlphabetScroller(
           letters: groups.albumLetters,
+          alignStart: ref.watch(
+            appSettingsProvider.select((s) => s.indexOnLeft),
+          ),
           itemCount: groups.albums.length,
           onLetterSelected: (letter) => _toLetter(groups, letter),
           countLabel: l10n.albumsCount,

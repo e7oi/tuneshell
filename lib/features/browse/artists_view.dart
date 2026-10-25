@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/features/browse/artist_detail_page.dart';
@@ -92,6 +93,7 @@ class _ArtistsViewState extends ConsumerState<ArtistsView> {
     final unavailable = ref.watch(unavailableDiskIdsProvider);
     return AlphabetScroller(
       letters: groups.artistLetters,
+      alignStart: ref.watch(appSettingsProvider.select((s) => s.indexOnLeft)),
       itemCount: groups.artists.length,
       onLetterSelected: (letter) {
         final offset = model.offsetOf(

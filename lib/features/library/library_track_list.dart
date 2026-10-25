@@ -5,6 +5,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/features/library/library_list_model.dart';
@@ -211,6 +212,9 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
       children: [
         AlphabetScroller(
           letters: model.letters,
+          alignStart: ref.watch(
+            appSettingsProvider.select((s) => s.indexOnLeft),
+          ),
           itemCount: model.total,
           onLetterSelected: _toLetter,
           countLabel: l10n.indexCount,
