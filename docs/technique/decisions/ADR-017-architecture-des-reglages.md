@@ -45,7 +45,11 @@ L'application n'a aucun réglage retenu : le thème suit le système, l'index es
 
 ## As-built
 
-MPL-051, 2026-10-25 (en cours).
+MPL-051, 2026-10-25. Test appareil non fait (D14) : Pixel verrouillé ; installation par-dessus la v3 et démarrage sans plantage seulement.
 
 - **Écart : `dynamic_color` 1.9.0, pas 2.1.0.** La 2.1.0 est écrite pour le paquet `material_ui` (la bibliothèque Material sortie du SDK) : son `ColorScheme` n'est pas celui de `package:flutter/material.dart`, que l'application utilise, et le thème refuse de le recevoir (erreur de type constatée à l'analyse). Elle tire aussi `material_ui` et `cupertino_ui`. La 1.9.0 (Apache-2.0, `material_color_utilities` 0.13.0) est celle d'avant cette séparation, et n'ajoute aucun paquet de plus. À reprendre quand l'application passera à `material_ui`.
+- La table s'appelle `app_settings` (classe Drift `SettingEntries`, ligne `SettingRow`) ; la migration v3 vers v4 est testée avec des données (`migration_test.dart`).
+- `main()` lit les réglages avant `runApp` (`AppSettingsNotifier.load`) ; `AppSettings.fromEntries` lit valeur par valeur.
+- L'APK passe de 82,0 à 85,8 Mo (réglages, licences, dépendance) : à surveiller, non mesuré poste par poste.
+- Constaté : `IndexedStack` ne coupe plus les `Ticker` ; sans rapport avec ce ticket (ADR-016).
 - `DynamicColorBuilder` renvoie des schémas nuls quand Android n'en fournit pas ; son canal est optionnel, donc sans plugin (tests) il ne lève rien.

@@ -33,4 +33,4 @@ L'utilisateur veut choisir l'apparence de l'application, régler ce qui se passe
 
 ## As-built
 
-À écrire à la livraison.
+MPL-051, 2026-10-25, test appareil non fait (D14) : le Pixel était verrouillé ; seuls l'installation de la build release par-dessus la précédente et son démarrage sans plantage ont été constatés. `lib/features/settings/` (écran, À propos, Confidentialité), `lib/features/library/folder_choice_page.dart`, `lib/app/providers/settings_providers.dart`, `lib/domain/settings/`. Tests : `test/features/settings/`, `test/domain/settings/`, `test/app/`, `test/features/library/`, `test/features/browse/`, `test/features/shell/`.

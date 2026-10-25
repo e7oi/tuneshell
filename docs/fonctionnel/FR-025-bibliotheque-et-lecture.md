@@ -33,4 +33,10 @@ Cette fiche s'écarte de trois fiches `Active` : elles ne sont pas modifiées, l
 
 ## As-built
 
-À écrire à la livraison.
+MPL-051, 2026-10-25, test appareil non fait (D14) : le Pixel était verrouillé ; seuls l'installation de la build release par-dessus la précédente et son démarrage sans plantage ont été constatés. - Dossiers : `FolderChoicePage` et `openFolderChoice(context, ref)` (`lib/features/library/folder_choice_page.dart`) ; sans accès, `LibraryController.openFolderChoice` montre l'explication. La branche « annulable » du contrôleur (`_beforeChoice`, `cancelFolderChoice`) et les champs `cancelable` et `whileChoosingFolders` de `LibraryLoadFailed` sont supprimés ; `LibraryFolderChoice.cancelable` reste pour dire « Valider » au lieu de « Continuer ».
+- Disques : la ligne lit `removableControllerProvider` ; badge « N absent » (`disksAbsentBadge`).
+- Pistes : `LibraryActionChips` est supprimé ; l'en-tête garde `LibraryTitleBar`. Le bouton « Choisir des dossiers » des états vides ouvre la page (sur le navigateur racine : le mini-lecteur n'y est pas).
+- Tirer pour actualiser : `RefreshIndicator` autour des trois listes (`AlwaysScrollableScrollPhysics`), `LibraryController.refresh()` ne fait rien pendant qu'une actualisation ou une indexation tourne.
+- Actualiser au démarrage : lu par `_continueOnce` ; éteint, l'état est « prêt » sans indexer, la disponibilité des disques est lue (`RemovableController.onResumed`). Un retour au premier plan ne réindexe jamais (déjà le cas).
+- Casque : `InterruptionPolicy(pauseOnUnplug: …)`, lu à chaque événement `BecameNoisy` ; les autres interruptions ne changent pas. Câblé dans `startSystemPlayback`.
+- Tests : `settings_page_test.dart`, `library_controller_test.dart`, `interruption_policy_test.dart`, `library_page_test.dart`.

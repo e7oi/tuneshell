@@ -400,3 +400,25 @@ Build release (D14) installée par-dessus la précédente. Bibliothèque réelle
 13. **Fluidité (profile) :** `flutter build apk --profile`, faire défiler la grille et la liste d'artistes de la bibliothèque réelle au doigt et à la volée ; noter toute saccade (60 i/s visés) et le temps d'ouverture de l'onglet Albums.
 
 Consigner le résultat (OK / KO + détails) de chaque étape, sans titre de piste ni nom de fichier (D27).
+
+## 19. Tester les réglages (MPL-051)
+
+Build release (D14) installée par-dessus la précédente : la base passe de la version 3 à la version 4 au premier lancement (rien ne doit être perdu : la bibliothèque, les repères, les pochettes). Bibliothèque réelle déjà indexée, SSD branché pour les étapes 6 et 9. Les essais TalkBack et texte à 200 % sont reportés à MPL-049 (décision du 2026-10-24) : ne pas les faire ici.
+
+1. **Migration :** lancer l'application installée par-dessus l'ancienne. Attendu : la liste des pistes s'affiche comme avant ; Réglages montre les valeurs par défaut (thème Système, couleurs du fond d'écran éteintes, index à droite, pause au débranchement et actualisation au démarrage allumées).
+2. **Écran :** ouvrir « Réglages ». Attendu : quatre sections (Bibliothèque, Apparence, Lecture, À propos), pas de « Reprendre là où j'en étais » ni de « Ignorer les fichiers courts ». La galerie de composants n'est pas là en release.
+3. **Thème :** choisir « Sombre » : tout l'application devient sombre aussitôt, lecteur et feuilles compris ; « Clair » ; « Système » suit le téléphone en direct (basculer le thème d'Android). Fermer l'application par les récentes et la rouvrir : le thème choisi est retenu, sans passer un instant par l'autre.
+4. **Couleurs du fond d'écran :** les allumer sur Android 17. Attendu : les couleurs de l'application suivent le fond d'écran ; les repères de source gardent leurs couleurs. Changer de fond d'écran Android : l'application suit. Les éteindre : le menthe revient.
+5. **Index à gauche :** allumer. Attendu : la poignée et la colonne de l'index sont à gauche dans Pistes, Albums et Artistes, la bulle de la lettre à droite du doigt ; le geste Retour depuis le bord gauche ne quitte pas l'application sur la poignée ; depuis le bord droit il agit. Éteindre : retour à droite.
+6. **Dossiers de musique :** la ligne dit « N dossiers · … ». La toucher : le choix s'ouvre dans l'onglet avec une flèche de retour et le mini-lecteur visible ; cocher ou décocher un dossier puis « Valider » : retour sur Réglages, la bibliothèque se réindexe (bandeau dans Pistes). Le Retour du système et la flèche ramènent sur Réglages sans rien changer. Sans accès aux fichiers audio (retirer l'autorisation dans les réglages d'Android) : la ligne ramène à l'explication d'accès.
+7. **Pistes sans pastilles :** l'en-tête de Pistes ne montre que « Pistes » et la loupe grisée. Les pastilles Actualiser, Dossiers et Disques n'existent plus. Avec une bibliothèque vide ou sans dossier, « Choisir des dossiers » ouvre le même choix en page.
+8. **Tirer pour actualiser :** copier un fichier audio sur le téléphone, puis tirer la liste de Pistes vers le bas, au sommet : le cercle tourne, la bibliothèque se réindexe, le fichier apparaît. Même geste sur Albums et Artistes. Un second geste pendant l'indexation ne relance rien. « Actualiser maintenant » (Réglages) fait pareil et se grise pendant l'indexation.
+9. **Disques amovibles :** la ligne dit le nom du disque et son état. Débrancher le SSD : « non connecté » et le badge « 1 absent » ; la toucher ouvre l'écran des disques dans l'onglet. Le bandeau « Voir » de Pistes y mène toujours.
+10. **Actualiser au démarrage :** éteindre, ajouter un fichier audio, fermer l'application par les récentes, la rouvrir : le fichier n'est pas dans la liste ; « Actualiser maintenant » le fait apparaître. Rallumer le réglage : au lancement suivant, le nouveau fichier apparaît seul.
+11. **Casque :** lecture dans un casque filaire puis Bluetooth. Avec « Pause si le casque est débranché » allumé : débrancher ou déconnecter met en pause. Éteint : la lecture continue (sur le haut-parleur) ; rien d'autre ne change (un appel met toujours en pause).
+12. **À propos :** « TuneShell 0.1.0 » ouvre la page : version, « © 2026 Eloi BERTIN », licence GPL-3.0-or-later, adresse du code source (texte sélectionnable), « Licences des composants » : la liste contient TuneShell (GPL), Manrope, Inter et les paquets.
+13. **Confidentialité :** la page dit qu'aucune donnée n'est collectée, ce qui reste sur le téléphone et ce que l'application demande à Android.
+14. **Retour :** depuis chaque sous-page, le Retour du système revient sur Réglages, puis sur Pistes, puis quitte l'application.
+15. **Réglages retenus :** changer plusieurs réglages, arrêter l'application de force (Réglages d'Android › Applications › Forcer l'arrêt), la rouvrir : tous les réglages sont ceux choisis.
+
+Consigner le résultat (OK / KO + détails) de chaque étape, sans titre de piste ni nom de fichier (D27).

@@ -32,4 +32,8 @@ Réglages cachés, profils, import et export, réinitialisation générale, lang
 
 ## As-built
 
-À écrire à la livraison.
+MPL-051, 2026-10-25, test appareil non fait (D14) : le Pixel était verrouillé ; seuls l'installation de la build release par-dessus la précédente et son démarrage sans plantage ont été constatés. `SettingsPage` (`lib/features/settings/settings_page.dart`), tuiles dans `lib/ui/widgets/settings_tiles.dart` (`SettingsSectionHeader`, `SettingsNavTile`, `SettingsSwitchTile`, `SettingsSegmentedTile`), `AppSettings` et `SettingsStore` (`lib/domain/settings/`), `AppSettingsNotifier` (`lib/app/providers/settings_providers.dart`), table `app_settings` (schéma v4) et `DriftSettingsStore`.
+
+- L'onglet a son navigateur (`_TabNavigator` de `HomeShell`) ; le Retour du système y entre avant de ramener sur Pistes.
+- Les réglages sont lus par `main()` avant `runApp` ; une lecture qui échoue donne les défauts ; une écriture qui échoue est journalisée et ne défait pas l'affichage.
+- Largeur maximale 600 dp, centrée (test). La galerie est montrée par `kDebugMode || kProfileMode`.

@@ -29,4 +29,4 @@ Lien web ouvrable, « noter l'application », journal des modifications dans l'a
 
 ## As-built
 
-À écrire à la livraison.
+MPL-051, 2026-10-25, test appareil non fait (D14) : le Pixel était verrouillé ; seuls l'installation de la build release par-dessus la précédente et son démarrage sans plantage ont été constatés. `AboutPage` et `PrivacyPage` (`lib/features/settings/`), `appVersion` et `sourceCodeUrl` (`lib/domain/settings/app_info.dart`, placés dans le domaine : les fonctionnalités n'importent pas `app/` hors fournisseurs), `registerLicenses` (`lib/app/licenses.dart`) ajoute `LICENSE` et les deux fichiers OFL (déclarés dans `pubspec.yaml`) à la page des licences de Flutter. Tests : `test/domain/settings/app_info_test.dart` (version contre `pubspec.yaml`), `test/app/licenses_test.dart`, `settings_page_test.dart`.

@@ -53,3 +53,4 @@ Livré par MPL-045 (2026-10-23), test appareil en attente (D14).
 - Exigence 10 : `SliverFixedExtentList` jusqu'à 1,3 fois le texte, `SliverList` au-delà. Limite : au-delà de 1,3, le décalage du bouton « En cours » et de l'index est estimé avec 64 dp par ligne.
 - Exigence 11 : `throttleLatest` de 500 ms sur le flux de pistes (`listedTracksProvider`).
 - Exigence 12 : `Semantics` de la ligne : « titre, artiste, durée, état, source X ».
+- MPL-051, 2026-10-25 : les pastilles « Actualiser », « Dossiers » et « Disques » (exigence 2) sont retirées de l'onglet Pistes, sur décision du propriétaire du 2026-10-24 ; leur rôle passe à Réglages et au tirer-pour-actualiser (FR-025). Le bandeau de source absente et son « Voir » restent.
