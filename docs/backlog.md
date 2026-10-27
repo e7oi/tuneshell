@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-057 · Dernière MAJ : 2026-10-25
+Préfixe : MPL · Prochaine clé : MPL-058 · Dernière MAJ : 2026-10-27
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -20,6 +20,7 @@ Préfixe : MPL · Prochaine clé : MPL-057 · Dernière MAJ : 2026-10-25
 | MPL-054 | Récit | P2 | Ignorer les fichiers courts (moins de 30 s : sonneries, notes vocales) : réglage de l'indexation ; à cadrer (durée connue tout de suite pour MediaStore, seulement après la lecture des étiquettes sur un disque ; pistes déjà indexées ; effet sur les listes et les compteurs ; seuil réglable ou fixe). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
 | MPL-055 | Récit | P1 | Recherche dans les listes (Pistes, Albums, Artistes) : champ de recherche à la place de la loupe grisée de l'en-tête, résultats en direct sans casse ni accents ; à cadrer (portée : titre, artiste, album ; coût sur plus de 7 500 pistes ; FTS5 de Drift possible, D3 ; résultats par vue ou communs). Demande du propriétaire du 2026-10-24 après le test de MPL-048. À cadrer | À faire | MPL-001 | — |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-001 | — |
+| MPL-057 | Bug | P1 | Notification et écran verrouillé : titre, artiste et album absents (seul le nom du fichier s'affiche, FR-005 exigence 2) et pas de pochette ; la session média ne voit pas la bibliothèque (carte des pistes non écoutée, jamais réaffichée quand les étiquettes arrivent) ; ajout de la pochette (extension de FR-005, hors périmètre noté en MPL-037). Constaté par le propriétaire sur le Pixel le 2026-10-27 | En cours | MPL-001 | — |
 | MPL-049 | Tâche technique | P2 | Design lot 6 — Finitions : icône d'application et de notification finales (`docs/design/brand/`), écran de démarrage, liste de contrôle d'accessibilité (TalkBack, texte à 200 %), profilage. Reçoit les essais TalkBack et texte à 200 % de tous les lots de design (décision du propriétaire du 2026-10-24 : ils ne sont plus faits ticket par ticket). À cadrer après MPL-016 | À faire | MPL-001 | MPL-048, MPL-051, MPL-052 |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-038 | Récit | P1 | Réassociation d'un nouveau disque dont les chemins relatifs correspondent à ceux d'un disque absent (D23) et retrait d'un disque externe de la bibliothèque (demande du propriétaire du 2026-10-15 ; sort des playlists, favoris et statistiques du disque à trancher au cadrage). Repris de MPL-018 le 2026-10-15 | À faire | MPL-001 | — |
@@ -148,6 +149,44 @@ Revue QA : ✅ (1 tour, sous-agent à contexte neuf ; aucun bloquant). Majeurs c
 Description de PR : titre `feat(ui): add the design foundations: theme, navigation and components (MPL-016)`. What: the Claude Design handoff enters the repository (specification, mock-up sources, four reduced captures, six OFL fonts); TuneShell tokens and light/dark themes that follow the system; four-tab shell with a bottom bar under 600 dp and a rail beyond, keeping each view's state on rotation, with the player bar in the shell; eight reusable components (ArtworkTile, SourceMark, TrackTile, StatusBanner, ProgressBanner, DiskCard, JumpToCurrentFab, AlphabetScroller) with a debug and profile gallery; a native channel that keeps the index handle out of the Back gesture; the current screens moved to the tokens with persistent states in the flow; `lib/ui/` rules in CLAUDE.md and the architecture tests, plus a no-literal style test; backlog MPL-044 to MPL-049 for the next design lots. Why: the owner chose to build the design lot by lot (lot 0 first), and the existing screens must keep working while the new ones arrive (ADR-010, ADR-011). How tested: format, analyses and 385 unit and widget tests green; release APK built (79.7 MB, no INTERNET); one review round without blocker; device: Pixel 10 Pro through adb in release and profile (see delivery block), owner confirmation pending. Known gaps: dark theme, landscape, TalkBack and fluidity not tested on the device; column fade-in and teardrop bubble of the index not done; the style test misses some literals; the gesture-exclusion rectangle is last-writer-wins; `playerStateProvider` now subscribes before it reads the state (out of scope, found by the page tests).
 Décisions prises en route : `playerStateProvider` corrigé (hors périmètre, trouvé par les tests de page) ; barre de lecture montée dans la coquille ; jetons `coverDetail`, `bannerMin` et `fixedRowMaxTextScale` ajoutés ; captures versionnées en JPEG ; galerie ouverte depuis Réglages en debug et profile ; courbe de l'effet loupe ajustée sur les valeurs de Design.
 À valider (PO) : écarts du dossier de conception consignés dans les As-built de FR-010 (fondu, bulle, échelle de texte) et BR-007 (test des jetons) ; sortir `ClaudeDesign/` de l'arbre de travail (il gêne `flutter analyze`) ; passer le ticket à « Terminé » après le test sur le Pixel (`HOWTO.md` §14, avec une build profile pour les étapes 7 à 11).
+
+### MPL-057
+**Description.** La notification de lecture et l'écran verrouillé n'affichent que le nom du fichier : `dumpsys media_session` montre le titre « nom-du-fichier.mp3 » et aucun artiste, alors que le mini-lecteur de l'application montre les bonnes étiquettes. `describe` de la session média lit `libraryTrackIndexProvider` par un `read` ponctuel : la carte dépend d'un flux que personne n'écoute, et le gestionnaire ne recompose jamais l'élément quand la bibliothèque arrive. Ajouter ensuite la pochette (FR-005 la plaçait hors périmètre).
+
+**Inclus.** Titre, artiste et album dans la session média (FR-005.2) ; réaffichage de la piste courante quand la bibliothèque change ; pochette de la piste dans la notification et sur l'écran verrouillé (`artUri`), absente sans erreur quand la piste n'en a pas.
+
+**Exclusions.** Touches média sans effet sur un processus de longue durée (non reproduit, à investiguer à part) ; Android Auto et navigation dans la bibliothèque depuis le système (MPL-005).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Détails de la piste dans la session média
+
+  Scénario: Titre, artiste et album
+    Soit une piste lue dont les étiquettes sont connues
+    Quand l'utilisateur ouvre la notification
+    Alors elle montre le titre, l'artiste et l'album, pas le nom du fichier
+
+  Scénario: Étiquettes lues après le démarrage
+    Soit une piste en lecture avant que la bibliothèque soit chargée
+    Quand la bibliothèque devient disponible
+    Alors la notification passe du nom du fichier au titre et à l'artiste
+
+  Scénario: Pochette
+    Soit une piste avec une pochette stockée
+    Quand la notification est affichée
+    Alors la pochette de la piste y figure
+
+  Scénario: Piste sans pochette
+    Soit une piste sans pochette
+    Quand la notification est affichée
+    Alors elle s'affiche sans image et sans erreur
+```
+
+**Fiches liées.** FR-005 (`Active` : exigence 2 ; la pochette étend la fiche, voir « À valider »), FR-007 (pochettes stockées), FR-016.
+
+**À valider (PO).**
+- La pochette dans la notification étend FR-005, qui la plaçait hors périmètre (« Pochettes dans la notification (MPL-037) ») : plan approuvé par le propriétaire le 2026-10-27 ; la fiche n'est complétée que dans son as-built.
 
 ### MPL-051
 **Description.** Donner à l'onglet Réglages son contenu (écran 8e du lot 5 de la conception, `docs/design/HANDOFF.md`), avec les réglages qui fonctionnent, retenus d'un lancement à l'autre ; y ranger les pastilles « Dossiers » et « Disques » de l'onglet Pistes ; remplacer « Actualiser » par le tirer-pour-actualiser (décisions du propriétaire du 2026-10-24) ; dire ce qu'est l'application (version, licence, données). Cadrage du 2026-10-25. « Reprendre là où j'en étais » (MPL-053) et « Ignorer les fichiers courts » (MPL-054) de la maquette sont absents tant qu'ils ne sont pas faits.
