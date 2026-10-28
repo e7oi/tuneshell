@@ -168,6 +168,115 @@ void main() {
     });
   });
 
+  group('FR-005 what the library knows', () {
+    final tagged = LibraryTrack(
+      id: 3,
+      disk: internalDisk,
+      info: TrackInfo(
+        relativePath: 'Music/c.flac',
+        size: 1000,
+        modifiedAt: DateTime(2026),
+        title: 'C',
+        artist: 'Singer',
+        album: 'Record',
+      ),
+      artwork: 'cover1',
+    );
+
+    Future<void> playing(
+      TrackDescriber describe, {
+      ArtworkLocator? artworkOf,
+    }) async {
+      await handler.dispose();
+      handler = PlayerAudioHandler(
+        controller,
+        describe: describe,
+        artworkOf: artworkOf ?? (_) => null,
+        clock: () => now,
+        stopGrace: const Duration(milliseconds: 20),
+      );
+      await controller.setQueue([tagged.track]);
+      await controller.play();
+      await settle();
+    }
+
+    /// @verifies FR-005
+    test(
+      'the tags that arrive after the track replace the file name',
+      () async {
+        LibraryTrack? library;
+        await playing((_) => library);
+        expect(handler.mediaItem.value!.title, 'c.flac');
+        expect(handler.mediaItem.value!.artist, isNull);
+
+        library = tagged;
+        handler.refreshItem();
+
+        expect(handler.mediaItem.value!.title, 'C');
+        expect(handler.mediaItem.value!.artist, 'Singer');
+        expect(handler.mediaItem.value!.album, 'Record');
+      },
+    );
+
+    /// @verifies FR-005
+    test('showing the same information again changes nothing', () async {
+      await playing((_) => tagged);
+      final shown = handler.mediaItem.value;
+      final changes = <Object?>[];
+      handler.mediaItem.listen(changes.add);
+
+      handler.refreshItem();
+      await settle();
+
+      expect(handler.mediaItem.value, same(shown));
+      expect(changes, hasLength(1));
+    });
+
+    /// @verifies FR-005
+    test('without a track, there is nothing to show again', () async {
+      await handler.dispose();
+      final empty = PlayerController(
+        engine: FakeAudioEngine(),
+        opener: FakeTrackSourceOpener(),
+        volumes: FakeVolumeEvents({internalDisk}),
+      );
+      await empty.start();
+      handler = PlayerAudioHandler(empty, describe: (_) => null)..refreshItem();
+
+      expect(handler.mediaItem.value, isNull);
+      await empty.dispose();
+    });
+
+    /// @verifies FR-005
+    test('the artwork of the track is shown', () async {
+      await playing((_) => tagged, artworkOf: (id) => Uri.file('/art/$id.jpg'));
+
+      expect(handler.mediaItem.value!.artUri, Uri.file('/art/cover1.jpg'));
+    });
+
+    /// @verifies FR-005
+    test('a track without artwork shows none', () async {
+      var asked = 0;
+      await playing(
+        (_) => LibraryTrack(id: 4, disk: internalDisk, info: tagged.info),
+        artworkOf: (_) {
+          asked++;
+          return Uri.file('/art/none.jpg');
+        },
+      );
+
+      expect(handler.mediaItem.value!.artUri, isNull);
+      expect(asked, 0);
+    });
+
+    /// @verifies FR-005
+    test('an artwork folder not known yet shows none', () async {
+      await playing((_) => tagged, artworkOf: (_) => null);
+
+      expect(handler.mediaItem.value!.artUri, isNull);
+    });
+  });
+
   group('FR-005 system commands', () {
     /// @verifies FR-005
     test('commands go through the controller', () async {
