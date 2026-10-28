@@ -895,7 +895,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPauseUnplug => 'Pause when headphones are unplugged';
 
   @override
-  String get settingsPauseUnplugSub => 'Recommended';
+  String get settingsPauseUnplugSub =>
+      'Recommended · cable unplugged or Bluetooth disconnected, not the in-ear detection of earbuds';
 
   @override
   String settingsAbout(String version) {

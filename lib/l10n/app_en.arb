@@ -1062,7 +1062,7 @@
   "@settingsPauseUnplug": {
     "description": "Switch of the playback settings (FR-025.7)."
   },
-  "settingsPauseUnplugSub": "Recommended",
+  "settingsPauseUnplugSub": "Recommended · cable unplugged or Bluetooth disconnected, not the in-ear detection of earbuds",
   "@settingsPauseUnplugSub": {
     "description": "Explanation of the pause on unplug switch (FR-025.7)."
   },

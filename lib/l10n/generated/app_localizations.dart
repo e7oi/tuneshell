@@ -1205,7 +1205,7 @@ abstract class AppLocalizations {
   /// Explanation of the pause on unplug switch (FR-025.7).
   ///
   /// In en, this message translates to:
-  /// **'Recommended'**
+  /// **'Recommended · cable unplugged or Bluetooth disconnected, not the in-ear detection of earbuds'**
   String get settingsPauseUnplugSub;
 
   /// About line: name and version (FR-026.1).

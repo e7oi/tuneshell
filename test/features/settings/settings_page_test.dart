@@ -135,7 +135,13 @@ void main() {
     expect(find.text("Couleurs du fond d'écran"), findsOneWidget);
     expect(find.text('Index alphabétique à gauche'), findsOneWidget);
     await scrollTo(tester, 'Pause si le casque est débranché');
-    expect(find.text('Recommandé'), findsOneWidget);
+    expect(
+      find.text(
+        'Recommandé · câble débranché ou Bluetooth déconnecté, '
+        'pas la détection de port des écouteurs',
+      ),
+      findsOneWidget,
+    );
   });
 
   /// @verifies FR-023.4

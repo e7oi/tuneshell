@@ -906,7 +906,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsPauseUnplug => 'Pause si le casque est débranché';
 
   @override
-  String get settingsPauseUnplugSub => 'Recommandé';
+  String get settingsPauseUnplugSub =>
+      'Recommandé · câble débranché ou Bluetooth déconnecté, pas la détection de port des écouteurs';
 
   @override
   String settingsAbout(String version) {
