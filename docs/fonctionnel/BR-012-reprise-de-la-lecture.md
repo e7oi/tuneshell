@@ -52,4 +52,4 @@ MPL-053, 2026-10-28, test appareil non fait (D14). Modèle `PlaybackSession` (`l
 - Écarts levés, validés par le propriétaire le 2026-10-28 : BR-009 (modes entre deux lancements), FR-001 et FR-005 (persistance de la file hors périmètre) ; leurs règles ne changent pas.
 - Journaux : seul le type de l'erreur est écrit, jamais son texte (règle 13).
 - Limite : une lecture qui lève une exception (stockage inaccessible) laisse la session en place ; seule une session incohérente est effacée.
-- À vérifier sur le Pixel (HOWTO §21) : `seek` juste après `open` (et s'il fait émettre « fin de piste » quand la position dépasse la durée) avec `media_kit`, temps d'écriture et de lecture de 7 500 pistes, enregistrement au retrait des récentes en pause.
+- À vérifier sur le Pixel (HOWTO §21) : temps d'écriture et de lecture de 7 500 pistes, enregistrement au retrait des récentes en pause.
