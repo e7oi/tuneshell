@@ -45,6 +45,7 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
     ),
     config: AudioServiceConfig(
       androidNotificationChannelId: 'net.trtl3.tuneshell.playback',
+      androidNotificationIcon: 'drawable/ic_notification',
       androidNotificationChannelName: l10n.notificationChannelName,
       androidNotificationChannelDescription:
           l10n.notificationChannelDescription,

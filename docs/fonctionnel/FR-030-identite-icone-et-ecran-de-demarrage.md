@@ -22,10 +22,15 @@ Accessibilité et profilage (MPL-059), animation du logo, publication, licence d
 
 ## À valider (PO)
 
-- **Tracés finaux (réponse du 2026-10-28 : le propriétaire fournira de nouveaux fichiers ; MPL-049 attend ces fichiers, les SVG actuels ne sont pas utilisés).** Les SVG de `docs/design/brand/` sont des maquettes « à finaliser » ; c'est toi qui valides le dessin final (je ne redessine pas la marque sans ton accord). Question : les SVG actuels servent-ils de base, ou fournis-tu de nouveaux fichiers ?
-- **Outil.** Proposé : ressources Android écrites à la main (vecteurs XML issus des SVG, `<adaptive-icon>`), sans `flutter_launcher_icons` ni dépendance ; `minSdk` 30 rend inutiles les anciennes icônes PNG, qui seraient supprimées.
+- **Tracés finaux (réponse du 2026-10-28 : le propriétaire fournira de nouveaux fichiers ; MPL-049 attend ces fichiers, les SVG actuels ne sont pas utilisés).** Les fichiers de `docs/design/brand/` sont des maquettes « à finaliser » ; c'est toi qui valides le dessin final (je ne redessine pas la marque sans ton accord). Question : les SVG actuels servent-ils de base, ou fournis-tu de nouveaux fichiers ?
+- **Format des sources (réponse du 2026-10-28 : le propriétaire n'aime pas le rendu vectoriel).** Les sources peuvent être des PNG de haute définition au rendu des images validées (dégradés, relief, lueur), pas seulement des SVG. Android accepte des PNG pour les trois couches de l'icône adaptative (avant-plan et monochrome en 432 × 432 px, transparents) ; seule l'icône de notification doit être une silhouette à un seul ton (canal alpha). Ressources écrites à la main, sans `flutter_launcher_icons` ni dépendance ; `minSdk` 30 rend inutiles les anciennes icônes PNG par défaut, qui seraient supprimées.
 - **Écran de démarrage.** Proposé : API native d'Android 12 (`windowSplashScreenBackground`, icône sans animation), avec repli de `launch_background` sur Android 11 (`minSdk` 30) ; pas de paquet.
 
 ## As-built
 
-À renseigner à la livraison.
+MPL-049, 2026-10-28, test appareil partiel (D14). Sources : trois PNG de l'IA, choisis par le propriétaire (`docs/design/brand/`, voir son README). Icône adaptative : `mipmap-anydpi` (et `-v33` avec la couche monochrome), fond `@color/brand_night`, avant-plan et monochrome de 432 px dans `drawable-nodpi`, emblème de 264 px (66 dp) ; les icônes PNG par défaut sont supprimées. Notification : `ic_notification.png` en cinq densités, référencée par `androidNotificationIcon` et gardée par `res/raw/keep.xml`. Démarrage : `values-v31` et `values-night-v31` (fond nuit et emblème dans les deux thèmes), `launch_background.xml` avant Android 12. Logo de l'application : `assets/brand/emblem.png` affiché par `TuneShellLogo` (le dessin en code est supprimé). Test : `test/ui/widgets/tuneshell_logo_test.dart`. Protocole : `HOWTO.md` §22.
+
+- Vu sur le Pixel 10 Pro (release) : icône du lanceur, petite icône de la carte multimédia du volet de notifications (silhouette de l'emblème). Non testé : icônes à thème, applications récentes, écran de démarrage (trop bref pour une capture sans arrêter la lecture en cours du propriétaire), écran d'accueil, écran verrouillé.
+- Exigence 2 (variante petites tailles) : non faite ; Android n'a pas de variante par taille pour l'icône adaptative, l'image n°4 de l'IA (damier dessiné dans l'image) est écartée.
+- Exigence 4 : le fond de l'écran de démarrage est le bleu nuit dans les deux thèmes (la marque), pas le thème du système ; l'application, elle, s'ouvre dans le thème choisi.
+- L'emblème de l'application ne suit plus la couleur dynamique (Material You), contrairement à l'ancien dessin en code.

@@ -459,3 +459,15 @@ Build release (D14) installée par-dessus la précédente, bibliothèque réelle
 10. **Aléatoire :** après un redémarrage avec l'aléatoire actif, le désactiver. Attendu : la file retrouve son ordre d'origine.
 11. **Vitesse :** avec une file de plusieurs milliers de pistes, chronométrer l'ouverture jusqu'au mini-lecteur. Attendu : le premier écran n'est pas retardé ; noter le délai avant l'apparition du mini-lecteur.
 12. **File vidée :** vider la file (ou retirer toutes les pistes), fermer, rouvrir. Attendu : pas de mini-lecteur.
+
+## 22. Tester l'identité visuelle (MPL-049)
+
+Build release (D14) installée par-dessus la précédente. Thème du lanceur d'Android 13 et plus : une fois « Icônes à thème » activées, une fois désactivées. Consigner le résultat de chaque étape (testé / non testé).
+
+1. **Icône du lanceur :** ouvrir la liste des applications. Attendu : l'emblème TuneShell (demi-carapace, demi-haut-parleur, note au centre) sur fond bleu nuit, lisible dans le masque du lanceur, sans bord coupé.
+2. **Icône à thème :** activer les icônes à thème (fond d'écran, Style et thèmes). Attendu : l'icône de TuneShell prend la couleur du thème, formes reconnaissables.
+3. **Applications récentes :** attendu : même icône, nette.
+4. **Notification de lecture :** lancer une piste, ouvrir le volet de notifications et l'écran verrouillé. Attendu : la silhouette blanche de l'emblème en petite icône, pas un carré blanc ni l'ancienne icône de Flutter.
+5. **Démarrage à froid :** forcer l'arrêt (Réglages d'Android, Informations sur l'appli), puis ouvrir. Attendu : fond bleu nuit avec l'emblème, puis la liste, sans flash blanc ; en thème clair comme en thème sombre.
+6. **Premier lancement :** effacer les données de l'application, ouvrir. Attendu : l'écran d'accueil montre le même emblème en couleur.
+7. **Paysage et texte à 200 % :** l'écran d'accueil reste lisible (essais reportés à MPL-059).
