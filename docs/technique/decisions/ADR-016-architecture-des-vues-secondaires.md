@@ -43,3 +43,5 @@ MPL-048, 2026-10-23, test appareil partiel (D14). Réalisé comme décidé, avec
 - Les détails d'album et d'artiste construisent leurs lignes à la demande (`SliverList.builder`), car « Artiste inconnu » peut compter des milliers de pistes.
 - Les menus d'appui long s'ouvrent sur le navigateur racine (`useRootNavigator`), comme sur Pistes : le voile couvre tout l'écran.
 - `libraryGroupsProvider` recalcule à chaque émission de `listedTracksProvider` (deux par seconde au plus) ou quand l'ensemble des disques indisponibles change.
+
+MPL-055, 2026-10-28 : `QueueOrigin` gagne `SearchOrigin(query)` (« Recherche · … ») ; le Retour du shell passe par `maybePop` pour que la vue de l'onglet puisse fermer sa recherche (FR-027, ADR-018).
