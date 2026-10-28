@@ -105,23 +105,31 @@ class _HomeShellState extends State<HomeShell> {
           Expanded(
             child: IndexedStack(
               index: _index,
+              // A tab that is not shown stops its tickers, and tells its
+              // views so (they stay built, and the route tells all of them
+              // about a Back).
               children: [
-                widget.tracks,
-                _TabNavigator(
-                  navigatorKey: _albumsNavigator,
-                  root: widget.albums ?? ComingSoonPage(title: l10n.navAlbums),
-                ),
-                _TabNavigator(
-                  navigatorKey: _artistsNavigator,
-                  root:
-                      widget.artists ?? ComingSoonPage(title: l10n.navArtists),
-                ),
-                _TabNavigator(
-                  navigatorKey: _settingsNavigator,
-                  root:
-                      widget.settings ??
-                      ComingSoonPage(title: l10n.navSettings),
-                ),
+                for (final (i, tab) in [
+                  widget.tracks,
+                  _TabNavigator(
+                    navigatorKey: _albumsNavigator,
+                    root:
+                        widget.albums ?? ComingSoonPage(title: l10n.navAlbums),
+                  ),
+                  _TabNavigator(
+                    navigatorKey: _artistsNavigator,
+                    root:
+                        widget.artists ??
+                        ComingSoonPage(title: l10n.navArtists),
+                  ),
+                  _TabNavigator(
+                    navigatorKey: _settingsNavigator,
+                    root:
+                        widget.settings ??
+                        ComingSoonPage(title: l10n.navSettings),
+                  ),
+                ].indexed)
+                  TickerMode(enabled: i == _index, child: tab),
               ],
             ),
           ),

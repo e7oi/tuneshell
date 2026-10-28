@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-061 · Dernière MAJ : 2026-10-28
+Préfixe : MPL · Prochaine clé : MPL-062 · Dernière MAJ : 2026-10-28
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -21,6 +21,7 @@ Préfixe : MPL · Prochaine clé : MPL-061 · Dernière MAJ : 2026-10-28
 | MPL-049 | Tâche technique | P1 | Design lot 6a — Identité : icône d'application adaptative et icône de notification finales (`docs/design/brand/`), écran de démarrage, même logo dans l'application. Priorité du propriétaire (2026-10-28) ; l'accessibilité et le profilage passent à MPL-059. Cadré le 2026-10-28 (FR-030) ; images du propriétaire reçues le 2026-10-28 | À tester | MPL-001 | — |
 | MPL-059 | Tâche technique | P2 | Design lot 6b — Finitions : liste de contrôle d'accessibilité (TalkBack, texte à 200 %), profilage. Reçoit les essais TalkBack et texte à 200 % de tous les lots de design (décision du 2026-10-24, auparavant dans MPL-049). À cadrer le moment venu | À faire | MPL-001 | MPL-048, MPL-051, MPL-052 |
 | MPL-060 | Récit | P1 | Android Auto : parcourir Albums, Artistes et Pistes, reprendre la dernière lecture et commander la lecture depuis l'écran de la voiture, sans écran de téléphone ; sortie de l'épique MPL-005 (priorité du propriétaire du 2026-10-28). Cadré le 2026-10-28 (UC-012, FR-029, BR-013, ADR-020) ; test final en voiture | À faire | MPL-005, MPL-053 | — |
+| MPL-061 | Bug | P1 | Le geste Retour depuis Albums, Artistes ou Réglages ramène à l'écran de bienvenue (« Commencer ») au lieu de la liste des pistes ; signalé par le propriétaire le 2026-10-28, ancien (depuis l'écran de bienvenue de MPL-044) | À tester | MPL-001 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-038 | Récit | P1 | Réassociation d'un nouveau disque dont les chemins relatifs correspondent à ceux d'un disque absent (D23) et retrait d'un disque externe de la bibliothèque (demande du propriétaire du 2026-10-15 ; sort des playlists, favoris et statistiques du disque à trancher au cadrage). Repris de MPL-018 le 2026-10-15 | À faire | MPL-001 | — |
 | MPL-019 | Récit | P2 | Normalisation du volume (ReplayGain, préampli) | À faire | MPL-004 | — |
@@ -40,6 +41,40 @@ Préfixe : MPL · Prochaine clé : MPL-061 · Dernière MAJ : 2026-10-28
 | MPL-035 | Tâche technique | P2 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-001 | — |
 
 ## Détails
+### MPL-061
+**Description.** Depuis Albums, Artistes ou Réglages, le geste Retour du système ramenait à l'écran de bienvenue (bouton « Commencer ») au lieu de la liste des pistes (FR-009, exigence 7). Cause : l'onglet Pistes reste construit sous les autres et son `PopScope` est prévenu de chaque Retour par la route ; il appelait `backToWelcome()` sans vérifier qu'il en était la raison ni que l'onglet était visible. Correctif : `backToWelcome()` seulement pour l'explication de l'accès ; l'onglet Pistes n'agit sur le Retour (explication, recherche ouverte) que lorsqu'il est visible, ce que `HomeShell` lui dit en coupant les `TickerMode` des onglets cachés (ce qui arrête aussi leurs animations). La recherche reste surveillée même cachée, sinon elle serait oubliée.
+
+**Exclusions.** Aucun changement de comportement du Retour dans l'onglet Pistes lui-même ni dans les navigateurs des autres onglets.
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Retour depuis un autre onglet
+
+  Scénario: Retour depuis Albums, Artistes ou Réglages
+    Soit la bibliothèque affichée et l'onglet Réglages ouvert
+    Quand j'utilise le geste Retour du système
+    Alors la liste des pistes s'affiche, sans écran de bienvenue
+
+  Scénario: Une recherche ouverte dans Pistes n'est pas fermée depuis un autre onglet
+    Soit une recherche ouverte dans Pistes puis l'onglet Albums
+    Quand j'utilise le geste Retour
+    Alors l'onglet Pistes s'affiche et la recherche y est toujours ouverte
+```
+
+**Fiches liées.** FR-009 (exigence 7, inchangée), FR-014, FR-027.
+
+#### Livraison — 2026-10-28
+Statut : ⚠️ partiel
+Résumé : l'onglet Pistes ne réagit plus au Retour des autres onglets ; un test de widget reproduisait le défaut (écran de bienvenue affiché) et passe maintenant ; les onglets cachés ont leurs animations coupées.
+Fiches touchées : aucune (FR-009 inchangée).
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → 0 fichier modifié, aucune anomalie, 944 tests passés (`test/features/library/library_page_test.dart` : FR-009.7, FR-027 ; `test/features/shell/home_shell_test.dart` : `TickerMode` des onglets).
+Test appareil (Pixel, release) : non testé (lecture en cours sur le téléphone du propriétaire, pas de réinstallation sans son accord).
+Revue QA : non requise (correctif court d'une condition de Retour) — Non vérifié : tout le comportement sur appareil.
+Description de PR : fix(ui): keep Back in other tabs from reopening the welcome screen (MPL-061). What: the Tracks tab only acts on Back while it is visible (HomeShell turns the tickers of hidden tabs off), and goes back to the welcome screen only to leave the access explanation. Why: the route notifies every PopScope of the window, so Back from Albums, Artists or Settings also triggered the welcome screen. How tested: a widget test that fails before the fix, 944 tests green; device not tested. Known gaps: none known beyond the missing device test.
+Décisions prises en route : branche empilée sur MPL-049 (le backlog des deux tickets modifie les mêmes lignes) ; PR avec la branche de MPL-049 pour base.
+À valider (PO) : aucun.
+
 ### MPL-060
 **Description.** Android Auto : TuneShell apparaît dans la voiture, se parcourt (Reprendre, Albums, Artistes, Pistes) et se commande au volant, y compris téléphone verrouillé et application jamais ouverte depuis le démarrage. L'interface est celle d'Android Auto ; TuneShell fournit l'arbre média (BR-013) et la lecture (le même `PlayerController`). Cadrage du 2026-10-28, sur demande du propriétaire.
 
