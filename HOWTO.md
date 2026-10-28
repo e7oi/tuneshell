@@ -485,7 +485,6 @@ Build release (D14) installée, bibliothèque réelle, Android Auto installé su
 7. **Commandes :** pause, suivant, précédent, position dans la piste, au volant et à l'écran. Attendu : comme la notification du téléphone.
 8. **Téléphone verrouillé, application fermée :** forcer l'arrêt de l'application, verrouiller le téléphone, rebrancher la voiture, choisir une piste. Attendu : la liste s'affiche et la piste joue.
 9. **Reprendre :** lecture en cours, couper et rebrancher la voiture, ouvrir TuneShell. Attendu : la piste courante est en premier ; la choisir la reprend sans changer la file.
-10. **Disque absent :** SSD débranché. Attendu : ses pistes, albums et artistes seuls n'apparaissent pas.
+10. **Disque absent :** SSD débranché, application fermée puis voiture branchée (démarrage à froid : les disques sont lus par la requête de la voiture). Attendu : ses pistes, albums et artistes seuls n'apparaissent pas, et « Reprendre » n'est pas proposé si la piste courante y était. **Non testé** tant que cela n'a pas été vu en voiture.
 11. **Bibliothèque vide :** données effacées. Attendu : un seul message demandant d'ouvrir TuneShell sur le téléphone.
 12. **Appel et navigation vocale :** pendant la lecture. Attendu : interruptions comme sur le téléphone (BR-005).
-

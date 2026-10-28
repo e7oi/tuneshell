@@ -122,6 +122,23 @@ void main() {
       expect(tree.action(root.first.id), isA<ResumeAction>());
     });
 
+    test('rule 6: a current track on an absent disk is not offered', () {
+      final away = track('x/9.flac', title: 'Away', disk: _ssd);
+      final tree = treeOf(
+        tracks: [a1, away],
+        unavailable: {_ssd},
+        current: away,
+      );
+
+      expect(titles(tree.children(MediaTree.rootId)), [
+        'Albums',
+        'Artists',
+        'Tracks',
+      ]);
+      expect(tree.children(MediaTree.recentId), isEmpty);
+      expect(tree.action('resume'), isNull);
+    });
+
     test('rule 2: no queue, nothing to resume and no action', () {
       final tree = library();
 
@@ -337,7 +354,7 @@ void main() {
 
       final top = tree.children('tracks');
 
-      expect(titles(top), ['A', 'B', 'C']);
+      expect(titles(top), ['APPLE', 'BERRY', 'CHERRY']);
       expect(top.every((n) => n.browsable && !n.playable), isTrue);
     });
 
@@ -347,9 +364,40 @@ void main() {
 
       final next = tree.children(apple.id);
 
-      expect(titles(next), ['AP']);
-      final deeper = tree.children(next.single.id);
-      expect(titles(deeper), ['APP']);
+      expect(titles(next), ['APPLE 0', 'APPLE 1', 'APPLE 2']);
+      expect(next.every((n) => n.browsable && !n.playable), isTrue);
+      expect(tree.node(next.first.id)!.title, 'APPLE 0');
+    });
+
+    test('rule 4: a leading space does not split the cut from the folder', () {
+      final spaced = [
+        track('t/s.flac', title: ' Spaced'),
+        for (var i = 0; i < 12; i++) track('t/x$i.flac', title: 'Xylo $i'),
+      ];
+      final tree = treeOf(tracks: spaced, maxChildren: 10);
+      final found = <String>[];
+      void walk(String id) {
+        for (final node in tree.children(id)) {
+          if (node.playable) {
+            found.add(node.title);
+          } else {
+            walk(node.id);
+          }
+        }
+      }
+
+      walk('tracks');
+
+      expect(found.length, spaced.length);
+    });
+
+    test('a malformed or stale identifier gives nothing and never throws', () {
+      final tree = treeOf(tracks: many, maxChildren: 10);
+
+      expect(tree.children('tracks|%E0%A4%A'), isEmpty);
+      expect(tree.node('t|%zz'), isNull);
+      expect(tree.action('album|gone'), isNull);
+      expect(tree.node('root'), isNull);
     });
 
     test('rule 4: no track is lost, whatever the depth', () {

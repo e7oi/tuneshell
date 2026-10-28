@@ -33,6 +33,7 @@ TrackInfo tagged(
 );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late FakeLibraryRepository library;
 
   setUp(() async {
@@ -95,6 +96,18 @@ void main() {
       expect(titles(tree.children(albums.last.id)), ['One', 'Two']);
       expect(titles(tree.children('artists')), ['Ann', 'Bob']);
       expect(titles(tree.children('tracks')), ['One', 'Solo', 'Two']);
+    });
+
+    test('an unchanged library gives the same tree again', () async {
+      await library.applyIndex(internalDisk, [
+        tagged('M/a1.flac', title: 'Solo', artist: 'Ann', album: 'Alpha'),
+      ]);
+      final container = await start();
+
+      final first = await currentMediaTree(container);
+      final second = await currentMediaTree(container);
+
+      expect(identical(first, second), isTrue);
     });
 
     test('choosing a track of an album queues the album from there', () async {

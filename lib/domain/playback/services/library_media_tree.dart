@@ -91,6 +91,8 @@ class LibraryMediaTree implements MediaTree {
         if (artist.albums.any((a) => _playable(a.tracks).isNotEmpty)) artist,
     ];
     _tracks = _playable(tracks);
+    final now = current;
+    _resume = now == null || unavailable.contains(now.disk) ? null : now;
   }
 
   /// In the order of the Albums view (BR-010).
@@ -118,6 +120,24 @@ class LibraryMediaTree implements MediaTree {
   late final List<MediaAlbum> _albums;
   late final List<MediaArtist> _artists;
   late final List<LibraryTrack> _tracks;
+
+  /// [current], unless it is on an absent disk (BR-013, rule 6).
+  late final LibraryTrack? _resume;
+
+  // The sorting text of each entry, made once: a long list is cut at every
+  // request of a car.
+  late final List<String> _albumKeys = [
+    for (final a in _albums)
+      _key('${a.unknownArtist ? '' : a.artist} ${a.title}'),
+  ];
+  late final List<String> _artistKeys = [
+    for (final a in _artists) _key(a.unknown ? '' : a.name),
+  ];
+  late final List<String> _trackKeys = [
+    for (final t in _tracks) _key(t.displayTitle),
+  ];
+
+  String _key(String text) => _fold(text.trim());
 
   static const _resumeId = 'resume';
   static const _albumsId = 'albums';
@@ -149,7 +169,7 @@ class LibraryMediaTree implements MediaTree {
         return _cut(
           parentId,
           _albums,
-          (a) => '${a.unknownArtist ? '' : a.artist} ${a.title}',
+          _albumKeys,
           _albumNode,
           _prefixOf(parts),
         );
@@ -157,7 +177,7 @@ class LibraryMediaTree implements MediaTree {
         return _cut(
           parentId,
           _artists,
-          (a) => a.unknown ? '' : a.name,
+          _artistKeys,
           _artistNode,
           _prefixOf(parts),
         );
@@ -165,7 +185,7 @@ class LibraryMediaTree implements MediaTree {
         return _cut(
           parentId,
           _tracks,
-          (t) => t.displayTitle,
+          _trackKeys,
           (t) => _trackNode(t, parentId),
           _prefixOf(parts),
         );
@@ -191,15 +211,15 @@ class LibraryMediaTree implements MediaTree {
     final parts = _split(id);
     switch (parts.first) {
       case MediaTree.rootId:
-        return MediaNode(id: id, title: labels.tracks, browsable: true);
+        return null;
       case _resumeId:
         return _resumeNode();
       case _albumsId:
-        return _folder(id, labels.albums);
+        return _folder(id, labels.albums, _prefixOf(parts));
       case _artistsId:
-        return _folder(id, labels.artists);
+        return _folder(id, labels.artists, _prefixOf(parts));
       case _tracksId:
-        return _folder(id, labels.tracks);
+        return _folder(id, labels.tracks, _prefixOf(parts));
       case 'album':
         final album = _albumOf(parts.length > 1 ? parts[1] : '');
         return album == null ? null : _albumNode(album);
@@ -217,7 +237,7 @@ class LibraryMediaTree implements MediaTree {
   BrowseAction? action(String id) {
     final parts = _split(id);
     if (parts.first == _resumeId) {
-      return current == null ? null : const ResumeAction();
+      return _resume == null ? null : const ResumeAction();
     }
     if (parts.first != 't') return null;
     final hit = _findTrack(parts);
@@ -258,8 +278,8 @@ class LibraryMediaTree implements MediaTree {
       case _tracksId:
         final prefix = _prefixOf(parts);
         return [
-          for (final t in _tracks)
-            if (_fold(t.displayTitle).startsWith(prefix)) t,
+          for (var i = 0; i < _tracks.length; i++)
+            if (_trackKeys[i].startsWith(prefix)) _tracks[i],
         ];
       case 'album':
         final album = _albumOf(parts.length > 1 ? parts[1] : '');
@@ -268,9 +288,16 @@ class LibraryMediaTree implements MediaTree {
     return const [];
   }
 
-  List<String> _split(String id) => [
-    for (final part in id.split('|')) Uri.decodeComponent(part),
-  ];
+  /// The parts of an identifier; one empty part for an identifier that is
+  /// not one of ours (a stale or foreign one never throws).
+  List<String> _split(String id) {
+    try {
+      return [for (final part in id.split('|')) Uri.decodeComponent(part)];
+      // ignore: avoid_catching_errors, decodeComponent offers no non-throwing form.
+    } on ArgumentError {
+      return const [''];
+    }
+  }
 
   String _prefixOf(List<String> parts) => parts.length > 1 ? parts[1] : '';
 
@@ -288,11 +315,15 @@ class LibraryMediaTree implements MediaTree {
     return null;
   }
 
-  MediaNode _folder(String id, String title) =>
-      MediaNode(id: id, title: title, browsable: true);
+  /// A list folder: the name of the list, or the letters of a cut.
+  MediaNode _folder(String id, String title, [String prefix = '']) => MediaNode(
+    id: id,
+    title: prefix.trim().isEmpty ? title : prefix.trim().toUpperCase(),
+    browsable: true,
+  );
 
   MediaNode? _resumeNode() {
-    final track = current;
+    final track = _resume;
     if (track == null) return null;
     return MediaNode(
       id: _resumeId,
@@ -326,46 +357,70 @@ class LibraryMediaTree implements MediaTree {
   );
 
   /// The entries of a list under [prefix]: the entries themselves when they
-  /// fit, otherwise one folder per next letter (BR-013, rule 4). Entries that
-  /// end exactly at the prefix come first, and the order of the list is kept.
+  /// fit, otherwise one folder per next letter (BR-013, rule 4). A folder
+  /// takes the whole start its entries have in common, so that a chain of
+  /// folders with a single way on never builds up. The order of the list is
+  /// kept.
   List<MediaNode> _cut<T>(
     String listId,
     List<T> items,
-    String Function(T item) text,
+    List<String> keys,
     MediaNode Function(T item) toNode,
     String prefix,
   ) {
     final kind = _split(listId).first;
-    final folded = [for (final item in items) _fold(text(item).trim())];
     final inside = [
       for (var i = 0; i < items.length; i++)
-        if (folded[i].startsWith(prefix)) i,
+        if (keys[i].startsWith(prefix)) i,
     ];
     if (inside.length <= maxChildren) {
       return [for (final i in inside) toNode(items[i])];
     }
-    final nodes = <MediaNode>[];
-    final groups = <String, int>{};
+    // The entries that end at the prefix, and for each next letter, where
+    // its entries are.
+    final entries = <Object>[];
+    final groups = <String, List<int>>{};
     for (final i in inside) {
-      final rest = folded[i].substring(prefix.length);
+      final rest = keys[i].substring(prefix.length);
       if (rest.isEmpty) {
-        nodes.add(toNode(items[i]));
+        entries.add(i);
         continue;
       }
       final next = prefix + String.fromCharCode(rest.runes.first);
-      if (groups.containsKey(next)) {
-        groups[next] = groups[next]! + 1;
-        continue;
+      final members = groups[next];
+      if (members == null) {
+        groups[next] = [i];
+        entries.add(next);
+      } else {
+        members.add(i);
       }
-      groups[next] = 1;
-      nodes.add(
-        MediaNode(
-          id: [kind, next].map(Uri.encodeComponent).join('|'),
-          title: next.toUpperCase(),
-          browsable: true,
-        ),
-      );
     }
-    return nodes;
+    return [
+      for (final entry in entries)
+        if (entry is int)
+          toNode(items[entry])
+        else
+          _folder(
+            [
+              kind,
+              _common([for (final i in groups[entry]!) keys[i]]),
+            ].map(Uri.encodeComponent).join('|'),
+            '',
+            _common([for (final i in groups[entry]!) keys[i]]),
+          ),
+    ];
+  }
+
+  /// The start all of [texts] share.
+  String _common(List<String> texts) {
+    var common = texts.first;
+    for (final text in texts.skip(1)) {
+      var n = 0;
+      while (n < common.length && n < text.length && common[n] == text[n]) {
+        n++;
+      }
+      common = common.substring(0, n);
+    }
+    return common;
   }
 }
