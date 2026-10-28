@@ -43,6 +43,8 @@ flutter:
     - LICENSE
     - assets/fonts/Manrope-OFL.txt
     - assets/fonts/Inter-OFL.txt
+    # The mark of the application (FR-030).
+    - assets/brand/emblem.png
   fonts:
     - family: Manrope
       fonts:

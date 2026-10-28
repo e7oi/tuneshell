@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand night: the background of the icon and of the start screen (FR-030). -->
+    <color name="brand_night">#0D1528</color>
+</resources>

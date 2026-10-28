@@ -1,22 +1,27 @@
 # Marque TuneShell
 
+Les images finales viennent d'une IA (réponse du propriétaire du 2026-10-28), choisies et validées par lui : demi-carapace à gauche, demi-haut-parleur à droite, note de musique au centre. Aucun fichier vectoriel : le propriétaire n'aime pas ce rendu (FR-030).
+
 | Fichier | Usage | Statut |
 |---|---|---|
-| `logo-reference.jpg` | Logo de référence fourni par l'auteur (demi-carapace + demi-haut-parleur) | Référence, pas pour l'app |
-| `note-centre-reference.png` | Note à intégrer au centre du logo | Référence |
-| `app_icon_foreground.svg` | Avant-plan de l'icône adaptative (108 dp, motif dans la zone sûre de 66 dp, fond transparent) | **Maquette à finaliser** |
-| `app_icon_preview.svg` | Aperçu de l'icône complète sur fond `#0D1528` | Maquette |
-| `app_icon_small_48dp.svg` | Variante simplifiée pour petites tailles (sans ondes fines, note pleine) | Maquette |
-| `app_icon_monochrome.svg` | Couche monochrome (icônes à thème Android 13+) | Maquette |
-| `ic_notification.svg` | Petite icône de notification, silhouette blanche unie, 24 dp | Maquette |
+| `logo-principal.jpeg` | Logo avec le texte « TuneShell », fond nuit | Référence validée |
+| `icon_color.png` | Emblème en couleur, fond transparent : source de l'avant-plan de l'icône adaptative, de l'écran de démarrage et du logo de l'application (`assets/brand/emblem.png`) | Finale |
+| `icon_monochrome.png` | Emblème blanc uni, fond transparent : couche monochrome (icônes à thème, Android 13 et plus) | Finale |
+| `icon_notification.png` | Emblème blanc uni et simplifié, fond transparent : petite icône de notification (24 dp) | Finale |
+| `logo-reference.jpg`, `note-centre-reference.png` | Références fournies par l'auteur | Référence, pas pour l'app |
 
 ## Couleurs
 
-- Fond de l'icône : `#0D1528` (`TsColors.brandNight`)
-- Menthe `#74FDD3` → cyan `#3DD6D9` (`brandMint`, `brandCyan`)
+- Fond de l'icône : `#0D1528` (`TsColors.brandNight`, `@color/brand_night`)
+- Menthe `#74FDD3` vers cyan `#3DD6D9` (`brandMint`, `brandCyan`)
 
-## Intégration Android (lot 6)
+## Intégration Android (MPL-049)
 
-1. Finaliser les SVG (tracés propres, vérification dans les masques rond / carré arrondi / goutte).
-2. Les convertir en Vector Drawable (Android Studio › New › Vector Asset, ou Image Asset pour l'icône adaptative), ou générer les icônes avec `flutter_launcher_icons` (configuration `adaptive_icon_background: "#0D1528"`, `adaptive_icon_foreground`, `adaptive_icon_monochrome`).
-3. `ic_notification` : vecteur blanc uni, référencé par la session média et la notification de parcours.
+Les ressources sont écrites à la main, sans `flutter_launcher_icons` :
+
+- Icône adaptative : `res/mipmap-anydpi/ic_launcher.xml` (et `-v33` avec la couche monochrome), fond `@color/brand_night`, avant-plan et monochrome en PNG de 432 px dans `res/drawable-nodpi/` ; l'emblème mesure 66 dp sur 108 (zone sûre).
+- Notification : `res/drawable-*/ic_notification.png` (24, 36, 48, 72 et 96 px), référencée par `AudioServiceConfig.androidNotificationIcon` et gardée par `res/raw/keep.xml`.
+- Écran de démarrage : `res/values-v31/` et `res/values-night-v31/` (Android 12 et plus), `res/drawable/launch_background.xml` avant.
+- Logo de l'application : `assets/brand/emblem.png`, affiché par `TuneShellLogo`.
+
+Les PNG de `res/` sont dérivés des fichiers de ce dossier : emblème recadré, canal alpha nettoyé, mis à l'échelle. Pour les refaire, repartir de ces sources.

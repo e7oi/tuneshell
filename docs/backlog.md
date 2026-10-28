@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-059 · Dernière MAJ : 2026-10-28
+Préfixe : MPL · Prochaine clé : MPL-061 · Dernière MAJ : 2026-10-28
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -15,11 +15,12 @@ Préfixe : MPL · Prochaine clé : MPL-059 · Dernière MAJ : 2026-10-28
 | MPL-015 | Tâche technique | P2 | Revoir dialogue et bandeau de permission ⚠️ un seul appareil testé | À faire | — | — |
 | MPL-046 | Récit | P1 | Design lot 3 — Disques amovibles : écran 4 refait (4a–4e), repère de source modifiable, détection du branchement en direct, parcours dans un service au premier plan avec notification et « Arrêter » ; recoupe MPL-035 et MPL-038. À cadrer après MPL-016 | À faire | MPL-001 | MPL-045 |
 | MPL-052 | Récit | P2 | Design lot 5 — Paysage et écrans larges (écran 6e) : panneau lecteur permanent de 280 dp à droite (pochette, contrôles, file d'attente) à partir de 840 dp, liste au centre, sans mini-lecteur ; panneau repliable de 600 à 839 dp ; réutilise les éléments du lecteur plein écran (FR-017). Découpé de MPL-048 le 2026-10-23. À cadrer | À faire | MPL-001 | MPL-048 |
-| MPL-053 | Récit | P2 | « Reprendre là où j'en étais » : mémoriser la file, la piste, la position et les modes (aléatoire, répétition) entre deux lancements et les restaurer à l'ouverture, en pause et sans service au premier plan ; réglage dans Réglages (MPL-051, livré) ; cadré et validé le 2026-10-28 (UC-011, BR-012, FR-028, ADR-019) ; livré le 2026-10-28, test sur le Pixel en attente. Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À tester | MPL-001 | — |
-| MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | MPL-053 |
+| MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-054 | Récit | P2 | Ignorer les fichiers courts (moins de 30 s : sonneries, notes vocales) : réglage de l'indexation ; à cadrer (durée connue tout de suite pour MediaStore, seulement après la lecture des étiquettes sur un disque ; pistes déjà indexées ; effet sur les listes et les compteurs ; seuil réglable ou fixe). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-001 | — |
-| MPL-049 | Tâche technique | P2 | Design lot 6 — Finitions : icône d'application et de notification finales (`docs/design/brand/`), écran de démarrage, liste de contrôle d'accessibilité (TalkBack, texte à 200 %), profilage. Reçoit les essais TalkBack et texte à 200 % de tous les lots de design (décision du propriétaire du 2026-10-24 : ils ne sont plus faits ticket par ticket). À cadrer après MPL-016 | À faire | MPL-001 | MPL-048, MPL-051, MPL-052 |
+| MPL-049 | Tâche technique | P1 | Design lot 6a — Identité : icône d'application adaptative et icône de notification finales (`docs/design/brand/`), écran de démarrage, même logo dans l'application. Priorité du propriétaire (2026-10-28) ; l'accessibilité et le profilage passent à MPL-059. Cadré le 2026-10-28 (FR-030) ; images du propriétaire reçues le 2026-10-28 | À tester | MPL-001 | — |
+| MPL-059 | Tâche technique | P2 | Design lot 6b — Finitions : liste de contrôle d'accessibilité (TalkBack, texte à 200 %), profilage. Reçoit les essais TalkBack et texte à 200 % de tous les lots de design (décision du 2026-10-24, auparavant dans MPL-049). À cadrer le moment venu | À faire | MPL-001 | MPL-048, MPL-051, MPL-052 |
+| MPL-060 | Récit | P1 | Android Auto : parcourir Albums, Artistes et Pistes, reprendre la dernière lecture et commander la lecture depuis l'écran de la voiture, sans écran de téléphone ; sortie de l'épique MPL-005 (priorité du propriétaire du 2026-10-28). Cadré le 2026-10-28 (UC-012, FR-029, BR-013, ADR-020) ; test final en voiture | À faire | MPL-005, MPL-053 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-038 | Récit | P1 | Réassociation d'un nouveau disque dont les chemins relatifs correspondent à ceux d'un disque absent (D23) et retrait d'un disque externe de la bibliothèque (demande du propriétaire du 2026-10-15 ; sort des playlists, favoris et statistiques du disque à trancher au cadrage). Repris de MPL-018 le 2026-10-15 | À faire | MPL-001 | — |
 | MPL-019 | Récit | P2 | Normalisation du volume (ReplayGain, préampli) | À faire | MPL-004 | — |
@@ -39,6 +40,115 @@ Préfixe : MPL · Prochaine clé : MPL-059 · Dernière MAJ : 2026-10-28
 | MPL-035 | Tâche technique | P2 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-001 | — |
 
 ## Détails
+### MPL-060
+**Description.** Android Auto : TuneShell apparaît dans la voiture, se parcourt (Reprendre, Albums, Artistes, Pistes) et se commande au volant, y compris téléphone verrouillé et application jamais ouverte depuis le démarrage. L'interface est celle d'Android Auto ; TuneShell fournit l'arbre média (BR-013) et la lecture (le même `PlayerController`). Cadrage du 2026-10-28, sur demande du propriétaire.
+
+**Inclus.**
+- Déclaration d'application multimédia d'Android Auto (manifeste, `automotive_app_desc.xml`), sans permission (FR-029).
+- Arbre média : logique pure testée d'abord dans `domain/`, identifiants stables, découpage alphabétique des longues listes, pistes absentes masquées (BR-013).
+- Le gestionnaire répond à la navigation et à `playFromMediaId` (ADR-020) ; « Reprendre » rejoue la session enregistrée (BR-012).
+- Pochettes dans la voiture si Android Auto sait les lire (ADR-020, risque 2).
+- Textes en français et en anglais dans les ARB ; protocole dans `HOWTO.md` (connexion à la voiture, sources inconnues).
+
+**Exclusions.** Recherche et commandes vocales ; Android Automotive OS ; CarPlay ; publication Play Store (D6) ; écrans personnalisés ; actions aléatoire et répétition dans la voiture ; émulateur DHU (test en voiture seulement, décision du propriétaire).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Écouter dans la voiture avec Android Auto
+
+  Scénario: TuneShell apparaît dans la voiture
+    Soit le Pixel connecté à la voiture avec Android Auto et les sources inconnues autorisées
+    Quand j'ouvre les applications multimédia de la voiture
+    Alors TuneShell est proposée avec son icône
+
+  Scénario: Parcourir et lire un album
+    Soit une bibliothèque indexée
+    Quand je choisis Albums puis un album puis sa troisième piste
+    Alors la troisième piste joue et la file est l'album, de cette piste à la dernière
+
+  Scénario: Reprendre la dernière lecture
+    Soit une session enregistrée
+    Quand j'ouvre TuneShell dans la voiture et je choisis Reprendre
+    Alors la piste courante reprend à la position enregistrée
+
+  Scénario: Application jamais ouverte
+    Soit le téléphone redémarré, TuneShell non ouverte et l'écran verrouillé
+    Quand je connecte la voiture et choisis une piste
+    Alors la liste s'affiche et la piste joue
+
+  Scénario: Liste longue
+    Soit une bibliothèque de plusieurs milliers de pistes
+    Quand j'ouvre Pistes
+    Alors j'atteins n'importe quelle piste par groupes alphabétiques, sans liste tronquée
+
+  Scénario: Disque absent
+    Soit un disque amovible débranché
+    Quand je parcours la bibliothèque dans la voiture
+    Alors ses pistes ne sont pas proposées
+
+  Scénario: Commandes du volant
+    Soit une piste qui joue
+    Quand j'utilise suivant, précédent et pause au volant
+    Alors la lecture suit, comme avec la notification du téléphone
+
+  Scénario: Bibliothèque vide
+    Soit aucune piste indexée
+    Quand j'ouvre TuneShell dans la voiture
+    Alors un message demande d'ouvrir TuneShell sur le téléphone
+```
+
+**Fiches liées.** UC-012, FR-029, BR-013 (Brouillon), ADR-020 (Brouillon) ; lisent FR-005, BR-001, BR-002, BR-004, BR-009, BR-010, BR-012.
+
+**Risques.** Démarrage sans interface assez rapide pour Android Auto, pochettes en `content://`, limite de taille des listes (ADR-020) : à mesurer avant de coder le reste. Le test réel exige la voiture (D14).
+
+### MPL-049
+**Description.** Mettre en place l'identité finale de TuneShell : icône d'application adaptative (avant-plan, fond, monochrome), icône de notification, écran de démarrage, même logo dans l'application. Cadrage du 2026-10-28, sur demande du propriétaire ; l'accessibilité et le profilage sont séparés (MPL-059).
+
+**Inclus.**
+- Icône adaptative et variante petites tailles ; suppression des icônes PNG par défaut (FR-030).
+- `ic_notification` blanche remplaçant l'icône actuelle de la session média.
+- Écran de démarrage de la marque, clair et sombre, sans flash.
+- Logo de l'écran d'accueil aligné sur les tracés finaux.
+- Tracés finaux validés par le propriétaire avant l'intégration.
+
+**Exclusions.** Accessibilité et profilage (MPL-059) ; animation du logo ; licence des ressources de marque (ADR-011) ; publication.
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Identité visuelle de TuneShell
+
+  Scénario: Icône du lanceur
+    Quand je regarde le lanceur du Pixel
+    Alors l'icône de TuneShell est la marque finale, lisible dans le masque du lanceur
+
+  Scénario: Icône à thème
+    Soit les icônes à thème d'Android activées
+    Alors l'icône de TuneShell prend la couleur du thème
+
+  Scénario: Notification de lecture
+    Quand une piste joue
+    Alors la notification montre la silhouette de la marque en petite icône
+
+  Scénario: Démarrage
+    Quand je lance TuneShell en thème sombre, puis en thème clair
+    Alors l'écran de démarrage montre la marque sans flash blanc et disparaît dès que l'application est prête
+```
+
+**Fiches liées.** FR-030 (Brouillon) ; lit FR-005, FR-014, BR-007, ADR-011.
+
+#### Livraison — 2026-10-28
+Statut : ⚠️ partiel
+Résumé : l'emblème final remplace l'icône par défaut : icône adaptative (couleur et monochrome), petite icône de notification, écran de démarrage et logo de l'écran d'accueil. Sources : trois PNG de l'IA validés par le propriétaire ; ressources écrites à la main, sans dépendance ni vecteur.
+Fiches touchées : FR-030 (Active, as-built mis à jour) ; `docs/design/brand/README.md` réécrit, anciennes maquettes SVG supprimées.
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → 0 fichier modifié, aucune anomalie, 941 tests passés (`test/ui/widgets/tuneshell_logo_test.dart` : FR-030.5) ; `flutter build apk --release` → 87,3 Mo ; markdownlint et `check-repo.sh` au vert.
+Test appareil (Pixel, release) : partiel, par `adb`, pour le propriétaire : l'icône du lanceur et la petite icône de la carte multimédia sont vues ; icônes à thème, applications récentes, écran de démarrage, écran d'accueil, écran verrouillé non testés (HOWTO §22).
+Revue QA : non requise (ressources Android, un composant sans logique ; pas de lecture, de stockage ni de permission) — Non vérifié : rendu de l'écran de démarrage, icônes à thème.
+Description de PR : feat(ui): add the brand identity: icon, notification icon, start screen (MPL-049). What: the final emblem (half shell, half loudspeaker, note) replaces the default Flutter icon: adaptive launcher icon with a monochrome layer, white notification small icon in five densities, Android 12 start screen on the night colour (layer-list before), logo of the welcome screen drawn from the same image. Why: finish the design (lot 6a); the owner chose the images and dislikes the vector look, so sources are PNG. How tested: format, analyses and 941 tests green; release APK built; Pixel 10 Pro through adb: launcher icon and media card icon seen; themed icons, recents, start screen, welcome screen not tested. Known gaps: the welcome-screen logo no longer follows Material You; no small-size variant (not an Android slot); the start screen is the night colour in both themes.
+Décisions prises en route : monochrome n°7 retenu plutôt que n°6 (plus rond) ; fond de démarrage nuit dans les deux thèmes ; emblème de 66 dp ; `logo-principal.jpeg` ajouté aux références.
+À valider (PO) : ces trois points ; accessibilité et profilage dans MPL-059.
+
 ### MPL-053
 **Description.** « Reprendre là où j'en étais » : la file, la piste courante, la position et les modes (aléatoire, répétition) sont enregistrés sur l'appareil et rétablis au lancement suivant, **en pause**, sans notification, sans service au premier plan et sans rien charger tant que l'utilisateur n'a pas touché « Lecture ». Un réglage de la section « Lecture » de Réglages l'active (par défaut) ou le désactive. Cadrage du 2026-10-28. Recommandation : enregistrer **toute la file** (identité disque et chemin relatif, BR-004) dans deux tables de la base (schéma v5), regrouper les écritures (position au plus toutes les 10 s, écriture immédiate à la pause, en arrière-plan et au retrait des récentes) et restaurer après la première lecture de la bibliothèque sans retarder le premier écran. Écartés : ne garder que la piste et la position (perd la suite de l'album), reprendre la musique toute seule (jamais de son sans commande, FR-005), démarrer la session média à la restauration.
 
@@ -1726,6 +1836,7 @@ Décisions prises en route : Flutter mis à jour de 3.47.6 à 3.47.7 sur le Mac 
 | MPL-045 | Design lot 2 — Bibliothèque : liste de pistes refaite (en-tête et pastilles, bandeaux dans le flux, repère de source par disque en schéma v3, tri sans accents, index alphabétique, bouton « En cours », états vides) | 23/10/2026 | Validé par le propriétaire, PR #17 fusionnée (23/10/2026). Pixel 10 Pro, release : migration v2→v3, repères, bandeau, masquage, piste grisée, saut de lecture, index, bouton, paysage, 200 % et libellés TalkBack OK ; non vus : voix et gestes TalkBack, fluidité en profile, retour du bandeau masqué. Limite : la liste ne suit pas en direct un branchement ou un retrait de disque avant MPL-035 |
 | MPL-057 | Notification et écran verrouillé : titre, artiste, album et pochette (la carte des pistes de la session média n'était jamais abonnée à la base ; `refreshItem` réaffiche la piste quand la bibliothèque change ; pochette par `artUri`) | 28/10/2026 | Validé par le propriétaire après test sur le Pixel (release), PR 22. Non vu sur l'appareil : piste sans aucune étiquette, lancement à froid avant la lecture des étiquettes ; coût de la carte pendant l'indexation à surveiller |
 | MPL-055 | Recherche dans les listes Pistes, Albums et Artistes : champ de recherche à la place de la loupe grisée, filtre en mémoire sans casse ni accents (tous les mots), une recherche par vue gardée entre onglets et détails, « N résultats », « Aucun résultat » avec « Effacer la recherche », Retour qui ferme la recherche, file = résultats avec provenance « Recherche · … » (`SearchField`, ADR-018) | 28/10/2026 | Validé par le propriétaire après test sur le Pixel (release), PR 23. Limites : une bibliothèque qui se vide avec la recherche ouverte laisse une recherche invisible que le premier Retour ferme ; le libellé de tri n'est pas lu par TalkBack pendant une recherche ; TalkBack et texte à 200 % reportés à MPL-049 |
+| MPL-053 | « Reprendre là où j'en étais » : la file, la piste, la position, l'aléatoire (avec son ordre d'origine) et la répétition sont enregistrés (schéma v5) et rétablis au lancement, en pause, sans son ni notification avant « Lecture » ; interrupteur dans Réglages (UC-011, BR-012, FR-028, ADR-019) | 28/10/2026 | Validé par le propriétaire après test sur le Pixel (release), PR 27. Essais par adb : arrêt forcé, retrait des récentes, modes, réglage. Non essayés : disque absent dans la file, pistes disparues, file de 7 500 pistes, mort brutale en lecture. Limites : une lecture qui lève une exception laisse la session en place ; file et avancement écrits en deux transactions ; idée de gestion améliorée de la file : MPL-058 |
 | MPL-051 | Design lot 5 — Réglages : écran Réglages à quatre sections (Bibliothèque, Apparence, Lecture, À propos), réglages stockés dans la base (schéma v4) et lus avant le premier écran, thème Système / Clair / Sombre, couleurs du fond d'écran (`dynamic_color` 1.9.0), index à gauche, pause au débranchement, actualiser au démarrage ; « Dossiers » (page poussée) et « Disques » dans Réglages, tirer-pour-actualiser, À propos, licences et Confidentialité | 27/10/2026 | Validé par le propriétaire après test sur le Pixel (release, HOWTO §19), PR 21. `dynamic_color` 1.9.0 et non 2.1.0 (ADR-017, dérogation à revoir avant le 23/01/2027) ; TalkBack et texte à 200 % reportés à MPL-049 ; première indexation interrompue reprise au lancement suivant ; retrait d'un dossier d'un disque absent ajouté à MPL-056 |
 | MPL-048 | Design lot 5 — Albums et Artistes : onglets refaits (grille d'albums triée par titre avec nombre de pistes, liste d'artistes, index alphabétique, détails dans l'onglet), lire / aléatoire / tout lire, « Lire ensuite » et « Ajouter à la file » d'un album ou d'un artiste en ordre disque puis piste | 25/10/2026 | Validé par le propriétaire, PR #20 fusionnée (25/10/2026). Pixel 10 Pro, release : grille, détails, lecture, Retour, artistes, index, ajout à la file et fluidité vus par le propriétaire (« très bonne ») ; tri par titre et nombre de pistes demandés après le test et faits ; TalkBack et texte à 200 % reportés à MPL-049. Limites : une compilation sans artiste d'album se découpe par artiste de piste ; groupes recalculés au plus deux fois par seconde même onglet caché ; recherche (MPL-055) et désactivation des disques (MPL-056) ouvertes |
 | MPL-047 | Design lot 4 — Lecture : mini-lecteur dans la coquille, lecteur plein écran, file d'attente en feuille (réordonner, retirer, vider), aléatoire et répétition, menu d'appui long « Lire ensuite » / « Ajouter à la file », bouton « En cours » vers le lecteur | 23/10/2026 | Validé par le propriétaire, PR #19 fusionnée (23/10/2026). Pixel 10 Pro, release : passage partiel par adb (mini-lecteur, lecteur, informations, aléatoire, feuille de 2 625 pistes, retrait par glissé, « Vider la suite ») ; message de retrait caché sous la feuille corrigé pendant le test ; non vus : curseur, répéter, fichier illisible, disque débranché, menu d'appui long, paysage, TalkBack, 200 %. Limites : pas de panneau lecteur permanent (MPL-048), notification inchangée, file et modes non conservés ; revue QA ⚠️ (restes dans le bloc Livraison) |
@@ -1752,7 +1863,7 @@ Décisions prises en route : Flutter mis à jour de 3.47.6 à 3.47.7 sur le Mac 
 | D3 | Gestion d'état et base de données : Base locale : SQLite via **Drift** (requêtes typées, migrations de schéma versionnées, flux réactifs, exécution en isolate, recherche plein texte FTS5 possible). Gestion d'état : **Riverpod**. Motif de la base : le modèle D23 est relationnel (disques, pistes par disque + chemin relatif, playlists mêlant plusieurs disques) ; Isar (état de maintenance en 2026 non vérifié) et ObjectBox (plus de natif, relations moins naturelles) ne sont pas retenus. Reporté à l'implémentation : la version exacte de Riverpod et l'usage ou non de sa génération de code (en plus de celle de Drift) | Tranchée 09/10/2026 | |
 | D4 | Nom définitif de l'application : **TuneShell**, appliqué partout, identifiants compris (ADR-007, MPL-039) | Tranchée 2026-10-21 | Choix du propriétaire |
 | D5 | Canaux de distribution (la release est signée avec la clé debug : TODO avant toute distribution) | Ouverte | |
-| D6 | Android Auto et Google Play | Ouverte | |
+| D6 | Android Auto et Google Play | Ouverte | Android Auto hors Play Store : « Sources inconnues » à activer dans les réglages développeur d'Android Auto (à confirmer en voiture, MPL-060) |
 | D7 | Identifiant d'organisation `net.trtl3` | Tranchée | |
 | D8 | Flutter/Dart, codebase unique | Tranchée | |
 | D9 | Lecteur local ; aucun catalogue sous licence ; pas de copie de l'identité Spotify/Deezer | Tranchée | |
@@ -1792,7 +1903,8 @@ Décisions prises en route : Flutter mis à jour de 3.47.6 à 3.47.7 sur le Mac 
 | À numéroter | Repère de source : un repère par disque (D23), retenu pour MPL-045 ; un repère par dossier reste une option ouverte, à trancher à l'usage | Ouverte 2026-10-23 | Demande du propriétaire : sur un téléphone, plusieurs disques externes branchés ensemble sont rares · FR-012, ADR-012, MPL-045 |
 | À numéroter | Premier lancement : « Choisir un dossier à la place » et « Ajouter un dossier » n'acceptent que les disques amovibles (D25 : MediaStore pour le stockage interne, SAF pour les disques) ; la maquette suppose le contraire | Provisoire 2026-10-23 | Cadrage de MPL-044 ; à confirmer par le propriétaire · MPL-044 |
 | À numéroter | Lot 5 du design (MPL-048) découpé en trois tickets : MPL-048 (Albums et Artistes), MPL-051 (Réglages, Material You), MPL-052 (panneau lecteur permanent) ; « Reprendre là où j'en étais » (MPL-053) et « Ignorer les fichiers courts » (MPL-054) restent des idées au backlog | Tranchée 2026-10-23 | Choix du propriétaire au cadrage, pour garder un test sur le Pixel par ticket · MPL-048, MPL-051 à MPL-054 |
-| À numéroter | Les essais TalkBack et texte à 200 % ne sont plus faits ticket par ticket ; ils sont reportés au lot de finitions (MPL-049) | Tranchée 2026-10-24 | Choix du propriétaire après le test de MPL-048 ; les tests de widgets à 200 % restent en CI · MPL-049 |
+| À numéroter | Android Auto d'abord testé dans la voiture, sans émulateur DHU | Tranchée 2026-10-28 | Choix du propriétaire au cadrage de MPL-060 · MPL-060 |
+| À numéroter | Les essais TalkBack et texte à 200 % ne sont plus faits ticket par ticket ; ils sont reportés au lot de finitions (MPL-049, puis MPL-059 depuis la séparation du 2026-10-28) | Tranchée 2026-10-24 | Choix du propriétaire après le test de MPL-048 ; les tests de widgets à 200 % restent en CI · MPL-059 |
 | À numéroter | Liste des albums triée par titre (et non par artiste de l'album comme la conception) ; nombre de pistes sur chaque carte | Tranchée 2026-10-24 | Demande du propriétaire après son test de MPL-048 · BR-010, FR-020, MPL-048 |
 | À numéroter | Onglet Pistes : les pastilles « Dossiers » et « Disques » passent dans Réglages (MPL-051) ; « Actualiser » devient un tirer-pour-actualiser sur les listes, avec « Actualiser maintenant » dans Réglages ; le bandeau « Voir » vers l'écran des disques reste dans Pistes ; l'en-tête de Pistes ne garde que le titre et la loupe | Tranchée 2026-10-24 | Choix du propriétaire ; « Dossiers » et « Disques » sont de la configuration, « Actualiser » relance l'indexation (FR-003.7) et sert peu avec l'actualisation au démarrage et la détection du branchement (MPL-046). Écart à la conception (écran 3) · MPL-051 |
 | À numéroter | Disques et dossiers désactivables (MPL-056) : les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, quelle que soit sa disponibilité ; un emplacement sélectionné mais absent reste grisé comme aujourd'hui (BR-008) | Tranchée 2026-10-24 | Précision du propriétaire : l'affichage suit la sélection, pas la présence du disque · MPL-056, BR-008 |
