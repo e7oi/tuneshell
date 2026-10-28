@@ -8,6 +8,7 @@ abstract final class SettingKey {
   static const indexOnLeft = 'index_on_left';
   static const pauseOnUnplug = 'pause_on_unplug';
   static const refreshOnStart = 'refresh_on_start';
+  static const resumePlayback = 'resume_playback';
 }
 
 /// The theme the user chose: the system's, or one of the two.
@@ -17,6 +18,7 @@ enum ThemeChoice { system, light, dark }
 /// unknown or damaged stored value gives it back, without a message.
 ///
 /// @implements FR-023
+/// @implements FR-028
 @immutable
 final class AppSettings {
   const new({
@@ -25,6 +27,7 @@ final class AppSettings {
     this.indexOnLeft = false,
     this.pauseOnUnplug = true,
     this.refreshOnStart = true,
+    this.resumePlayback = true,
   });
 
   /// Reads the stored texts leniently, setting by setting (FR-023.7).
@@ -48,6 +51,10 @@ final class AppSettings {
         entries[SettingKey.refreshOnStart],
         defaults.refreshOnStart,
       ),
+      resumePlayback: _bool(
+        entries[SettingKey.resumePlayback],
+        defaults.resumePlayback,
+      ),
     );
   }
 
@@ -65,18 +72,24 @@ final class AppSettings {
   /// The library is indexed again at each start (FR-025.6, FR-003.7).
   final bool refreshOnStart;
 
+  /// The queue, the track and the position are kept and restored (FR-028,
+  /// BR-012).
+  final bool resumePlayback;
+
   AppSettings copyWith({
     ThemeChoice? theme,
     bool? dynamicColors,
     bool? indexOnLeft,
     bool? pauseOnUnplug,
     bool? refreshOnStart,
+    bool? resumePlayback,
   }) => AppSettings(
     theme: theme ?? this.theme,
     dynamicColors: dynamicColors ?? this.dynamicColors,
     indexOnLeft: indexOnLeft ?? this.indexOnLeft,
     pauseOnUnplug: pauseOnUnplug ?? this.pauseOnUnplug,
     refreshOnStart: refreshOnStart ?? this.refreshOnStart,
+    resumePlayback: resumePlayback ?? this.resumePlayback,
   );
 
   /// Every setting as the text that is stored.
@@ -86,6 +99,7 @@ final class AppSettings {
     SettingKey.indexOnLeft: '$indexOnLeft',
     SettingKey.pauseOnUnplug: '$pauseOnUnplug',
     SettingKey.refreshOnStart: '$refreshOnStart',
+    SettingKey.resumePlayback: '$resumePlayback',
   };
 
   /// The entries that differ from [before]: the only ones to write.
@@ -104,7 +118,8 @@ final class AppSettings {
       other.dynamicColors == dynamicColors &&
       other.indexOnLeft == indexOnLeft &&
       other.pauseOnUnplug == pauseOnUnplug &&
-      other.refreshOnStart == refreshOnStart;
+      other.refreshOnStart == refreshOnStart &&
+      other.resumePlayback == resumePlayback;
 
   @override
   int get hashCode => Object.hash(
@@ -113,6 +128,7 @@ final class AppSettings {
     indexOnLeft,
     pauseOnUnplug,
     refreshOnStart,
+    resumePlayback,
   );
 
   @override

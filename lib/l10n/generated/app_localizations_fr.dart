@@ -949,6 +949,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Recommandé · câble débranché ou Bluetooth déconnecté, pas la détection de port des écouteurs';
 
   @override
+  String get settingsResume => 'Reprendre là où j\'en étais';
+
+  @override
+  String get settingsResumeSub => 'Restaure la file d\'attente au démarrage';
+
+  @override
   String settingsAbout(String version) {
     return 'TuneShell $version';
   }

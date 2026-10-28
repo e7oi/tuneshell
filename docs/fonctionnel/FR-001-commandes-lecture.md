@@ -18,7 +18,7 @@ L'application lit une file de pistes avec un seul moteur (`media_kit`, D2), sans
 
 ## Hors périmètre
 
-Lecture aléatoire, répétition, gapless, fondu enchaîné, persistance de la file après redémarrage, notification et lecture en arrière-plan (`audio_service`, MPL-036), interface.
+Lecture aléatoire, répétition, gapless, fondu enchaîné, persistance de la file après redémarrage (levée par BR-012, MPL-053), notification et lecture en arrière-plan (`audio_service`, MPL-036), interface.
 
 ## As-built
 

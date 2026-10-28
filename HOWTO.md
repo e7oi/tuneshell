@@ -442,3 +442,20 @@ Build release (D14) installée par-dessus la précédente, bibliothèque réelle
 12. **Paysage, TalkBack, texte à 200 % :** en paysage le champ garde sa largeur ; avec TalkBack le champ est annoncé avec son suggestion et le nombre de résultats est dit environ une demi-seconde après la dernière frappe ; à 200 %, rien n'est coupé.
 
 Consigner le résultat (OK / KO + détails) de chaque étape, sans titre de piste ni nom de fichier (D27).
+
+## 21. Tester la reprise de la lecture (MPL-053)
+
+Build release (D14) installée par-dessus la précédente, bibliothèque réelle (plus de 7 500 pistes si possible), SSD branché pour l'étape 7. Ne pas toucher à l'application pendant les attentes. Consigner le résultat (OK / KO + détails) de chaque étape, sans titre de piste ni nom de fichier (D27).
+
+1. **Réglage :** Réglages, section Lecture. Attendu : « Reprendre là où j'en étais » existe, activé, avec « Restaure la file d'attente au démarrage ».
+2. **Enregistrer :** lancer un album, laisser jouer, passer à la piste suivante, aller vers la mi-piste, activer l'aléatoire puis la répétition « toutes », mettre en pause. Noter la piste, la position et le contenu de la file.
+3. **Retrait des récentes, en pause :** retirer l'application des applications récentes, la rouvrir. Attendu : le mini-lecteur apparaît en pause sur la même piste, avec la progression à la même position ; la file du lecteur est la même ; aléatoire et répétition sont actifs ; aucune notification, aucun son.
+4. **Premier « Lecture » :** toucher lecture. Attendu : la piste repart au plus près de la position (à une ou deux secondes), puis la file continue ; la notification apparaît seulement maintenant.
+5. **Retrait des récentes, en lecture :** la lecture continue (FR-005) ; arrêter ensuite la lecture par la notification, retirer l'application, la rouvrir : la piste et la position sont celles de l'arrêt.
+6. **Mort du processus :** lancer une lecture, forcer l'arrêt de l'application (Réglages d'Android, Informations sur l'appli, Forcer l'arrêt) ou redémarrer le téléphone, rouvrir. Attendu : la file et la piste sont retrouvées, la position retarde de 10 secondes au plus.
+7. **Disque absent :** file contenant des pistes du SSD, SSD débranché, application fermée puis rouverte. Attendu : les pistes du SSD sont grisées dans la file ; lecture : elles sont sautées avec le message habituel.
+8. **Pistes disparues :** supprimer ou déplacer un fichier de la file en dehors de l'application, rouvrir. Attendu : la piste n'est plus dans la file ; si c'était la piste courante, la suivante est courante, au début.
+9. **Désactiver le réglage :** le désactiver, fermer et rouvrir. Attendu : rien n'est restauré. Le réactiver, lancer une file, fermer, rouvrir : la file revient.
+10. **Aléatoire :** après un redémarrage avec l'aléatoire actif, le désactiver. Attendu : la file retrouve son ordre d'origine.
+11. **Vitesse :** avec une file de plusieurs milliers de pistes, chronométrer l'ouverture jusqu'au mini-lecteur. Attendu : le premier écran n'est pas retardé ; noter le délai avant l'apparition du mini-lecteur.
+12. **File vidée :** vider la file (ou retirer toutes les pistes), fermer, rouvrir. Attendu : pas de mini-lecteur.

@@ -1117,6 +1117,14 @@
   "@settingsPauseUnplugSub": {
     "description": "Explanation of the pause on unplug switch (FR-025.7)."
   },
+  "settingsResume": "Resume where I left off",
+  "@settingsResume": {
+    "description": "Switch of the playback settings (FR-028.1)."
+  },
+  "settingsResumeSub": "Restores the queue at start",
+  "@settingsResumeSub": {
+    "description": "Explanation of the resume playback switch (FR-028.1)."
+  },
   "settingsAbout": "TuneShell {version}",
   "@settingsAbout": {
     "description": "About line: name and version (FR-026.1).",

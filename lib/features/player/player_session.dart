@@ -15,6 +15,19 @@ final trackIndexProvider = Provider<Map<Track, LibraryTrack>>((ref) {
   return {for (final t in tracks) t.track: t};
 });
 
+/// The duration of the current track: the engine's once it knows it, else
+/// the library's, so that a restored session shows its progress before
+/// anything is loaded (FR-028.4).
+final shownDurationProvider = Provider<Duration?>((ref) {
+  final (known, track) = ref.watch(
+    playerStateProvider.select(
+      (s) => (s.value?.duration, s.value?.currentTrack),
+    ),
+  );
+  if (known != null || track == null) return known;
+  return ref.watch(trackIndexProvider)[track]?.info.duration;
+});
+
 /// Where the queue was started from (FR-017.2, FR-022.6): the list of tracks,
 /// an album, an artist or the results of a search (FR-027).
 @immutable

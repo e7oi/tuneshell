@@ -24,6 +24,7 @@ import 'package:tuneshell/ui/widgets/settings_tiles.dart';
 /// builds it also offers the component gallery (FR-010.7).
 ///
 /// @implements FR-023
+/// @implements FR-028
 /// @implements FR-024
 /// @implements FR-025
 /// @implements FR-026
@@ -125,6 +126,13 @@ class SettingsPage extends ConsumerWidget {
                       subtitle: l10n.settingsPauseUnplugSub,
                       value: settings.pauseOnUnplug,
                       onChanged: (on) => notifier.setPauseOnUnplug(enabled: on),
+                    ),
+                    SettingsSwitchTile(
+                      title: l10n.settingsResume,
+                      subtitle: l10n.settingsResumeSub,
+                      value: settings.resumePlayback,
+                      onChanged: (on) =>
+                          notifier.setResumePlayback(enabled: on),
                     ),
                     SettingsSectionHeader(l10n.settingsSectionAbout),
                     SettingsNavTile(

@@ -194,6 +194,8 @@
   "settingsIndexLeftSub": "Pour une utilisation de la main gauche",
   "settingsPauseUnplug": "Pause si le casque est débranché",
   "settingsPauseUnplugSub": "Recommandé · câble débranché ou Bluetooth déconnecté, pas la détection de port des écouteurs",
+  "settingsResume": "Reprendre là où j'en étais",
+  "settingsResumeSub": "Restaure la file d'attente au démarrage",
   "settingsAbout": "TuneShell {version}",
   "settingsAboutSub": "Libre · GPL-3.0-or-later · code source",
   "settingsPrivacy": "Confidentialité",
