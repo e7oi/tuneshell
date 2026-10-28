@@ -1,6 +1,6 @@
 # FR-027 — Recherche dans les listes Pistes, Albums et Artistes
 
-**Statut :** Brouillon · **Créée le :** 2026-10-28 · **Ticket :** MPL-055 · **Décisions :** D3 · **Lié :** UC-010, UC-005, UC-008, FR-009, FR-010, FR-011, FR-013, FR-018, FR-020, FR-021, FR-022, BR-007, BR-008, BR-011, ADR-010, ADR-016, ADR-018 · **Source :** demande du propriétaire du 2026-10-24 ; **la conception ne montre pas d'écran de recherche** (`docs/design/HANDOFF.md` §4 : emplacement discret ; §8 : hors périmètre)
+**Statut :** Active (validée le 2026-10-28) · **Créée le :** 2026-10-28 · **Ticket :** MPL-055 · **Décisions :** D3 · **Lié :** UC-010, UC-005, UC-008, FR-009, FR-010, FR-011, FR-013, FR-018, FR-020, FR-021, FR-022, BR-007, BR-008, BR-011, ADR-010, ADR-016, ADR-018 · **Source :** demande du propriétaire du 2026-10-24 ; **la conception ne montre pas d'écran de recherche** (`docs/design/HANDOFF.md` §4 : emplacement discret ; §8 : hors périmètre)
 
 ## Besoin
 

@@ -1,6 +1,6 @@
 # UC-010 — Retrouver une piste, un album ou un artiste en le cherchant
 
-**Statut :** Brouillon · **Créée le :** 2026-10-28 · **Ticket :** MPL-055 · **Lié :** UC-004, UC-005, UC-008, FR-011, FR-020, FR-021, FR-027, BR-011, ADR-018 · **Source :** demande du propriétaire du 2026-10-24 (la conception ne montre qu'un emplacement, `docs/design/HANDOFF.md` §4 et §8)
+**Statut :** Active (validée le 2026-10-28) · **Créée le :** 2026-10-28 · **Ticket :** MPL-055 · **Lié :** UC-004, UC-005, UC-008, FR-011, FR-020, FR-021, FR-027, BR-011, ADR-018 · **Source :** demande du propriétaire du 2026-10-24 (la conception ne montre qu'un emplacement, `docs/design/HANDOFF.md` §4 et §8)
 
 ## Acteur et but
 

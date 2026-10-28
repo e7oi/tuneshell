@@ -1,6 +1,6 @@
 # ADR-018 — Recherche en mémoire dans `features/`, sans FTS5 ni schéma
 
-**Statut :** Brouillon · **Date :** 2026-10-28 · **Ticket :** MPL-055 · **Décisions :** D3 · **Fiches :** UC-010, FR-027, BR-011 · **Complète :** ADR-010, ADR-013, ADR-016
+**Statut :** Active (validée le 2026-10-28) · **Date :** 2026-10-28 · **Ticket :** MPL-055 · **Décisions :** D3 · **Fiches :** UC-010, FR-027, BR-011 · **Complète :** ADR-010, ADR-013, ADR-016
 
 ## Contexte
 

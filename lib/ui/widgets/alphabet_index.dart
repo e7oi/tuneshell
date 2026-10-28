@@ -84,14 +84,20 @@ String alphabetKey(String text) {
 /// letters first (digits, symbols and other scripts under "#" come before
 /// any letter, as the "#" group leads the index).
 String sortKey(String text) {
+  final group = alphabetKey(text) == '#' ? '0' : '1';
+  return '$group${foldText(text.trimLeft())}';
+}
+
+/// [text] in lower case and without accents: what the sort key and the search
+/// (BR-011) compare.
+String foldText(String text) {
   final folded = StringBuffer();
-  for (final rune in text.trimLeft().runes) {
+  for (final rune in text.runes) {
     final char = String.fromCharCode(rune);
     final upper = char.toUpperCase();
     folded.write((_folded[upper] ?? upper).toLowerCase());
   }
-  final group = alphabetKey(text) == '#' ? '0' : '1';
-  return '$group$folded';
+  return folded.toString();
 }
 
 /// "#" then A to Z, each with the number of [titles] that fall under it.

@@ -1,6 +1,6 @@
 # BR-011 — Correspondance de la recherche
 
-**Statut :** Brouillon · **Créée le :** 2026-10-28 · **Ticket :** MPL-055 · **Décisions :** D3 · **Lié :** UC-010, FR-011, FR-027, BR-010, ADR-018 · **Source :** demande du propriétaire du 2026-10-24
+**Statut :** Active (validée le 2026-10-28) · **Créée le :** 2026-10-28 · **Ticket :** MPL-055 · **Décisions :** D3 · **Lié :** UC-010, FR-011, FR-027, BR-010, ADR-018 · **Source :** demande du propriétaire du 2026-10-24
 
 ## Règles
 
