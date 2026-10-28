@@ -423,3 +423,22 @@ Build release (D14) installée par-dessus la précédente : la base passe de la 
 15. **Réglages retenus :** changer plusieurs réglages, arrêter l'application de force (Réglages d'Android › Applications › Forcer l'arrêt), la rouvrir : tous les réglages sont ceux choisis.
 
 Consigner le résultat (OK / KO + détails) de chaque étape, sans titre de piste ni nom de fichier (D27).
+
+## 20. Tester la recherche (MPL-055)
+
+Build release (D14) installée par-dessus la précédente, bibliothèque réelle (plus de 7 500 pistes si possible), SSD branché pour l'étape 9. TalkBack et texte à 200 % : à l'étape 12 seulement (reportés sinon à MPL-049).
+
+1. **Ouvrir :** dans Pistes, toucher la loupe. Attendu : le titre est remplacé par un champ avec la flèche de retour, le clavier s'ouvre. Même chose dans Albums et Artistes (suggestions « Rechercher une piste / un album / un artiste »).
+2. **Frappe :** taper quelques lettres d'un titre. Attendu : la liste se réduit à chaque lettre, sans saccade (60 i/s visés sur toute la bibliothèque), « N résultats » remplace le compte, l'index alphabétique disparaît.
+3. **Casse, accents, mots :** chercher « ecris » pour une piste accentuée ; chercher deux mots d'un même album et artiste dans l'ordre inverse. Attendu : les pistes sont trouvées.
+4. **Champs :** chercher un nom d'artiste, puis un nom d'album (Pistes), puis une partie d'un titre d'album ou d'un artiste (Albums, Artistes). « inconnu » ne trouve pas les pistes sans étiquette.
+5. **Aucun résultat :** taper une suite absurde. Attendu : « Aucun résultat pour « … » » et « Effacer la recherche » ; le toucher ferme la recherche et rend la liste entière.
+6. **Lancer un résultat :** toucher le deuxième résultat. Attendu : il se lance ; ouvrir la file d'attente : elle contient les résultats dans leur ordre ; le lecteur dit « Recherche · … ».
+7. **Entre les vues :** laisser une recherche ouverte dans Pistes, aller dans Albums puis revenir : la recherche est intacte. Dans Albums, ouvrir un album d'un résultat, revenir : résultats et texte intacts, le clavier ne se rouvre pas. Fermer l'application par les récentes et la rouvrir : plus aucune recherche.
+8. **Clavier :** la touche « rechercher » ferme le clavier et garde les résultats ; faire défiler la liste ferme le clavier ; changer d'onglet ferme le clavier.
+9. **Disque absent :** SSD débranché, chercher une de ses pistes. Attendu : la ligne est grisée, la toucher explique quoi brancher et ne lance rien.
+10. **Retour :** avec une recherche ouverte, le Retour du système ferme d'abord le clavier (Android), puis la recherche (la liste complète revient), puis fait le Retour habituel. Avec un détail ouvert depuis un résultat, Retour ferme le détail, puis la recherche.
+11. **Bandeaux et actualisation :** pendant une recherche, le bandeau de source absente reste en haut ; tirer la liste vers le bas actualise toujours la bibliothèque.
+12. **Paysage, TalkBack, texte à 200 % :** en paysage le champ garde sa largeur ; avec TalkBack le champ est annoncé avec son suggestion et le nombre de résultats est dit environ une demi-seconde après la dernière frappe ; à 200 %, rien n'est coupé.
+
+Consigner le résultat (OK / KO + détails) de chaque étape, sans titre de piste ni nom de fichier (D27).

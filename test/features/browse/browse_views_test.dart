@@ -21,6 +21,7 @@ import 'package:tuneshell/features/shell/home_shell.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 import 'package:tuneshell/ui/widgets/album_card.dart';
+import 'package:tuneshell/ui/widgets/alphabet_scroller.dart';
 import 'package:tuneshell/ui/widgets/artist_tile.dart';
 import 'package:tuneshell/ui/widgets/source_mark.dart';
 
@@ -879,5 +880,99 @@ void main() {
     await tab(tester, 'Albums');
 
     expect(find.byType(SourceMark), findsWidgets);
+  });
+
+  group('FR-027 search', () {
+    Future<void> search(WidgetTester tester, String text) async {
+      await tester.tap(find.byTooltip('Search'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), text);
+      await tester.pumpAndSettle();
+    }
+
+    flow('albums: filters by title, hides the index, counts', (tester) async {
+      await pump(tester);
+      await tab(tester, 'Albums');
+
+      await search(tester, 'litt');
+
+      expect(find.byType(AlbumCard), findsOneWidget);
+      expect(find.text('1 result'), findsOneWidget);
+      expect(find.byType(AlphabetScroller), findsNothing);
+    });
+
+    flow('albums: the artist is searched too', (tester) async {
+      await pump(tester);
+      await tab(tester, 'Albums');
+
+      await search(tester, 'clara');
+
+      expect(find.byType(AlbumCard), findsNWidgets(2));
+      expect(find.text('2 results'), findsOneWidget);
+    });
+
+    flow('albums: the search survives a detail, Back closes it', (
+      tester,
+    ) async {
+      await pump(tester);
+      await tab(tester, 'Albums');
+      await search(tester, 'litt');
+
+      await tester.tap(find.byType(AlbumCard));
+      await tester.pumpAndSettle();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.text('litt'), findsOneWidget);
+      expect(find.byType(AlbumCard), findsOneWidget);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(AlbumCard), findsNWidgets(4));
+    });
+
+    flow('albums: no match, then the button clears the search', (tester) async {
+      await pump(tester);
+      await tab(tester, 'Albums');
+
+      await search(tester, 'zzz');
+
+      expect(find.text('No results for “zzz”'), findsOneWidget);
+      await tester.tap(find.text('Clear search'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlbumCard), findsNWidgets(4));
+    });
+
+    flow('artists: filters by name, Back closes the search first', (
+      tester,
+    ) async {
+      await pump(tester);
+      await tab(tester, 'Artists');
+
+      await search(tester, 'nod');
+
+      expect(find.text('1 result'), findsOneWidget);
+      expect(find.byType(ArtistTile), findsOneWidget);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(ArtistTile), findsNWidgets(3));
+    });
+
+    flow('each view keeps its own search', (tester) async {
+      await pump(tester);
+      await tab(tester, 'Albums');
+      await search(tester, 'litt');
+
+      await tab(tester, 'Artists');
+
+      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(ArtistTile), findsNWidgets(3));
+    });
   });
 }

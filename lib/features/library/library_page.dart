@@ -12,10 +12,13 @@ import 'package:tuneshell/features/library/folder_choice_view.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_header.dart';
 import 'package:tuneshell/features/library/library_list_providers.dart';
+import 'package:tuneshell/features/library/library_search.dart';
+import 'package:tuneshell/features/library/library_search_state.dart';
 import 'package:tuneshell/features/library/library_track_list.dart';
 import 'package:tuneshell/features/library/removable_controller.dart';
 import 'package:tuneshell/features/library/removable_messages.dart';
 import 'package:tuneshell/features/library/removable_page.dart';
+import 'package:tuneshell/features/library/search_widgets.dart';
 import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
@@ -83,10 +86,19 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     final withBar = state is LibraryFolderChoice || state is LibraryLoadFailed;
     // Back leaves the explanation of the access before it leaves the app.
     final explaining = state is LibraryWelcome && state.explaining;
+    // Back closes the search before anything else (FR-027).
+    final searching =
+        state is LibraryReady &&
+        ref.watch(searchTextProvider(SearchView.tracks)) != null;
     return PopScope(
-      canPop: !explaining,
+      canPop: !explaining && !searching,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _controller.backToWelcome();
+        if (didPop) return;
+        if (searching) {
+          ref.read(searchTextProvider(SearchView.tracks).notifier).close();
+        } else {
+          _controller.backToWelcome();
+        }
       },
       child: Scaffold(
         appBar: withBar ? AppBar(title: Text(l10n.foldersTitle)) : null,
@@ -177,12 +189,22 @@ class _ReadyView extends ConsumerWidget {
     final searching = state.indexing && (model == null || model.total == 0);
     final empty = model != null && model.total == 0 && !state.indexing;
     final banner = model?.banner;
+    final query = ref.watch(searchTextProvider(SearchView.tracks));
+    final found = ref.watch(searchedListModelProvider);
+    final searchOn = query != null && found != null;
+    final noMatch =
+        searchOn && found.total == 0 && !SearchQuery.of(query).isEmpty;
+    final resultsText = searchOn ? l10n.searchResults(found.total) : null;
     return SafeArea(
       bottom: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const LibraryTitleBar(),
+          SearchTitleBar(
+            view: SearchView.tracks,
+            title: l10n.navTracks,
+            canSearch: !searching && !empty && model != null,
+          ),
           if (searching)
             ProgressBanner(label: l10n.libraryScanning)
           else if (tagProgress != null && tagProgress.running)
@@ -208,12 +230,18 @@ class _ReadyView extends ConsumerWidget {
                   .dismiss(banner.fingerprint),
             ),
           if (!empty)
-            LibraryCountRow(
-              text: searching || model == null
-                  ? l10n.libraryCountSearching
-                  : l10n.libraryCount(model.total, model.unavailableCount),
-              showSort: !searching && model != null,
-            ),
+            if (resultsText != null)
+              ResultsAnnouncer(
+                text: resultsText,
+                child: LibraryCountRow(text: resultsText),
+              )
+            else
+              LibraryCountRow(
+                text: searching || model == null
+                    ? l10n.libraryCountSearching
+                    : l10n.libraryCount(model.total, model.unavailableCount),
+                showSort: !searching && model != null,
+              ),
           Expanded(
             child: model == null || searching
                 ? const _Skeleton()
@@ -223,7 +251,17 @@ class _ReadyView extends ConsumerWidget {
                     onChooseFolders: onFolders,
                     onRefresh: onRefresh,
                   )
-                : LibraryTrackList(model: model),
+                : noMatch
+                ? SearchNoResults(
+                    query: query,
+                    onClear: ref
+                        .read(searchTextProvider(SearchView.tracks).notifier)
+                        .close,
+                  )
+                : LibraryTrackList(
+                    model: searchOn ? found : model,
+                    searchText: searchOn ? query : null,
+                  ),
           ),
         ],
       ),

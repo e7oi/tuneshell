@@ -143,7 +143,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get demoGallery => 'Component gallery';
 
   @override
-  String get searchSoon => 'Search (soon)';
+  String get searchOpen => 'Search';
+
+  @override
+  String get searchHintTracks => 'Search tracks';
+
+  @override
+  String get searchHintAlbums => 'Search albums';
+
+  @override
+  String get searchHintArtists => 'Search artists';
+
+  @override
+  String get searchClear => 'Clear';
+
+  @override
+  String get searchClose => 'Close search';
+
+  @override
+  String searchResults(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '$count result',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String searchNoResults(String query) {
+    return 'No results for “$query”';
+  }
+
+  @override
+  String get searchClearAction => 'Clear search';
+
+  @override
+  String queueOriginSearch(String query) {
+    return 'Search · $query';
+  }
 
   @override
   String disksAbsentBadge(int count) {

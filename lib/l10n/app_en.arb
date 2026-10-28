@@ -175,9 +175,60 @@
   "@demoGallery": {
     "description": "Entry of the settings tab that opens the component demo page (debug and profile builds only, FR-010)."
   },
-  "searchSoon": "Search (soon)",
-  "@searchSoon": {
-    "description": "Tooltip of the disabled search button of the Tracks header (FR-011.1)."
+  "searchOpen": "Search",
+  "@searchOpen": {
+    "description": "Tooltip of the search button of the three views (FR-027)."
+  },
+  "searchHintTracks": "Search tracks",
+  "@searchHintTracks": {
+    "description": "Hint of the search field of the Tracks view (FR-027)."
+  },
+  "searchHintAlbums": "Search albums",
+  "@searchHintAlbums": {
+    "description": "Hint of the search field of the Albums view (FR-027)."
+  },
+  "searchHintArtists": "Search artists",
+  "@searchHintArtists": {
+    "description": "Hint of the search field of the Artists view (FR-027)."
+  },
+  "searchClear": "Clear",
+  "@searchClear": {
+    "description": "Button that empties the search field (FR-027)."
+  },
+  "searchClose": "Close search",
+  "@searchClose": {
+    "description": "Back arrow of the search field: closes the search (FR-027)."
+  },
+  "searchResults": "{count, plural, one{{count} result} other{{count} results}}",
+  "@searchResults": {
+    "description": "Count line while a search is open (FR-027).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchNoResults": "No results for “{query}”",
+  "@searchNoResults": {
+    "description": "Title of the view when nothing matches (FR-027).",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchClearAction": "Clear search",
+  "@searchClearAction": {
+    "description": "Button of the no-results view that closes the search (FR-027)."
+  },
+  "queueOriginSearch": "Search · {query}",
+  "@queueOriginSearch": {
+    "description": "Origin of a queue started from search results (FR-027).",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "disksAbsentBadge": "{count} missing",
   "@disksAbsentBadge": {

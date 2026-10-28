@@ -175,6 +175,7 @@ class _Header extends ConsumerWidget {
       ArtistOrigin(:final name) => l10n.queueOriginArtist(
         name.isEmpty ? l10n.trackUnknownArtist : name,
       ),
+      SearchOrigin(:final query) => l10n.queueOriginSearch(query.trim()),
       null => null,
     };
     return Padding(

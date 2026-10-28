@@ -37,3 +37,4 @@ MPL-048, 2026-10-23, test appareil partiel (D14). `ArtistsView` (`artists_view.d
 
 - Liste : `SliverVariedExtentList` (intercalaire 40 dp, ligne 64 dp, proportionnels au texte au-delà de 1,3) ; le saut de l'index vient de `ArtistListModel.offsetOf`.
 - Avatar de 96 dp du détail : `displaySmall` ; de 48 dp : `titleLarge`.
+- MPL-055, 2026-10-28 : l'en-tête (`BrowseHeader`) porte la loupe et le champ de recherche (FR-027) ; pendant une recherche la liste montre les artistes trouvés (`searchedArtistListModelProvider`), sans index, avec « N résultats ».

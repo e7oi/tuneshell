@@ -11,7 +11,7 @@
 
 ## Règles Git et dépôt
 
-- Ne jamais pousser sur `main`. Travailler sur une branche, un commit annulable par correctif. N'ouvrir aucune pull request sans demande ; le propriétaire crée les PR.
+- Ne jamais pousser sur `main`. Travailler sur une branche, un commit annulable par correctif. Depuis le 2026-10-28, Claude ouvre lui-même la pull request de chaque ticket livré (`gh pr create`, base `main`, titre = en-tête de commit, description tirée du bloc Livraison) ; le propriétaire la relit, la fusionne et teste sur le Pixel. Ne jamais fusionner ni activer la fusion automatique.
 - `main` est protégée (ruleset `protect-main`, D17). Aucun code applicatif n'arrive sur `main` sans job de CI code : MPL-017 ajoute un job minimal (format, analyse, tests) ; MPL-026 le complète (vulnérabilités, licences, liste blanche des permissions, empreinte de libmpv).
 - L'identité Git est le nom du propriétaire et son adresse noreply GitHub, configurés localement dans chaque clone TuneShell, jamais en global. Vérifier `git config user.name` et `git config user.email` par rapport aux derniers commits (`git log -1 --format='%an <%ae>'`) avant le premier commit.
 - Deux dépôts, deux clones. Ne jamais ajouter l'un comme remote de l'autre. `music-player-prototype` est privé et ne devient jamais public.
@@ -143,7 +143,7 @@ Tout ticket non trivial commence par `/cadrer` (`.claude/commands/cadrer.md`), e
 ### Branches et pull requests
 
 - Un ticket = une branche `mpl-NNN-<slug>`, créée depuis `main` quand le ticket passe « En cours ». Tous les commits du ticket (code, fiches, as-built, bloc Livraison) y vivent. Jamais de push sur `main`.
-- Livrer « À tester » = branche poussée, vérification au vert, description de PR (quoi, pourquoi, comment testé, limites connues) écrite dans le bloc Livraison. Le propriétaire crée la PR et teste sur le Pixel.
+- Livrer « À tester » = branche poussée, vérification au vert, description de PR (quoi, pourquoi, comment testé, limites connues) écrite dans le bloc Livraison, et PR ouverte par Claude. Le propriétaire teste sur le Pixel et fusionne.
 - Sur « validé » : attendre le merge en squash du propriétaire, puis `git switch main && git pull`, supprimer la branche locale et distante, et clore le ticket (Terminé, déplacé dans Terminés). `main` est protégée, donc le commit de clôture (`docs(backlog): close ticket after owner validation (MPL-NNN)`) va sur la branche du ticket suivant, ou sur une courte branche `docs/close-mpl-NNN` si le propriétaire le veut tout de suite.
 - Les changements de documentation sans ticket vont sur une branche `docs/<slug>`, eux aussi par PR.
 

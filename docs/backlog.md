@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-058 · Dernière MAJ : 2026-10-27
+Préfixe : MPL · Prochaine clé : MPL-058 · Dernière MAJ : 2026-10-28
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -17,9 +17,8 @@ Préfixe : MPL · Prochaine clé : MPL-058 · Dernière MAJ : 2026-10-27
 | MPL-052 | Récit | P2 | Design lot 5 — Paysage et écrans larges (écran 6e) : panneau lecteur permanent de 280 dp à droite (pochette, contrôles, file d'attente) à partir de 840 dp, liste au centre, sans mini-lecteur ; panneau repliable de 600 à 839 dp ; réutilise les éléments du lecteur plein écran (FR-017). Découpé de MPL-048 le 2026-10-23. À cadrer | À faire | MPL-001 | MPL-048 |
 | MPL-053 | Récit | P2 | « Reprendre là où j'en étais » : mémoriser la file, la piste, la position et les modes (aléatoire, répétition) entre deux lancements et les restaurer à l'ouverture, en pause et sans service au premier plan ; réglage dans MPL-051 ; à cadrer (BR-004 : pistes disparues, disque absent, FR-005 : pas de notification avant un « Lecture »). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
 | MPL-054 | Récit | P2 | Ignorer les fichiers courts (moins de 30 s : sonneries, notes vocales) : réglage de l'indexation ; à cadrer (durée connue tout de suite pour MediaStore, seulement après la lecture des étiquettes sur un disque ; pistes déjà indexées ; effet sur les listes et les compteurs ; seuil réglable ou fixe). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
-| MPL-055 | Récit | P1 | Recherche dans les listes (Pistes, Albums, Artistes) : champ de recherche à la place de la loupe grisée de l'en-tête, résultats en direct sans casse ni accents ; à cadrer (portée : titre, artiste, album ; coût sur plus de 7 500 pistes ; FTS5 de Drift possible, D3 ; résultats par vue ou communs). Demande du propriétaire du 2026-10-24 après le test de MPL-048. À cadrer | À faire | MPL-001 | — |
+| MPL-055 | Récit | P1 | Recherche dans les listes (Pistes, Albums, Artistes) : champ de recherche à la place de la loupe grisée de l'en-tête, résultats en direct sans casse ni accents ; à cadrer (portée : titre, artiste, album ; coût sur plus de 7 500 pistes ; FTS5 de Drift possible, D3 ; résultats par vue ou communs). Demande du propriétaire du 2026-10-24 après le test de MPL-048. Cadré le 2026-10-28 : filtre en mémoire par vue (ADR-018), fiches UC-010, BR-011, FR-027 et ADR-018 validées (Active) le 2026-10-28. Livré le 2026-10-28, test appareil en attente | À tester | MPL-001 | — |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-001 | — |
-| MPL-057 | Bug | P1 | Notification et écran verrouillé : titre, artiste et album absents (seul le nom du fichier s'affiche, FR-005 exigence 2) et pas de pochette ; la session média ne voit pas la bibliothèque (carte des pistes non écoutée, jamais réaffichée quand les étiquettes arrivent) ; ajout de la pochette (extension de FR-005, hors périmètre noté en MPL-037). Constaté par le propriétaire sur le Pixel le 2026-10-27 | À tester | MPL-001 | — |
 | MPL-049 | Tâche technique | P2 | Design lot 6 — Finitions : icône d'application et de notification finales (`docs/design/brand/`), écran de démarrage, liste de contrôle d'accessibilité (TalkBack, texte à 200 %), profilage. Reçoit les essais TalkBack et texte à 200 % de tous les lots de design (décision du propriétaire du 2026-10-24 : ils ne sont plus faits ticket par ticket). À cadrer après MPL-016 | À faire | MPL-001 | MPL-048, MPL-051, MPL-052 |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-038 | Récit | P1 | Réassociation d'un nouveau disque dont les chemins relatifs correspondent à ceux d'un disque absent (D23) et retrait d'un disque externe de la bibliothèque (demande du propriétaire du 2026-10-15 ; sort des playlists, favoris et statistiques du disque à trancher au cadrage). Repris de MPL-018 le 2026-10-15 | À faire | MPL-001 | — |
@@ -197,6 +196,125 @@ Revue QA : ⚠️ — un tour (sous-agent à contexte neuf). Corrigés : câblag
 Description de PR : fix(playback): show tags and artwork in the media notification (MPL-057) ; what: the system media session listens to the track index and shows the current track again when the library changes, titles and artists no longer stay the file name, the artwork is shown through artUri (file scheme, downscaled to 512 px); why: the notification showed only the file name because the index was read once and never subscribed; tested: 800 unit and widget tests, device protocol (HOWTO section 12, step 13) not run; limits: the artwork folder is read once at startup, the index is rebuilt at most twice a second while indexing.
 Décisions prises en route : index throttlé de l'interface réutilisé pour la session (le `libraryTrackIndexProvider` non limité est supprimé) ; pochette réduite à 512 px.
 À valider (PO) : l'extension de FR-005 par la pochette (validée avec le plan du 2026-10-27).
+
+### MPL-055
+**Description.** Une recherche dans chacune des vues Pistes, Albums et Artistes : la loupe de l'en-tête ouvre un champ de texte, la liste se réduit à chaque frappe aux lignes qui correspondent, sans tenir compte de la casse ni des accents. Recommandation du cadrage : un **filtre en mémoire par vue** (les listes sont déjà chargées, plus de 7 500 pistes tiennent dans une image), sans FTS5 ni schéma, plutôt qu'une recherche globale ; la file d'un résultat touché est les résultats affichés. La conception ne montre pas d'écran de recherche : l'interface est une proposition à valider.
+
+**Inclus.**
+- Champ de recherche dans les trois vues, à la place de la loupe grisée de Pistes (FR-027).
+- Correspondance : titre, artiste, artiste de l'album, album pour les pistes ; titre et artiste pour les albums ; nom pour les artistes ; tous les mots, sans casse ni accents (BR-011).
+- Résultats en direct, ligne de compte « N résultats », index masqué, état « aucun résultat » avec « Effacer la recherche » ; Retour ferme la recherche ; requête gardée entre onglets (FR-027).
+- Toucher une piste trouvée : file = les résultats, provenance « Recherche · … » (FR-027, FR-018).
+- `SearchField` dans `ui/widgets/`, modèle de recherche pur dans `features/library/`, `foldText` partagé avec le tri (ADR-018).
+- Textes en français et en anglais dans les ARB ; clair et sombre ; HOWTO §20 à écrire à la livraison.
+
+**Exclusions.** Résultats mélangés pistes, albums et artistes sur un écran ; genre, année, dossier, chemin ; historique, suggestions, recherche vocale ; filtres et autres tris ; recherche dans la file ou dans un détail ; surlignage ; FTS5 et tout changement de schéma ; désactiver un disque (MPL-056).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Recherche dans les listes
+
+  Scénario: Ouvrir la recherche dans Pistes
+    Soit l'onglet Pistes avec une bibliothèque
+    Quand l'utilisateur touche la loupe
+    Alors le titre est remplacé par un champ de texte avec le focus et le clavier
+    Et la loupe n'est plus un bouton désactivé
+
+  Scénario: Résultats en direct sans casse ni accents
+    Soit une piste "Écris-moi"
+    Quand l'utilisateur tape "ECRIS"
+    Alors la liste ne montre que les pistes qui correspondent, dont "Écris-moi"
+    Et la ligne de compte dit "N résultats"
+
+  Scénario: Plusieurs mots dans n'importe quel ordre
+    Soit une piste d'artiste "Hahn" dans l'album "Bach"
+    Quand l'utilisateur tape "bach hahn"
+    Alors la piste est trouvée
+
+  Scénario: Artiste, artiste de l'album et album
+    Soit une piste dont seul l'album contient "Record"
+    Quand l'utilisateur tape "record"
+    Alors la piste est trouvée
+
+  Scénario: Texte de remplacement non cherché
+    Soit des pistes sans étiquette d'artiste
+    Quand l'utilisateur tape "inconnu"
+    Alors ces pistes ne sont pas trouvées pour ce motif
+
+  Scénario: Albums et artistes
+    Soit l'onglet Albums ou Artistes
+    Quand l'utilisateur tape une partie d'un titre d'album, d'un artiste ou d'un nom
+    Alors la grille ou la liste se réduit aux albums ou aux artistes qui correspondent
+
+  Scénario: Aucun résultat
+    Quand l'utilisateur tape une requête qui ne correspond à rien
+    Alors "Aucun résultat pour « … »" s'affiche avec "Effacer la recherche"
+    Et toucher "Effacer la recherche" rend la liste complète
+
+  Scénario: Toucher une piste trouvée
+    Soit trois résultats
+    Quand l'utilisateur touche le deuxième
+    Alors il se lance et la file est les trois résultats dans leur ordre
+    Et la provenance de la file est "Recherche · …"
+
+  Scénario: Piste d'un disque absent
+    Soit un résultat sur un disque absent
+    Alors la ligne est grisée comme dans la liste
+    Et la toucher explique ce qu'il faut brancher
+
+  Scénario: Retour ferme la recherche
+    Soit une recherche ouverte avec des résultats
+    Quand l'utilisateur fait Retour
+    Alors la recherche se ferme et la liste complète revient
+    Et un second Retour fait le Retour habituel
+
+  Scénario: Détail ouvert depuis un résultat
+    Soit une recherche d'albums et un album touché
+    Quand l'utilisateur revient du détail
+    Alors la recherche et ses résultats sont intacts
+
+  Scénario: Requête gardée entre onglets
+    Soit une recherche ouverte dans Pistes
+    Quand l'utilisateur passe à Albums puis revient à Pistes
+    Alors la requête de Pistes est la même
+
+  Scénario: Bibliothèque vide
+    Soit une bibliothèque sans piste
+    Alors la loupe est désactivée
+
+  Scénario: Fluidité
+    Soit 7 500 pistes
+    Quand l'utilisateur tape dans le champ
+    Alors l'écran reste à 60 images par seconde (profile, Pixel)
+
+  Scénario: Accessibilité
+    Soit TalkBack
+    Alors le champ se lit "Rechercher une piste"
+    Et le nombre de résultats est annoncé après la dernière frappe
+```
+
+**Test appareil (Pixel, release).** Bibliothèque réelle : taper dans les trois vues (accents, plusieurs mots, aucun résultat), toucher un résultat, Retour à chaque étape, changement d'onglet, disque absent, fluidité à la frappe ; protocole en HOWTO §20. TalkBack et texte à 200 % : MPL-049.
+
+**Fiches liées.** UC-010, BR-011, FR-027, ADR-018 (`Active`, validées par le propriétaire le 2026-10-28). Utilise UC-005, UC-008, FR-009, FR-010, FR-011, FR-013, FR-018, FR-020, FR-021, FR-022, BR-007, BR-008, BR-010, ADR-010, ADR-013, ADR-015, ADR-016 (`Active`). Complétées à la livraison sans changer leurs règles : FR-011 (exigence 1), FR-013, FR-020, FR-021, FR-018, FR-009.
+
+**À valider (PO).**
+- Pas de maquette de la conception (HANDOFF §8) : interface proposée dans FR-027 ; option : demander un écran à Claude Design avant le code.
+- Filtre en mémoire par vue, sans FTS5 ni schéma (ADR-018) ; limite à 50 000 pistes.
+- La file d'un résultat touché est les résultats affichés ; provenance « Recherche · … » (FR-027.5).
+- Portée par vue, tous les mots, « Artiste inconnu » non cherché, pas de pertinence (BR-011).
+- Requête gardée entre onglets, pas entre lancements ; index masqué pendant la recherche ; loupe désactivée sans bibliothèque (FR-027).
+
+#### Livraison — 2026-10-28
+Statut : ⚠️ partiel (test sur le Pixel non fait, D14)
+Résumé : la loupe ouvre un champ de recherche dans Pistes, Albums et Artistes ; filtre en mémoire sans casse ni accents, tous les mots, une recherche par vue gardée entre onglets et détails, « N résultats », index masqué, « Aucun résultat » avec « Effacer la recherche », Retour qui ferme la recherche, file = résultats et provenance « Recherche · … ». `SearchField` est dans `ui/widgets/`.
+Fiches touchées : UC-010, BR-011, FR-027, ADR-018 (inchangées sauf as-built de FR-027) ; as-built ajouté à FR-009, FR-011, FR-020, FR-021, ADR-016 ; HOWTO §20.
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → au vert (Flutter 3.47.8 installé, épingle 3.47.7 inchangée), `check-repo.sh` et `markdownlint` au vert.
+Test appareil (Pixel, release) : non testé. Procédure : HOWTO §20 (fluidité à plus de 7 500 pistes, clavier, Retour, TalkBack).
+Revue QA : ⚠️ — un tour (sous-agent à contexte neuf), aucun bloquant. Corrigés : index de pistes construit seulement quand la recherche est ouverte, index d'albums et d'artistes reconstruits seulement quand les groupes changent, provenance sans requête vide, tests de file (deuxième résultat) et d'annonce. Tests ajoutés ensuite : loupe grisée avec une bibliothèque vide, piste d'un disque absent dans les résultats. Restent : une bibliothèque qui se vide avec la recherche ouverte laisse une recherche invisible que le premier Retour ferme ; le libellé de tri n'est pas lu par TalkBack pendant une recherche. Non vérifié : tout ce qui demande l'appareil (coût réel de l'index, clavier, focus, `maybePop` avec le vrai Retour Android).
+Description de PR : feat(library): add search to the Tracks, Albums and Artists views (MPL-055) ; what: a search field replaces the title in the three views, in-memory filter without case or accents on all words, one search per view kept across tabs and details, result count, no-results state, Back closes the search, queue of a touched result is the results with origin "Search · …"; why: owner request after the MPL-048 test; tested: 848 unit and widget tests, device protocol (HOWTO section 20) not run; limits: performance on 7,500+ tracks not measured; the branch also carries the CLAUDE.md rule on PRs opened by Claude.
+Décisions prises en route : `HomeShell` envoie le Retour par `maybePop` pour que la vue de l'onglet garde la recherche ; le saut « piste en cours » reste actif dans les résultats.
+À valider (PO) : interface de recherche (aucune maquette, FR-027) ; comportement de la bibliothèque qui se vide avec la recherche ouverte.
 
 ### MPL-051
 **Description.** Donner à l'onglet Réglages son contenu (écran 8e du lot 5 de la conception, `docs/design/HANDOFF.md`), avec les réglages qui fonctionnent, retenus d'un lancement à l'autre ; y ranger les pastilles « Dossiers » et « Disques » de l'onglet Pistes ; remplacer « Actualiser » par le tirer-pour-actualiser (décisions du propriétaire du 2026-10-24) ; dire ce qu'est l'application (version, licence, données). Cadrage du 2026-10-25. « Reprendre là où j'en étais » (MPL-053) et « Ignorer les fichiers courts » (MPL-054) de la maquette sont absents tant qu'ils ne sont pas faits.
@@ -1483,6 +1601,7 @@ Décisions prises en route : Flutter mis à jour de 3.47.6 à 3.47.7 sur le Mac 
 | MPL-037 | Bibliothèque d'un disque amovible (SSD par SAF) : sélecteur de dossiers, droit persistant, parcours, lecture par `fd://`, tags et pochettes lus dans les fichiers (SSD et stockage interne), schéma Drift v2, écrans temporaires | 23/10/2026 | Validé par le propriétaire, PR #15 fusionnée (23/10/2026). Pixel 10 Pro, SSD exFAT, release : étapes de `HOWTO.md` §13 faites avec 7 562 pistes (tags à ≈ 38 fichiers/s à 2 lectures en parallèle) ; non testés : redémarrage du téléphone, fichiers `._` et `.nomedia`, débranchement pendant l'actualisation ; limites connues dans le bloc Livraison |
 | MPL-016 | Fondations du design (lot 0 de la conception Claude Design v0.4) : dossier de conception intégré, thème clair et sombre et jetons, polices Manrope et Inter embarquées, navigation à 4 onglets adaptative, huit composants réutilisables avec galerie en debug et profile, dossier `lib/ui/` | 23/10/2026 | Validé par le propriétaire, PR #16 fusionnée (23/10/2026). Pixel 10 Pro, release et profile : thème clair et sombre suivant le système, 4 onglets, retour système, rail en paysage ; retour depuis « Dossiers de musique » et rail avec encoche corrigés pendant le test ; non testés : TalkBack, texte à 200 %, fluidité mesurée, vibration ressentie à la main ; limites connues dans le bloc Livraison |
 | MPL-045 | Design lot 2 — Bibliothèque : liste de pistes refaite (en-tête et pastilles, bandeaux dans le flux, repère de source par disque en schéma v3, tri sans accents, index alphabétique, bouton « En cours », états vides) | 23/10/2026 | Validé par le propriétaire, PR #17 fusionnée (23/10/2026). Pixel 10 Pro, release : migration v2→v3, repères, bandeau, masquage, piste grisée, saut de lecture, index, bouton, paysage, 200 % et libellés TalkBack OK ; non vus : voix et gestes TalkBack, fluidité en profile, retour du bandeau masqué. Limite : la liste ne suit pas en direct un branchement ou un retrait de disque avant MPL-035 |
+| MPL-057 | Notification et écran verrouillé : titre, artiste, album et pochette (la carte des pistes de la session média n'était jamais abonnée à la base ; `refreshItem` réaffiche la piste quand la bibliothèque change ; pochette par `artUri`) | 28/10/2026 | Validé par le propriétaire après test sur le Pixel (release), PR 22. Non vu sur l'appareil : piste sans aucune étiquette, lancement à froid avant la lecture des étiquettes ; coût de la carte pendant l'indexation à surveiller |
 | MPL-051 | Design lot 5 — Réglages : écran Réglages à quatre sections (Bibliothèque, Apparence, Lecture, À propos), réglages stockés dans la base (schéma v4) et lus avant le premier écran, thème Système / Clair / Sombre, couleurs du fond d'écran (`dynamic_color` 1.9.0), index à gauche, pause au débranchement, actualiser au démarrage ; « Dossiers » (page poussée) et « Disques » dans Réglages, tirer-pour-actualiser, À propos, licences et Confidentialité | 27/10/2026 | Validé par le propriétaire après test sur le Pixel (release, HOWTO §19), PR 21. `dynamic_color` 1.9.0 et non 2.1.0 (ADR-017, dérogation à revoir avant le 23/01/2027) ; TalkBack et texte à 200 % reportés à MPL-049 ; première indexation interrompue reprise au lancement suivant ; retrait d'un dossier d'un disque absent ajouté à MPL-056 |
 | MPL-048 | Design lot 5 — Albums et Artistes : onglets refaits (grille d'albums triée par titre avec nombre de pistes, liste d'artistes, index alphabétique, détails dans l'onglet), lire / aléatoire / tout lire, « Lire ensuite » et « Ajouter à la file » d'un album ou d'un artiste en ordre disque puis piste | 25/10/2026 | Validé par le propriétaire, PR #20 fusionnée (25/10/2026). Pixel 10 Pro, release : grille, détails, lecture, Retour, artistes, index, ajout à la file et fluidité vus par le propriétaire (« très bonne ») ; tri par titre et nombre de pistes demandés après le test et faits ; TalkBack et texte à 200 % reportés à MPL-049. Limites : une compilation sans artiste d'album se découpe par artiste de piste ; groupes recalculés au plus deux fois par seconde même onglet caché ; recherche (MPL-055) et désactivation des disques (MPL-056) ouvertes |
 | MPL-047 | Design lot 4 — Lecture : mini-lecteur dans la coquille, lecteur plein écran, file d'attente en feuille (réordonner, retirer, vider), aléatoire et répétition, menu d'appui long « Lire ensuite » / « Ajouter à la file », bouton « En cours » vers le lecteur | 23/10/2026 | Validé par le propriétaire, PR #19 fusionnée (23/10/2026). Pixel 10 Pro, release : passage partiel par adb (mini-lecteur, lecteur, informations, aléatoire, feuille de 2 625 pistes, retrait par glissé, « Vider la suite ») ; message de retrait caché sous la feuille corrigé pendant le test ; non vus : curseur, répéter, fichier illisible, disque débranché, menu d'appui long, paysage, TalkBack, 200 %. Limites : pas de panneau lecteur permanent (MPL-048), notification inchangée, file et modes non conservés ; revue QA ⚠️ (restes dans le bloc Livraison) |

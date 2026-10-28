@@ -44,3 +44,4 @@ MPL-048, 2026-10-23, test appareil partiel (D14). `AlbumsView` (`albums_view.dar
 - Une carte d'album d'une piste « inconnu » dit « artiste · N piste(s) ».
 - Les pistes sont numérotées par leur numéro d'étiquette, à défaut par leur position.
 - MPL-048, 2026-10-24 (retour du propriétaire) : albums triés par titre (`_compareAlbums`, `titleKey`), index sur la première lettre du titre (l'album inconnu sous « # », en tête), troisième ligne « N pistes » sur chaque carte (`AlbumCard.detail`), libellé de tri « Album A→Z ».
+- MPL-055, 2026-10-28 : l'en-tête (`BrowseHeader`) porte la loupe et le champ de recherche (FR-027) ; pendant une recherche la grille montre les albums trouvés, sans index, avec « N résultats ».

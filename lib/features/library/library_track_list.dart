@@ -27,9 +27,13 @@ import 'package:tuneshell/ui/widgets/track_tile.dart';
 /// @implements FR-011
 /// @implements FR-013
 class LibraryTrackList extends ConsumerStatefulWidget {
-  const new({required this.model, super.key});
+  const new({required this.model, this.searchText, super.key});
 
   final LibraryListModel model;
+
+  /// The text of the open search, whose results the list shows; the index is
+  /// then hidden (FR-027).
+  final String? searchText;
 
   @override
   ConsumerState<LibraryTrackList> createState() => _LibraryTrackListState();
@@ -164,7 +168,14 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
 
   Future<void> _play(int index) async {
     final player = ref.read(playerControllerProvider);
-    ref.read(queueOriginProvider.notifier).set(QueueOrigin.tracksByTitle);
+    final searchText = widget.searchText;
+    ref
+        .read(queueOriginProvider.notifier)
+        .set(
+          searchText == null || searchText.trim().isEmpty
+              ? QueueOrigin.tracksByTitle
+              : SearchOrigin(searchText),
+        );
     // UC-001: the queue is the whole list, in the displayed order.
     await player.setQueue([
       for (final e in widget.model.entries) e.track.track,
@@ -198,6 +209,7 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
       controller: _scroll,
       // A short list can be pulled too (FR-025.4).
       physics: const AlwaysScrollableScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       slivers: [
         SliverFixedExtentList(
           itemExtent: _rowExtent,
@@ -213,29 +225,25 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
     );
     return Stack(
       children: [
-        AlphabetScroller(
-          letters: model.letters,
-          alignStart: ref.watch(
-            appSettingsProvider.select((s) => s.indexOnLeft),
-          ),
-          itemCount: model.total,
-          onLetterSelected: _toLetter,
-          countLabel: l10n.indexCount,
-          letterSemantics: l10n.indexLetter,
-          gridTitle: l10n.indexGoToLetter,
-          onHandleRect: (rect) {
-            _handle = rect;
-            _sendExclusion();
-          },
-          child: NotificationListener<ScrollNotification>(
-            onNotification: _onScroll,
-            child: RefreshIndicator(
-              onRefresh: () =>
-                  ref.read(libraryControllerProvider.notifier).refresh(),
-              child: list,
+        if (widget.searchText != null)
+          _scrollable(list)
+        else
+          AlphabetScroller(
+            letters: model.letters,
+            alignStart: ref.watch(
+              appSettingsProvider.select((s) => s.indexOnLeft),
             ),
+            itemCount: model.total,
+            onLetterSelected: _toLetter,
+            countLabel: l10n.indexCount,
+            letterSemantics: l10n.indexLetter,
+            gridTitle: l10n.indexGoToLetter,
+            onHandleRect: (rect) {
+              _handle = rect;
+              _sendExclusion();
+            },
+            child: _scrollable(list),
           ),
-        ),
         PositionedDirectional(
           end: TsSpace.l,
           bottom: TsSpace.l,
@@ -247,6 +255,14 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
       ],
     );
   }
+
+  Widget _scrollable(Widget list) => NotificationListener<ScrollNotification>(
+    onNotification: _onScroll,
+    child: RefreshIndicator(
+      onRefresh: () => ref.read(libraryControllerProvider.notifier).refresh(),
+      child: list,
+    ),
+  );
 
   Widget _fab(AppLocalizations l10n) {
     if (widget.model.currentOutsideList) {
