@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/playback/model/engine_issue.dart';
 import 'package:tuneshell/domain/playback/model/playback_notice.dart';
+import 'package:tuneshell/domain/playback/model/playback_session.dart';
 import 'package:tuneshell/domain/playback/model/player_state.dart';
 import 'package:tuneshell/domain/playback/model/repeat_mode.dart';
 import 'package:tuneshell/domain/playback/ports/audio_engine.dart';
@@ -29,6 +30,7 @@ import 'package:tuneshell/domain/storage/ports/volume_events.dart';
 /// @implements BR-002
 /// @implements BR-003
 /// @implements BR-009
+/// @implements BR-012
 class PlayerController {
   new({
     required this._engine,
@@ -68,6 +70,14 @@ class PlayerController {
   /// shuffle is off.
   List<int>? _origin;
 
+  /// The position a restored session stops at, used by the first [play]
+  /// (BR-012, rule 7); null once used or when there is none.
+  Duration? _resumeAt;
+
+  /// The position just given to the engine for a restored track, kept until
+  /// its duration is known so that a position beyond it can be dropped.
+  Duration? _resumedAt;
+
   PlayerState get state => _state;
 
   /// Broadcast.
@@ -90,9 +100,7 @@ class PlayerController {
       _engine.positionStream.listen(
         (position) => _emit(_state.copyWith(position: position)),
       ),
-      _engine.durationStream.listen(
-        (duration) => _emit(_state.copyWith(duration: () => duration)),
-      ),
+      _engine.durationStream.listen(_onDuration),
     ]);
     return _serial(() async {
       final disks = await _volumes.availableDisks();
@@ -107,6 +115,54 @@ class PlayerController {
   }
 
   Future<void> play() => _serial(_play);
+
+  /// What it takes to find this queue again, or null without a queue
+  /// (BR-012, rule 1).
+  PlaybackSession? get session {
+    final index = _state.currentIndex;
+    if (index == null || _state.queue.isEmpty) return null;
+    final origin = _origin;
+    List<int>? order;
+    if (origin != null) {
+      final place = {for (var i = 0; i < _ids.length; i++) _ids[i]: i};
+      order = [for (final id in origin) ?place[id]];
+    }
+    return PlaybackSession(
+      queue: _state.queue,
+      currentIndex: index,
+      position: _state.position,
+      shuffle: order != null,
+      repeat: _state.repeat,
+      origin: order,
+    );
+  }
+
+  /// Puts a stored session back in place, paused and with nothing loaded:
+  /// the first [play] loads the current track and goes to its position
+  /// (BR-012, rules 6 and 7). Returns false, without any change, when the
+  /// session cannot be used or when a queue is already in place (rule 5).
+  Future<bool> restore(PlaybackSession session) => _serial(() async {
+    if (!session.isValid || _ids.isNotEmpty) return false;
+    final ids = [for (var i = 0; i < session.queue.length; i++) _nextId++];
+    final origin = session.origin;
+    _ids = ids;
+    _origin = origin == null ? null : [for (final i in origin) ids[i]];
+    _consecutiveFailures = 0;
+    _resumeAt = session.position == Duration.zero ? null : session.position;
+    _emit(
+      _state.copyWith(
+        queue: List.unmodifiable(session.queue),
+        currentIndex: () => session.currentIndex,
+        status: PlayerStatus.stopped,
+        playing: false,
+        position: session.position,
+        duration: () => null,
+        shuffle: session.shuffle,
+        repeat: session.repeat,
+      ),
+    );
+    return true;
+  });
 
   Future<void> _setQueue(List<Track> tracks, int startIndex) async {
     if (_isEngaged) await _unload();
@@ -130,6 +186,7 @@ class PlayerController {
       _origin = _state.shuffle ? ids : null;
     }
     _ids = queueIds;
+    _resumeAt = null;
     _emit(
       _state.copyWith(
         queue: List.unmodifiable(queue),
@@ -152,7 +209,9 @@ class PlayerController {
       case PlayerStatus.stopped:
         // A new start by the user: earlier failures no longer count.
         _consecutiveFailures = 0;
-        await _loadFrom(index, 1, wrap: true);
+        final startAt = _resumeAt;
+        _resumeAt = null;
+        await _loadFrom(index, 1, wrap: true, startAt: startAt);
       case PlayerStatus.loading:
       case PlayerStatus.idle:
         break;
@@ -395,7 +454,17 @@ class PlayerController {
   ///
   /// @implements BR-001: tracks of an unavailable disk are never opened; each
   /// run of them produces one [TracksSkipped].
-  Future<void> _loadFrom(int index, int step, {bool wrap = false}) async {
+  ///
+  /// With [startAt], the track at [index] starts there if it is the one that
+  /// gets loaded (BR-012, rule 7).
+  Future<void> _loadFrom(
+    int index,
+    int step, {
+    bool wrap = false,
+    Duration? startAt,
+  }) async {
+    _resumeAt = null;
+    _resumedAt = null;
     final skipped = <Track>[];
     var wrapped = false;
     var i = index;
@@ -439,10 +508,18 @@ class PlayerController {
         continue;
       }
       await _engine.open(source);
+      var at = Duration.zero;
+      if (startAt != null && i == index) {
+        try {
+          await _engine.seek(startAt);
+          at = startAt;
+          _resumedAt = startAt;
+        } on Object {
+          // The track starts from its beginning (BR-012, rule 7).
+        }
+      }
       // A late position of the previous track must not count for "previous".
-      _emit(
-        _state.copyWith(status: PlayerStatus.ready, position: Duration.zero),
-      );
+      _emit(_state.copyWith(status: PlayerStatus.ready, position: at));
       if (_state.playing) await _engine.play();
       return;
     }
@@ -503,6 +580,20 @@ class PlayerController {
       return;
     }
     await _loadFrom(index + 1, 1, wrap: true);
+  }
+
+  void _onDuration(Duration? duration) {
+    _emit(_state.copyWith(duration: () => duration));
+    final at = _resumedAt;
+    if (at == null || duration == null) return;
+    _resumedAt = null;
+    if (at <= duration) return;
+    final load = _load;
+    _enqueueEvent(() async {
+      if (load != _load || _state.status != PlayerStatus.ready) return;
+      await _engine.seek(Duration.zero);
+      _emit(_state.copyWith(position: Duration.zero));
+    });
   }
 
   void _onIssue(EngineIssue issue) {

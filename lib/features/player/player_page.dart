@@ -405,15 +405,17 @@ class _ControlsState extends ConsumerState<_Controls> {
           s.value?.playing ?? false,
           s.value?.shuffle ?? false,
           s.value?.repeat ?? RepeatMode.off,
-          s.value?.duration,
+          s.value?.duration != null,
           s.value?.status ?? PlayerStatus.idle,
         ),
       ),
     );
-    final (playing, shuffle, repeat, duration, status) = state;
+    final (playing, shuffle, repeat, engineKnowsDuration, status) = state;
+    final duration = ref.watch(shownDurationProvider);
     final position = ref.watch(playerPositionProvider).value ?? Duration.zero;
     final total = duration?.inMilliseconds ?? 0;
-    final known = total > 0 && status == PlayerStatus.ready;
+    final known =
+        engineKnowsDuration && total > 0 && status == PlayerStatus.ready;
     final shown = _dragging ?? position.inMilliseconds.toDouble();
     final clamped = shown.clamp(0, math.max(total, 1)).toDouble();
     final shownTime = Duration(milliseconds: clamped.round());

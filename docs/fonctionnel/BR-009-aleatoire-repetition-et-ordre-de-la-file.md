@@ -4,7 +4,7 @@
 
 ## Règle
 
-Le `PlayerController` porte deux modes (aléatoire, répétition) et six opérations sur la file (déplacer, vider la suite, aller à une piste, retirer, lire ensuite, ajouter à la fin). FR-001 et FR-002 les laissaient hors périmètre ; elles s'ajoutent sans changer leurs règles quand les modes sont éteints. Les modes valent pour la session : ils ne sont pas conservés entre deux lancements.
+Le `PlayerController` porte deux modes (aléatoire, répétition) et six opérations sur la file (déplacer, vider la suite, aller à une piste, retirer, lire ensuite, ajouter à la fin). FR-001 et FR-002 les laissaient hors périmètre ; elles s'ajoutent sans changer leurs règles quand les modes sont éteints. Les modes valent pour la session ; ils sont conservés entre deux lancements par BR-012 (MPL-053).
 
 1. **Aléatoire : activation.** La piste courante reste courante. Les pistes qui la suivent sont mélangées une fois (tirage uniforme) ; les pistes qui la précèdent ne bougent pas. L'ordre d'origine est mémorisé par le contrôleur.
 2. **Aléatoire : désactivation.** La file retrouve son ordre d'origine, la piste courante reste courante et la lecture continue avec ses suivantes dans cet ordre. Les déplacements faits à la main pendant le mode sont perdus. Les pistes retirées entre-temps (FR-002, règle 9 ci-dessous) restent retirées.
@@ -35,7 +35,7 @@ Le `PlayerController` porte deux modes (aléatoire, répétition) et six opérat
 - Règle 4, *toutes* : « suivant » sur la dernière piste reprend au début, ce qui complète FR-001, règle 5 (`Active`) quand la répétition est active.
 - Règle 4 : l'ordre d'une nouvelle boucle reste celui du premier tour (pas de nouveau mélange).
 - Règle 8 : toucher une ligne de la file lit cette piste ; les pistes sautées ne sont pas retirées.
-- Les modes ne survivent pas à la fermeture de l'application.
+- Les modes ne survivent pas à la fermeture de l'application. (Levé par BR-012, MPL-053, validé le 2026-10-28.)
 - Ajouté à la revue (2026-10-23) : retirer la dernière piste, quand elle est la courante, avec la répétition « toutes » reprend la file au début (FR-002, règle 4 s'arrêterait). Autre choix : l'arrêt.
 - Règle 11 : « Lire ensuite » répété place chaque piste juste après la courante (ordre inverse de la demande) ; doublons permis.
 

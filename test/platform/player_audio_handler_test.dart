@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
+import 'package:tuneshell/domain/playback/model/playback_session.dart';
 import 'package:tuneshell/domain/playback/services/player_controller.dart';
 import 'package:tuneshell/platform/media_session/player_audio_handler.dart';
 
@@ -274,6 +275,40 @@ void main() {
       await playing((_) => tagged, artworkOf: (_) => null);
 
       expect(handler.mediaItem.value!.artUri, isNull);
+    });
+  });
+
+  group('FR-005 a restored session', () {
+    /// @verifies FR-005
+    /// @verifies BR-012
+    test('stays idle for the system until the first play', () async {
+      await handler.dispose();
+      final fresh = PlayerController(
+        engine: FakeAudioEngine(),
+        opener: FakeTrackSourceOpener(),
+        volumes: FakeVolumeEvents({internalDisk}),
+      );
+      await fresh.start();
+      handler = PlayerAudioHandler(
+        fresh,
+        describe: (track) => known[track],
+        stopGrace: const Duration(milliseconds: 20),
+      );
+
+      await fresh.restore(
+        PlaybackSession(
+          queue: [a.track, b.track],
+          currentIndex: 1,
+          position: const Duration(seconds: 30),
+        ),
+      );
+      await stopped();
+
+      // Idle, as after any new queue: Android shows no notification and starts
+      // no service until the first play.
+      expect(playback().processingState, AudioProcessingState.idle);
+      expect(playback().playing, isFalse);
+      await fresh.dispose();
     });
   });
 

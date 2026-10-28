@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-058 · Dernière MAJ : 2026-10-28
+Préfixe : MPL · Prochaine clé : MPL-059 · Dernière MAJ : 2026-10-28
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -15,7 +15,8 @@ Préfixe : MPL · Prochaine clé : MPL-058 · Dernière MAJ : 2026-10-28
 | MPL-015 | Tâche technique | P2 | Revoir dialogue et bandeau de permission ⚠️ un seul appareil testé | À faire | — | — |
 | MPL-046 | Récit | P1 | Design lot 3 — Disques amovibles : écran 4 refait (4a–4e), repère de source modifiable, détection du branchement en direct, parcours dans un service au premier plan avec notification et « Arrêter » ; recoupe MPL-035 et MPL-038. À cadrer après MPL-016 | À faire | MPL-001 | MPL-045 |
 | MPL-052 | Récit | P2 | Design lot 5 — Paysage et écrans larges (écran 6e) : panneau lecteur permanent de 280 dp à droite (pochette, contrôles, file d'attente) à partir de 840 dp, liste au centre, sans mini-lecteur ; panneau repliable de 600 à 839 dp ; réutilise les éléments du lecteur plein écran (FR-017). Découpé de MPL-048 le 2026-10-23. À cadrer | À faire | MPL-001 | MPL-048 |
-| MPL-053 | Récit | P2 | « Reprendre là où j'en étais » : mémoriser la file, la piste, la position et les modes (aléatoire, répétition) entre deux lancements et les restaurer à l'ouverture, en pause et sans service au premier plan ; réglage dans MPL-051 ; à cadrer (BR-004 : pistes disparues, disque absent, FR-005 : pas de notification avant un « Lecture »). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
+| MPL-053 | Récit | P2 | « Reprendre là où j'en étais » : mémoriser la file, la piste, la position et les modes (aléatoire, répétition) entre deux lancements et les restaurer à l'ouverture, en pause et sans service au premier plan ; réglage dans Réglages (MPL-051, livré) ; cadré et validé le 2026-10-28 (UC-011, BR-012, FR-028, ADR-019). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | En cours | MPL-001 | — |
+| MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | MPL-053 |
 | MPL-054 | Récit | P2 | Ignorer les fichiers courts (moins de 30 s : sonneries, notes vocales) : réglage de l'indexation ; à cadrer (durée connue tout de suite pour MediaStore, seulement après la lecture des étiquettes sur un disque ; pistes déjà indexées ; effet sur les listes et les compteurs ; seuil réglable ou fixe). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-001 | — |
 | MPL-049 | Tâche technique | P2 | Design lot 6 — Finitions : icône d'application et de notification finales (`docs/design/brand/`), écran de démarrage, liste de contrôle d'accessibilité (TalkBack, texte à 200 %), profilage. Reçoit les essais TalkBack et texte à 200 % de tous les lots de design (décision du propriétaire du 2026-10-24 : ils ne sont plus faits ticket par ticket). À cadrer après MPL-016 | À faire | MPL-001 | MPL-048, MPL-051, MPL-052 |
@@ -38,6 +39,118 @@ Préfixe : MPL · Prochaine clé : MPL-058 · Dernière MAJ : 2026-10-28
 | MPL-035 | Tâche technique | P2 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-001 | — |
 
 ## Détails
+### MPL-053
+**Description.** « Reprendre là où j'en étais » : la file, la piste courante, la position et les modes (aléatoire, répétition) sont enregistrés sur l'appareil et rétablis au lancement suivant, **en pause**, sans notification, sans service au premier plan et sans rien charger tant que l'utilisateur n'a pas touché « Lecture ». Un réglage de la section « Lecture » de Réglages l'active (par défaut) ou le désactive. Cadrage du 2026-10-28. Recommandation : enregistrer **toute la file** (identité disque et chemin relatif, BR-004) dans deux tables de la base (schéma v5), regrouper les écritures (position au plus toutes les 10 s, écriture immédiate à la pause, en arrière-plan et au retrait des récentes) et restaurer après la première lecture de la bibliothèque sans retarder le premier écran. Écartés : ne garder que la piste et la position (perd la suite de l'album), reprendre la musique toute seule (jamais de son sans commande, FR-005), démarrer la session média à la restauration.
+
+**Inclus.**
+- Modèle `PlaybackSession`, port `PlaybackSessionStore`, `SessionKeeper` (enregistrement regroupé), `PlayerController.restore` et position de départ différée (BR-012, ADR-019).
+- Schéma v5, tables `playback_session` et `playback_queue`, migration depuis le dump v4 testée (ADR-019).
+- Restauration au lancement : pistes disparues retirées, piste courante disparue remplacée, disque absent gardé et grisé (BR-012).
+- Interrupteur « Reprendre là où j'en étais » dans Réglages, clé de réglage, effacement de la session à la désactivation (FR-028).
+- Affichage du mini-lecteur, du lecteur et de la file en pause, avec la position (FR-028).
+- Textes en français et en anglais dans les ARB ; HOWTO §21 à écrire à la livraison.
+
+**Exclusions.** Reprise de la lecture toute seule ; notification ou service avant « Lecture » ; reprise par une touche média quand le processus est mort ; provenance de la file (« Album · … ») ; restauration de l'onglet, du défilement, d'un détail ou d'une recherche ; historique ou plusieurs files ; synchronisation ; désactiver un disque (MPL-056) ; réassociation d'un disque (MPL-038).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Reprendre là où j'en étais
+
+  Scénario: Retrouver la file, la piste et la position
+    Soit une file de dix pistes lue jusqu'à 1 min 20 s de la quatrième
+    Quand l'application est fermée puis rouverte
+    Alors le mini-lecteur montre la quatrième piste en pause à 1 min 20 s
+    Et la file du lecteur est celle de dix pistes, la quatrième en tête
+
+  Scénario: Les modes sont conservés
+    Soit l'aléatoire et la répétition "toutes" actifs
+    Quand l'application est fermée puis rouverte
+    Alors les deux modes sont actifs
+    Et désactiver l'aléatoire rend l'ordre d'origine de la file
+
+  Scénario: Rien ne démarre tout seul
+    Quand l'application est rouverte avec une session enregistrée
+    Alors aucun son n'est émis et aucune notification n'est montrée
+    Et le service au premier plan n'est pas démarré
+
+  Scénario: Premier « Lecture » à la position enregistrée
+    Soit une session restaurée à 1 min 20 s
+    Quand l'utilisateur touche lecture
+    Alors la piste repart à 1 min 20 s et la file continue
+
+  Scénario: Position hors de la piste
+    Soit une position plus longue que la durée de la piste
+    Quand l'utilisateur touche lecture
+    Alors la piste repart du début, sans message
+
+  Scénario: Pistes disparues
+    Soit une session dont deux pistes ne sont plus dans la bibliothèque
+    Quand l'application est rouverte
+    Alors la file ne contient plus ces deux pistes et le reste est intact
+
+  Scénario: Piste courante disparue
+    Soit une session dont la piste courante n'est plus dans la bibliothèque
+    Quand l'application est rouverte
+    Alors la courante est la première piste restante qui la suivait, au début
+
+  Scénario: Disque absent
+    Soit une session dont la piste courante est sur un disque absent
+    Quand l'application est rouverte
+    Alors la piste revient grisée
+    Et à la lecture la piste est sautée avec le message habituel (BR-001)
+
+  Scénario: L'utilisateur est plus rapide que la restauration
+    Soit une session enregistrée
+    Quand l'utilisateur lance une piste avant la fin de la restauration
+    Alors sa file reste et la session enregistrée est ignorée puis remplacée
+
+  Scénario: Position enregistrée à la pause
+    Soit une lecture mise en pause à 2 min 05 s
+    Quand le processus est arrêté ensuite
+    Alors la position retrouvée est 2 min 05 s
+
+  Scénario: Perte bornée en pleine lecture
+    Soit une lecture en cours
+    Quand le processus meurt sans prévenir
+    Alors la position retrouvée retarde de 10 s au plus
+
+  Scénario: File vide
+    Quand l'utilisateur vide la file
+    Alors la session enregistrée est effacée
+    Et au lancement suivant le mini-lecteur n'apparaît pas
+
+  Scénario: Réglage désactivé
+    Soit le réglage "Reprendre là où j'en étais" désactivé
+    Alors aucune session n'est enregistrée ni restaurée
+    Et celle qui existait est effacée
+
+  Scénario: Session illisible
+    Soit une session abîmée ou d'une version inconnue
+    Quand l'application est rouverte
+    Alors elle est ignorée et effacée, sans message ni plantage
+
+  Scénario: Fluidité au démarrage
+    Soit une file de 7 500 pistes enregistrée
+    Quand l'application est rouverte
+    Alors le premier écran n'est pas retardé et le mini-lecteur apparaît d'un coup
+
+  Scénario: Confidentialité
+    Alors aucun chemin ni titre de la session n'est écrit dans les journaux
+```
+
+**Test appareil (Pixel, release).** Bibliothèque réelle : lire un album en milieu de piste puis fermer par les récentes en pause, par les récentes en lecture, par redémarrage du téléphone ; vérifier piste, position, file, modes ; disque absent au lancement ; touche lecture, notification seulement après ; file de plusieurs milliers de pistes ; temps jusqu'au mini-lecteur ; protocole en HOWTO §21.
+
+**Fiches liées.** UC-011, BR-012, FR-028, ADR-019 (`Brouillon`). Utilise UC-002, UC-007, UC-009, FR-001, FR-005, FR-016, FR-017, FR-018, FR-023, FR-025, BR-001, BR-003, BR-004, BR-007, BR-008, BR-009, ADR-004, ADR-015, ADR-017 (`Active`).
+
+**À valider (PO).**
+- Écarts à des fiches `Active`, non modifiées : BR-009 (« les modes ne sont pas conservés »), FR-001 et FR-005 (persistance de la file hors périmètre), FR-023 (ligne ajoutée à « Lecture »). Détail dans BR-012 et FR-028.
+- Le son ne reprend jamais tout seul, même si la musique jouait à la fermeture.
+- Réglage activé par défaut.
+- Provenance de la file non conservée.
+- Perte de 10 s de position au pire après une mort brutale ; ordre d'origine de l'aléatoire conservé.
+- Schéma v5 avec deux tables (ADR-019).
+
 ### MPL-016
 **Description.** Poser les fondations du design de TuneShell à partir de la conception de Claude Design (v0.4 « Carapace sonore », `docs/design/HANDOFF.md`) : le dossier de conception entre dans le dépôt, l'application prend un thème clair et sombre défini par des jetons, une navigation à quatre onglets qui s'adapte à la largeur, et une bibliothèque de huit composants testés dans tous leurs états. Aucun écran n'est refait : les lots suivants (MPL-044 à MPL-049) le feront un par un. Cadrage du 2026-10-23, découpage choisi par le propriétaire (lot 0 seulement). Remplace le ticket « Maquettes UI/UX » : les maquettes sont livrées.
 

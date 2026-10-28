@@ -126,6 +126,13 @@ class SettingsPage extends ConsumerWidget {
                       value: settings.pauseOnUnplug,
                       onChanged: (on) => notifier.setPauseOnUnplug(enabled: on),
                     ),
+                    SettingsSwitchTile(
+                      title: l10n.settingsResume,
+                      subtitle: l10n.settingsResumeSub,
+                      value: settings.resumePlayback,
+                      onChanged: (on) =>
+                          notifier.setResumePlayback(enabled: on),
+                    ),
                     SettingsSectionHeader(l10n.settingsSectionAbout),
                     SettingsNavTile(
                       title: l10n.settingsAbout(appVersion),

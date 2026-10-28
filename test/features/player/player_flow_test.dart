@@ -6,6 +6,7 @@ import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/playback/model/engine_issue.dart';
+import 'package:tuneshell/domain/playback/model/playback_session.dart';
 import 'package:tuneshell/domain/playback/model/player_state.dart';
 import 'package:tuneshell/domain/playback/model/repeat_mode.dart';
 import 'package:tuneshell/domain/playback/services/player_controller.dart';
@@ -460,5 +461,56 @@ void main() {
         expect(find.byTooltip('Shuffle'), findsOneWidget);
       });
     }
+  });
+
+  /// @verifies FR-028.4
+  group('a restored session', () {
+    flow('shows the track in pause, with its progress', (tester) async {
+      await pump(tester);
+      await player.restore(
+        PlaybackSession(
+          queue: [for (final t in all) t.track],
+          currentIndex: 0,
+          position: const Duration(seconds: 15),
+          repeat: RepeatMode.all,
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(find.byType(MiniPlayer), findsOneWidget);
+      expect(find.text('Alpha'), findsOneWidget);
+      expect(find.byTooltip('Play'), findsOneWidget);
+      expect(find.byTooltip('Pause'), findsNothing);
+      expect(
+        tester
+            .widget<MiniPlayerProgress>(find.byType(MiniPlayerProgress))
+            .value,
+        closeTo(0.25, 0.001),
+      );
+      expect(engine.calls, isEmpty);
+    });
+
+    flow('play goes on from the stored position', (tester) async {
+      await pump(tester);
+      await player.restore(
+        PlaybackSession(
+          queue: [for (final t in all) t.track],
+          currentIndex: 1,
+          position: const Duration(seconds: 40),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.tap(find.byTooltip('Play'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(player.state.currentIndex, 1);
+      expect(player.state.position, const Duration(seconds: 40));
+      expect(find.byTooltip('Pause'), findsOneWidget);
+    });
   });
 }

@@ -13,6 +13,7 @@ void main() {
       expect(settings.indexOnLeft, isFalse);
       expect(settings.pauseOnUnplug, isTrue);
       expect(settings.refreshOnStart, isTrue);
+      expect(settings.resumePlayback, isTrue);
     });
 
     test('an empty store gives the defaults', () {
@@ -29,6 +30,7 @@ void main() {
         indexOnLeft: true,
         pauseOnUnplug: false,
         refreshOnStart: false,
+        resumePlayback: false,
       );
 
       final read = AppSettings.fromEntries(settings.toEntries());
@@ -57,6 +59,7 @@ void main() {
         SettingKey.indexOnLeft: '',
         SettingKey.pauseOnUnplug: '1',
         SettingKey.refreshOnStart: 'null',
+        SettingKey.resumePlayback: 'yes',
       });
 
       expect(read, const AppSettings());
@@ -97,6 +100,7 @@ void main() {
         SettingKey.indexOnLeft: 'true',
         SettingKey.pauseOnUnplug: 'true',
         SettingKey.refreshOnStart: 'true',
+        SettingKey.resumePlayback: 'true',
       });
     });
 

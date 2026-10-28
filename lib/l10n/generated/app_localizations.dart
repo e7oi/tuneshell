@@ -1262,6 +1262,18 @@ abstract class AppLocalizations {
   /// **'Recommended · cable unplugged or Bluetooth disconnected, not the in-ear detection of earbuds'**
   String get settingsPauseUnplugSub;
 
+  /// Switch of the playback settings (FR-028.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Resume where I left off'**
+  String get settingsResume;
+
+  /// Explanation of the resume playback switch (FR-028.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Restores the queue at start'**
+  String get settingsResumeSub;
+
   /// About line: name and version (FR-026.1).
   ///
   /// In en, this message translates to:

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/app.dart';
 import 'package:tuneshell/app/licenses.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
+import 'package:tuneshell/app/session_keeping.dart';
 import 'package:tuneshell/app/system_playback.dart';
 import 'package:tuneshell/data/audio/media_kit_audio_engine.dart';
 
@@ -18,6 +19,7 @@ Future<void> main() async {
   // The wallpaper colours too: asked once, before the first frame.
   await container.read(systemSchemesProvider.future);
   await startSystemPlayback(container);
+  startSessionKeeping(container);
   runApp(
     UncontrolledProviderScope(
       container: container,

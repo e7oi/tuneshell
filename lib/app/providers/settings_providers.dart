@@ -49,6 +49,9 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
   void setRefreshOnStart({required bool enabled}) =>
       _change((s) => s.copyWith(refreshOnStart: enabled));
 
+  void setResumePlayback({required bool enabled}) =>
+      _change((s) => s.copyWith(resumePlayback: enabled));
+
   void _change(AppSettings Function(AppSettings) change) {
     final before = state;
     final after = change(before);

@@ -1740,6 +1740,689 @@ class SettingEntriesCompanion extends UpdateCompanion<SettingRow> {
   }
 }
 
+class $PlaybackSessionsTable extends PlaybackSessions
+    with TableInfo<$PlaybackSessionsTable, PlaybackSessionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlaybackSessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _currentIndexMeta = const VerificationMeta(
+    'currentIndex',
+  );
+  @override
+  late final GeneratedColumn<int> currentIndex = GeneratedColumn<int>(
+    'current_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMsMeta = const VerificationMeta(
+    'positionMs',
+  );
+  @override
+  late final GeneratedColumn<int> positionMs = GeneratedColumn<int>(
+    'position_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _shuffleMeta = const VerificationMeta(
+    'shuffle',
+  );
+  @override
+  late final GeneratedColumn<bool> shuffle = GeneratedColumn<bool>(
+    'shuffle',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("shuffle" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _repeatMeta = const VerificationMeta('repeat');
+  @override
+  late final GeneratedColumn<String> repeat = GeneratedColumn<String>(
+    'repeat',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    currentIndex,
+    positionMs,
+    shuffle,
+    repeat,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'playback_session';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PlaybackSessionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('current_index')) {
+      context.handle(
+        _currentIndexMeta,
+        currentIndex.isAcceptableOrUnknown(
+          data['current_index']!,
+          _currentIndexMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currentIndexMeta);
+    }
+    if (data.containsKey('position_ms')) {
+      context.handle(
+        _positionMsMeta,
+        positionMs.isAcceptableOrUnknown(data['position_ms']!, _positionMsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMsMeta);
+    }
+    if (data.containsKey('shuffle')) {
+      context.handle(
+        _shuffleMeta,
+        shuffle.isAcceptableOrUnknown(data['shuffle']!, _shuffleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_shuffleMeta);
+    }
+    if (data.containsKey('repeat')) {
+      context.handle(
+        _repeatMeta,
+        repeat.isAcceptableOrUnknown(data['repeat']!, _repeatMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_repeatMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PlaybackSessionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlaybackSessionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      currentIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}current_index'],
+      )!,
+      positionMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position_ms'],
+      )!,
+      shuffle: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}shuffle'],
+      )!,
+      repeat: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}repeat'],
+      )!,
+    );
+  }
+
+  @override
+  $PlaybackSessionsTable createAlias(String alias) {
+    return $PlaybackSessionsTable(attachedDatabase, alias);
+  }
+}
+
+class PlaybackSessionRow extends DataClass
+    implements Insertable<PlaybackSessionRow> {
+  /// Always 1.
+  final int id;
+  final int currentIndex;
+  final int positionMs;
+  final bool shuffle;
+
+  /// The name of a `RepeatMode`.
+  final String repeat;
+  const PlaybackSessionRow({
+    required this.id,
+    required this.currentIndex,
+    required this.positionMs,
+    required this.shuffle,
+    required this.repeat,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['current_index'] = Variable<int>(currentIndex);
+    map['position_ms'] = Variable<int>(positionMs);
+    map['shuffle'] = Variable<bool>(shuffle);
+    map['repeat'] = Variable<String>(repeat);
+    return map;
+  }
+
+  PlaybackSessionsCompanion toCompanion(bool nullToAbsent) {
+    return PlaybackSessionsCompanion(
+      id: Value(id),
+      currentIndex: Value(currentIndex),
+      positionMs: Value(positionMs),
+      shuffle: Value(shuffle),
+      repeat: Value(repeat),
+    );
+  }
+
+  factory PlaybackSessionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlaybackSessionRow(
+      id: serializer.fromJson<int>(json['id']),
+      currentIndex: serializer.fromJson<int>(json['currentIndex']),
+      positionMs: serializer.fromJson<int>(json['positionMs']),
+      shuffle: serializer.fromJson<bool>(json['shuffle']),
+      repeat: serializer.fromJson<String>(json['repeat']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'currentIndex': serializer.toJson<int>(currentIndex),
+      'positionMs': serializer.toJson<int>(positionMs),
+      'shuffle': serializer.toJson<bool>(shuffle),
+      'repeat': serializer.toJson<String>(repeat),
+    };
+  }
+
+  PlaybackSessionRow copyWith({
+    int? id,
+    int? currentIndex,
+    int? positionMs,
+    bool? shuffle,
+    String? repeat,
+  }) => PlaybackSessionRow(
+    id: id ?? this.id,
+    currentIndex: currentIndex ?? this.currentIndex,
+    positionMs: positionMs ?? this.positionMs,
+    shuffle: shuffle ?? this.shuffle,
+    repeat: repeat ?? this.repeat,
+  );
+  PlaybackSessionRow copyWithCompanion(PlaybackSessionsCompanion data) {
+    return PlaybackSessionRow(
+      id: data.id.present ? data.id.value : this.id,
+      currentIndex: data.currentIndex.present
+          ? data.currentIndex.value
+          : this.currentIndex,
+      positionMs: data.positionMs.present
+          ? data.positionMs.value
+          : this.positionMs,
+      shuffle: data.shuffle.present ? data.shuffle.value : this.shuffle,
+      repeat: data.repeat.present ? data.repeat.value : this.repeat,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlaybackSessionRow(')
+          ..write('id: $id, ')
+          ..write('currentIndex: $currentIndex, ')
+          ..write('positionMs: $positionMs, ')
+          ..write('shuffle: $shuffle, ')
+          ..write('repeat: $repeat')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, currentIndex, positionMs, shuffle, repeat);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlaybackSessionRow &&
+          other.id == this.id &&
+          other.currentIndex == this.currentIndex &&
+          other.positionMs == this.positionMs &&
+          other.shuffle == this.shuffle &&
+          other.repeat == this.repeat);
+}
+
+class PlaybackSessionsCompanion extends UpdateCompanion<PlaybackSessionRow> {
+  final Value<int> id;
+  final Value<int> currentIndex;
+  final Value<int> positionMs;
+  final Value<bool> shuffle;
+  final Value<String> repeat;
+  const PlaybackSessionsCompanion({
+    this.id = const Value.absent(),
+    this.currentIndex = const Value.absent(),
+    this.positionMs = const Value.absent(),
+    this.shuffle = const Value.absent(),
+    this.repeat = const Value.absent(),
+  });
+  PlaybackSessionsCompanion.insert({
+    this.id = const Value.absent(),
+    required int currentIndex,
+    required int positionMs,
+    required bool shuffle,
+    required String repeat,
+  }) : currentIndex = Value(currentIndex),
+       positionMs = Value(positionMs),
+       shuffle = Value(shuffle),
+       repeat = Value(repeat);
+  static Insertable<PlaybackSessionRow> custom({
+    Expression<int>? id,
+    Expression<int>? currentIndex,
+    Expression<int>? positionMs,
+    Expression<bool>? shuffle,
+    Expression<String>? repeat,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (currentIndex != null) 'current_index': currentIndex,
+      if (positionMs != null) 'position_ms': positionMs,
+      if (shuffle != null) 'shuffle': shuffle,
+      if (repeat != null) 'repeat': repeat,
+    });
+  }
+
+  PlaybackSessionsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? currentIndex,
+    Value<int>? positionMs,
+    Value<bool>? shuffle,
+    Value<String>? repeat,
+  }) {
+    return PlaybackSessionsCompanion(
+      id: id ?? this.id,
+      currentIndex: currentIndex ?? this.currentIndex,
+      positionMs: positionMs ?? this.positionMs,
+      shuffle: shuffle ?? this.shuffle,
+      repeat: repeat ?? this.repeat,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (currentIndex.present) {
+      map['current_index'] = Variable<int>(currentIndex.value);
+    }
+    if (positionMs.present) {
+      map['position_ms'] = Variable<int>(positionMs.value);
+    }
+    if (shuffle.present) {
+      map['shuffle'] = Variable<bool>(shuffle.value);
+    }
+    if (repeat.present) {
+      map['repeat'] = Variable<String>(repeat.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlaybackSessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('currentIndex: $currentIndex, ')
+          ..write('positionMs: $positionMs, ')
+          ..write('shuffle: $shuffle, ')
+          ..write('repeat: $repeat')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PlaybackQueueEntriesTable extends PlaybackQueueEntries
+    with TableInfo<$PlaybackQueueEntriesTable, PlaybackQueueRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlaybackQueueEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _diskIdMeta = const VerificationMeta('diskId');
+  @override
+  late final GeneratedColumn<String> diskId = GeneratedColumn<String>(
+    'disk_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _relativePathMeta = const VerificationMeta(
+    'relativePath',
+  );
+  @override
+  late final GeneratedColumn<String> relativePath = GeneratedColumn<String>(
+    'relative_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originPositionMeta = const VerificationMeta(
+    'originPosition',
+  );
+  @override
+  late final GeneratedColumn<int> originPosition = GeneratedColumn<int>(
+    'origin_position',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    position,
+    diskId,
+    relativePath,
+    originPosition,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'playback_queue';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PlaybackQueueRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('disk_id')) {
+      context.handle(
+        _diskIdMeta,
+        diskId.isAcceptableOrUnknown(data['disk_id']!, _diskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_diskIdMeta);
+    }
+    if (data.containsKey('relative_path')) {
+      context.handle(
+        _relativePathMeta,
+        relativePath.isAcceptableOrUnknown(
+          data['relative_path']!,
+          _relativePathMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_relativePathMeta);
+    }
+    if (data.containsKey('origin_position')) {
+      context.handle(
+        _originPositionMeta,
+        originPosition.isAcceptableOrUnknown(
+          data['origin_position']!,
+          _originPositionMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {position};
+  @override
+  PlaybackQueueRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlaybackQueueRow(
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      diskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}disk_id'],
+      )!,
+      relativePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relative_path'],
+      )!,
+      originPosition: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}origin_position'],
+      ),
+    );
+  }
+
+  @override
+  $PlaybackQueueEntriesTable createAlias(String alias) {
+    return $PlaybackQueueEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class PlaybackQueueRow extends DataClass
+    implements Insertable<PlaybackQueueRow> {
+  final int position;
+  final String diskId;
+  final String relativePath;
+
+  /// Place of the entry in the original order of the shuffle; null when the
+  /// shuffle is off.
+  final int? originPosition;
+  const PlaybackQueueRow({
+    required this.position,
+    required this.diskId,
+    required this.relativePath,
+    this.originPosition,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['position'] = Variable<int>(position);
+    map['disk_id'] = Variable<String>(diskId);
+    map['relative_path'] = Variable<String>(relativePath);
+    if (!nullToAbsent || originPosition != null) {
+      map['origin_position'] = Variable<int>(originPosition);
+    }
+    return map;
+  }
+
+  PlaybackQueueEntriesCompanion toCompanion(bool nullToAbsent) {
+    return PlaybackQueueEntriesCompanion(
+      position: Value(position),
+      diskId: Value(diskId),
+      relativePath: Value(relativePath),
+      originPosition: originPosition == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originPosition),
+    );
+  }
+
+  factory PlaybackQueueRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlaybackQueueRow(
+      position: serializer.fromJson<int>(json['position']),
+      diskId: serializer.fromJson<String>(json['diskId']),
+      relativePath: serializer.fromJson<String>(json['relativePath']),
+      originPosition: serializer.fromJson<int?>(json['originPosition']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'position': serializer.toJson<int>(position),
+      'diskId': serializer.toJson<String>(diskId),
+      'relativePath': serializer.toJson<String>(relativePath),
+      'originPosition': serializer.toJson<int?>(originPosition),
+    };
+  }
+
+  PlaybackQueueRow copyWith({
+    int? position,
+    String? diskId,
+    String? relativePath,
+    Value<int?> originPosition = const Value.absent(),
+  }) => PlaybackQueueRow(
+    position: position ?? this.position,
+    diskId: diskId ?? this.diskId,
+    relativePath: relativePath ?? this.relativePath,
+    originPosition: originPosition.present
+        ? originPosition.value
+        : this.originPosition,
+  );
+  PlaybackQueueRow copyWithCompanion(PlaybackQueueEntriesCompanion data) {
+    return PlaybackQueueRow(
+      position: data.position.present ? data.position.value : this.position,
+      diskId: data.diskId.present ? data.diskId.value : this.diskId,
+      relativePath: data.relativePath.present
+          ? data.relativePath.value
+          : this.relativePath,
+      originPosition: data.originPosition.present
+          ? data.originPosition.value
+          : this.originPosition,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlaybackQueueRow(')
+          ..write('position: $position, ')
+          ..write('diskId: $diskId, ')
+          ..write('relativePath: $relativePath, ')
+          ..write('originPosition: $originPosition')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(position, diskId, relativePath, originPosition);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlaybackQueueRow &&
+          other.position == this.position &&
+          other.diskId == this.diskId &&
+          other.relativePath == this.relativePath &&
+          other.originPosition == this.originPosition);
+}
+
+class PlaybackQueueEntriesCompanion extends UpdateCompanion<PlaybackQueueRow> {
+  final Value<int> position;
+  final Value<String> diskId;
+  final Value<String> relativePath;
+  final Value<int?> originPosition;
+  const PlaybackQueueEntriesCompanion({
+    this.position = const Value.absent(),
+    this.diskId = const Value.absent(),
+    this.relativePath = const Value.absent(),
+    this.originPosition = const Value.absent(),
+  });
+  PlaybackQueueEntriesCompanion.insert({
+    this.position = const Value.absent(),
+    required String diskId,
+    required String relativePath,
+    this.originPosition = const Value.absent(),
+  }) : diskId = Value(diskId),
+       relativePath = Value(relativePath);
+  static Insertable<PlaybackQueueRow> custom({
+    Expression<int>? position,
+    Expression<String>? diskId,
+    Expression<String>? relativePath,
+    Expression<int>? originPosition,
+  }) {
+    return RawValuesInsertable({
+      if (position != null) 'position': position,
+      if (diskId != null) 'disk_id': diskId,
+      if (relativePath != null) 'relative_path': relativePath,
+      if (originPosition != null) 'origin_position': originPosition,
+    });
+  }
+
+  PlaybackQueueEntriesCompanion copyWith({
+    Value<int>? position,
+    Value<String>? diskId,
+    Value<String>? relativePath,
+    Value<int?>? originPosition,
+  }) {
+    return PlaybackQueueEntriesCompanion(
+      position: position ?? this.position,
+      diskId: diskId ?? this.diskId,
+      relativePath: relativePath ?? this.relativePath,
+      originPosition: originPosition ?? this.originPosition,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (diskId.present) {
+      map['disk_id'] = Variable<String>(diskId.value);
+    }
+    if (relativePath.present) {
+      map['relative_path'] = Variable<String>(relativePath.value);
+    }
+    if (originPosition.present) {
+      map['origin_position'] = Variable<int>(originPosition.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlaybackQueueEntriesCompanion(')
+          ..write('position: $position, ')
+          ..write('diskId: $diskId, ')
+          ..write('relativePath: $relativePath, ')
+          ..write('originPosition: $originPosition')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$LibraryDatabase extends GeneratedDatabase {
   _$LibraryDatabase(QueryExecutor e) : super(e);
   $LibraryDatabaseManager get managers => $LibraryDatabaseManager(this);
@@ -1747,6 +2430,11 @@ abstract class _$LibraryDatabase extends GeneratedDatabase {
   late final $DiskFoldersTable diskFolders = $DiskFoldersTable(this);
   late final $TracksTable tracks = $TracksTable(this);
   late final $SettingEntriesTable settingEntries = $SettingEntriesTable(this);
+  late final $PlaybackSessionsTable playbackSessions = $PlaybackSessionsTable(
+    this,
+  );
+  late final $PlaybackQueueEntriesTable playbackQueueEntries =
+      $PlaybackQueueEntriesTable(this);
   late final Index disksMarkIndex = Index(
     'disks_mark_index',
     'CREATE UNIQUE INDEX disks_mark_index ON disks (mark_index)',
@@ -1760,6 +2448,8 @@ abstract class _$LibraryDatabase extends GeneratedDatabase {
     diskFolders,
     tracks,
     settingEntries,
+    playbackSessions,
+    playbackQueueEntries,
     disksMarkIndex,
   ];
 }
@@ -3107,6 +3797,431 @@ typedef $$SettingEntriesTableProcessedTableManager =
       SettingRow,
       PrefetchHooks Function()
     >;
+typedef $$PlaybackSessionsTableCreateCompanionBuilder =
+    PlaybackSessionsCompanion Function({
+      Value<int> id,
+      required int currentIndex,
+      required int positionMs,
+      required bool shuffle,
+      required String repeat,
+    });
+typedef $$PlaybackSessionsTableUpdateCompanionBuilder =
+    PlaybackSessionsCompanion Function({
+      Value<int> id,
+      Value<int> currentIndex,
+      Value<int> positionMs,
+      Value<bool> shuffle,
+      Value<String> repeat,
+    });
+
+class $$PlaybackSessionsTableFilterComposer
+    extends Composer<_$LibraryDatabase, $PlaybackSessionsTable> {
+  $$PlaybackSessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get currentIndex => $composableBuilder(
+    column: $table.currentIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get shuffle => $composableBuilder(
+    column: $table.shuffle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get repeat => $composableBuilder(
+    column: $table.repeat,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlaybackSessionsTableOrderingComposer
+    extends Composer<_$LibraryDatabase, $PlaybackSessionsTable> {
+  $$PlaybackSessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get currentIndex => $composableBuilder(
+    column: $table.currentIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get shuffle => $composableBuilder(
+    column: $table.shuffle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get repeat => $composableBuilder(
+    column: $table.repeat,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlaybackSessionsTableAnnotationComposer
+    extends Composer<_$LibraryDatabase, $PlaybackSessionsTable> {
+  $$PlaybackSessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get currentIndex => $composableBuilder(
+    column: $table.currentIndex,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get shuffle =>
+      $composableBuilder(column: $table.shuffle, builder: (column) => column);
+
+  GeneratedColumn<String> get repeat =>
+      $composableBuilder(column: $table.repeat, builder: (column) => column);
+}
+
+class $$PlaybackSessionsTableTableManager
+    extends
+        RootTableManager<
+          _$LibraryDatabase,
+          $PlaybackSessionsTable,
+          PlaybackSessionRow,
+          $$PlaybackSessionsTableFilterComposer,
+          $$PlaybackSessionsTableOrderingComposer,
+          $$PlaybackSessionsTableAnnotationComposer,
+          $$PlaybackSessionsTableCreateCompanionBuilder,
+          $$PlaybackSessionsTableUpdateCompanionBuilder,
+          (
+            PlaybackSessionRow,
+            BaseReferences<
+              _$LibraryDatabase,
+              $PlaybackSessionsTable,
+              PlaybackSessionRow
+            >,
+          ),
+          PlaybackSessionRow,
+          PrefetchHooks Function()
+        > {
+  $$PlaybackSessionsTableTableManager(
+    _$LibraryDatabase db,
+    $PlaybackSessionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlaybackSessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlaybackSessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlaybackSessionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> currentIndex = const Value.absent(),
+                Value<int> positionMs = const Value.absent(),
+                Value<bool> shuffle = const Value.absent(),
+                Value<String> repeat = const Value.absent(),
+              }) => PlaybackSessionsCompanion(
+                id: id,
+                currentIndex: currentIndex,
+                positionMs: positionMs,
+                shuffle: shuffle,
+                repeat: repeat,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int currentIndex,
+                required int positionMs,
+                required bool shuffle,
+                required String repeat,
+              }) => PlaybackSessionsCompanion.insert(
+                id: id,
+                currentIndex: currentIndex,
+                positionMs: positionMs,
+                shuffle: shuffle,
+                repeat: repeat,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PlaybackSessionsTable, PlaybackSessionRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$LibraryDatabase,
+                    $PlaybackSessionsTable,
+                    PlaybackSessionRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlaybackSessionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$LibraryDatabase,
+      $PlaybackSessionsTable,
+      PlaybackSessionRow,
+      $$PlaybackSessionsTableFilterComposer,
+      $$PlaybackSessionsTableOrderingComposer,
+      $$PlaybackSessionsTableAnnotationComposer,
+      $$PlaybackSessionsTableCreateCompanionBuilder,
+      $$PlaybackSessionsTableUpdateCompanionBuilder,
+      (
+        PlaybackSessionRow,
+        BaseReferences<
+          _$LibraryDatabase,
+          $PlaybackSessionsTable,
+          PlaybackSessionRow
+        >,
+      ),
+      PlaybackSessionRow,
+      PrefetchHooks Function()
+    >;
+typedef $$PlaybackQueueEntriesTableCreateCompanionBuilder =
+    PlaybackQueueEntriesCompanion Function({
+      Value<int> position,
+      required String diskId,
+      required String relativePath,
+      Value<int?> originPosition,
+    });
+typedef $$PlaybackQueueEntriesTableUpdateCompanionBuilder =
+    PlaybackQueueEntriesCompanion Function({
+      Value<int> position,
+      Value<String> diskId,
+      Value<String> relativePath,
+      Value<int?> originPosition,
+    });
+
+class $$PlaybackQueueEntriesTableFilterComposer
+    extends Composer<_$LibraryDatabase, $PlaybackQueueEntriesTable> {
+  $$PlaybackQueueEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get diskId => $composableBuilder(
+    column: $table.diskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get originPosition => $composableBuilder(
+    column: $table.originPosition,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlaybackQueueEntriesTableOrderingComposer
+    extends Composer<_$LibraryDatabase, $PlaybackQueueEntriesTable> {
+  $$PlaybackQueueEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get diskId => $composableBuilder(
+    column: $table.diskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get originPosition => $composableBuilder(
+    column: $table.originPosition,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlaybackQueueEntriesTableAnnotationComposer
+    extends Composer<_$LibraryDatabase, $PlaybackQueueEntriesTable> {
+  $$PlaybackQueueEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<String> get diskId =>
+      $composableBuilder(column: $table.diskId, builder: (column) => column);
+
+  GeneratedColumn<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get originPosition => $composableBuilder(
+    column: $table.originPosition,
+    builder: (column) => column,
+  );
+}
+
+class $$PlaybackQueueEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$LibraryDatabase,
+          $PlaybackQueueEntriesTable,
+          PlaybackQueueRow,
+          $$PlaybackQueueEntriesTableFilterComposer,
+          $$PlaybackQueueEntriesTableOrderingComposer,
+          $$PlaybackQueueEntriesTableAnnotationComposer,
+          $$PlaybackQueueEntriesTableCreateCompanionBuilder,
+          $$PlaybackQueueEntriesTableUpdateCompanionBuilder,
+          (
+            PlaybackQueueRow,
+            BaseReferences<
+              _$LibraryDatabase,
+              $PlaybackQueueEntriesTable,
+              PlaybackQueueRow
+            >,
+          ),
+          PlaybackQueueRow,
+          PrefetchHooks Function()
+        > {
+  $$PlaybackQueueEntriesTableTableManager(
+    _$LibraryDatabase db,
+    $PlaybackQueueEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlaybackQueueEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlaybackQueueEntriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$PlaybackQueueEntriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> position = const Value.absent(),
+                Value<String> diskId = const Value.absent(),
+                Value<String> relativePath = const Value.absent(),
+                Value<int?> originPosition = const Value.absent(),
+              }) => PlaybackQueueEntriesCompanion(
+                position: position,
+                diskId: diskId,
+                relativePath: relativePath,
+                originPosition: originPosition,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> position = const Value.absent(),
+                required String diskId,
+                required String relativePath,
+                Value<int?> originPosition = const Value.absent(),
+              }) => PlaybackQueueEntriesCompanion.insert(
+                position: position,
+                diskId: diskId,
+                relativePath: relativePath,
+                originPosition: originPosition,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PlaybackQueueEntriesTable, PlaybackQueueRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$LibraryDatabase,
+                    $PlaybackQueueEntriesTable,
+                    PlaybackQueueRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlaybackQueueEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$LibraryDatabase,
+      $PlaybackQueueEntriesTable,
+      PlaybackQueueRow,
+      $$PlaybackQueueEntriesTableFilterComposer,
+      $$PlaybackQueueEntriesTableOrderingComposer,
+      $$PlaybackQueueEntriesTableAnnotationComposer,
+      $$PlaybackQueueEntriesTableCreateCompanionBuilder,
+      $$PlaybackQueueEntriesTableUpdateCompanionBuilder,
+      (
+        PlaybackQueueRow,
+        BaseReferences<
+          _$LibraryDatabase,
+          $PlaybackQueueEntriesTable,
+          PlaybackQueueRow
+        >,
+      ),
+      PlaybackQueueRow,
+      PrefetchHooks Function()
+    >;
 
 class $LibraryDatabaseManager {
   final _$LibraryDatabase _db;
@@ -3119,4 +4234,8 @@ class $LibraryDatabaseManager {
       $$TracksTableTableManager(_db, _db.tracks);
   $$SettingEntriesTableTableManager get settingEntries =>
       $$SettingEntriesTableTableManager(_db, _db.settingEntries);
+  $$PlaybackSessionsTableTableManager get playbackSessions =>
+      $$PlaybackSessionsTableTableManager(_db, _db.playbackSessions);
+  $$PlaybackQueueEntriesTableTableManager get playbackQueueEntries =>
+      $$PlaybackQueueEntriesTableTableManager(_db, _db.playbackQueueEntries);
 }

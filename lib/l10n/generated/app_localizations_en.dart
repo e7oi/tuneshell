@@ -938,6 +938,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Recommended · cable unplugged or Bluetooth disconnected, not the in-ear detection of earbuds';
 
   @override
+  String get settingsResume => 'Resume where I left off';
+
+  @override
+  String get settingsResumeSub => 'Restores the queue at start';
+
+  @override
   String settingsAbout(String version) {
     return 'TuneShell $version';
   }

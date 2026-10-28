@@ -9,6 +9,7 @@ import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
+import 'generated/schema_v5.dart' as v5;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -232,6 +233,50 @@ void main() {
           expect(await newDb.select(newDb.disks).get(), expectedDisks);
           expect(await newDb.select(newDb.tracks).get(), expectedTracks);
           expect(await newDb.select(newDb.appSettings).get(), isEmpty);
+        },
+      );
+    },
+  );
+
+  /// ADR-019: a v4 library keeps its disks, tracks and settings and gets an
+  /// empty playback session, which the app reads as nothing to restore.
+  test(
+    'migration from v4 to v5 keeps the library and adds the playback session',
+    () async {
+      const oldDisks = [
+        v4.DisksData(id: 1, key: 'internal', label: 'Local', kind: 0),
+      ];
+      const oldTracks = [
+        v4.TracksData(
+          id: 7,
+          diskId: 1,
+          relativePath: 'a.mp3',
+          size: 10,
+          modifiedAt: 1000,
+          indexedAt: 2000,
+          tagsState: 1,
+        ),
+      ];
+      const oldSettings = [v4.AppSettingsData(key: 'theme', value: 'dark')];
+
+      await verifier.testWithDataIntegrity(
+        oldVersion: 4,
+        newVersion: 5,
+        createOld: v4.DatabaseAtV4.new,
+        createNew: v5.DatabaseAtV5.new,
+        openTestedDatabase: LibraryDatabase.new,
+        createItems: (batch, oldDb) {
+          batch
+            ..insertAll(oldDb.disks, oldDisks)
+            ..insertAll(oldDb.tracks, oldTracks)
+            ..insertAll(oldDb.appSettings, oldSettings);
+        },
+        validateItems: (newDb) async {
+          expect(await newDb.select(newDb.disks).get(), hasLength(1));
+          expect(await newDb.select(newDb.tracks).get(), hasLength(1));
+          expect(await newDb.select(newDb.appSettings).get(), hasLength(1));
+          expect(await newDb.select(newDb.playbackSession).get(), isEmpty);
+          expect(await newDb.select(newDb.playbackQueue).get(), isEmpty);
         },
       );
     },

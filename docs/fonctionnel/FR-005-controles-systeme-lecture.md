@@ -22,7 +22,7 @@ La lecture continue quand l'application n'est plus à l'écran, et Android la co
 
 ## Hors périmètre
 
-Pochettes dans la notification (MPL-037, levé par MPL-057, voir l'as-built), Android Auto et navigation dans la bibliothèque depuis le système (MPL-005, D12), lecture aléatoire et répétition, reprise de la file après un redémarrage de l'application.
+Pochettes dans la notification (MPL-037, levé par MPL-057, voir l'as-built), Android Auto et navigation dans la bibliothèque depuis le système (MPL-005, D12), lecture aléatoire et répétition, reprise de la file après un redémarrage de l'application (levée par BR-012, MPL-053 : la restauration se fait en pause, sans notification ni service avant un « Lecture »).
 
 ## As-built
 

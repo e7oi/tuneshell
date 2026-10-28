@@ -117,7 +117,7 @@ void main() {
     expect(find.text('PLAYBACK'), findsOneWidget);
     await scrollTo(tester, 'Privacy');
     expect(find.text('ABOUT'), findsOneWidget);
-    expect(find.textContaining('Resume'), findsNothing);
+    expect(find.text('Resume where I left off'), findsOneWidget);
     expect(find.textContaining('short files'), findsNothing);
   });
 
@@ -135,6 +135,11 @@ void main() {
     expect(find.text("Couleurs du fond d'écran"), findsOneWidget);
     expect(find.text('Index alphabétique à gauche'), findsOneWidget);
     await scrollTo(tester, 'Pause si le casque est débranché');
+    expect(find.text("Reprendre là où j'en étais"), findsOneWidget);
+    expect(
+      find.text("Restaure la file d'attente au démarrage"),
+      findsOneWidget,
+    );
     expect(
       find.text(
         'Recommandé · câble débranché ou Bluetooth déconnecté, '
@@ -198,6 +203,21 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(settings().pauseOnUnplug, isFalse);
+  });
+
+  /// @verifies FR-028
+  testWidgets('the resume playback switch is on and can be turned off', (
+    tester,
+  ) async {
+    await pump(tester);
+    await scrollTo(tester, 'Resume where I left off');
+    expect(find.text('Restores the queue at start'), findsOneWidget);
+    expect(settings().resumePlayback, isTrue);
+
+    await tester.tap(find.text('Resume where I left off'));
+    await tester.pumpAndSettle();
+
+    expect(settings().resumePlayback, isFalse);
   });
 
   /// @verifies FR-025.6

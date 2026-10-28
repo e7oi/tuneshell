@@ -86,9 +86,7 @@ class _Progress extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final position = ref.watch(playerPositionProvider).value ?? Duration.zero;
-    final duration = ref.watch(
-      playerStateProvider.select((s) => s.value?.duration),
-    );
+    final duration = ref.watch(shownDurationProvider);
     final total = duration?.inMilliseconds ?? 0;
     return MiniPlayerProgress(
       value: total <= 0 ? 0 : position.inMilliseconds / total,

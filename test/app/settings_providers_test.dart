@@ -160,7 +160,8 @@ void main() {
         ..setDynamicColors(enabled: true)
         ..setIndexOnLeft(enabled: true)
         ..setPauseOnUnplug(enabled: false)
-        ..setRefreshOnStart(enabled: false);
+        ..setRefreshOnStart(enabled: false)
+        ..setResumePlayback(enabled: false);
 
       expect(
         settings(),
@@ -170,6 +171,7 @@ void main() {
           indexOnLeft: true,
           pauseOnUnplug: false,
           refreshOnStart: false,
+          resumePlayback: false,
         ),
       );
     });

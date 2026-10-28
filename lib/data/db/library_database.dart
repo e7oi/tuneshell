@@ -97,12 +97,66 @@ class SettingEntries extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [Disks, DiskFolders, Tracks, SettingEntries])
+/// The stored playback session: at most one row, with the progress and the
+/// modes (ADR-019, BR-012). The queue is in [PlaybackQueueEntries].
+@DataClassName('PlaybackSessionRow')
+class PlaybackSessions extends Table {
+  @override
+  String get tableName => 'playback_session';
+
+  /// Always 1.
+  IntColumn get id => integer()();
+
+  IntColumn get currentIndex => integer()();
+
+  IntColumn get positionMs => integer()();
+
+  BoolColumn get shuffle => boolean()();
+
+  /// The name of a `RepeatMode`.
+  TextColumn get repeat => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// One entry of the stored queue, in queue order. A track is identified by
+/// its disk and its path (BR-004), not by a row of [Tracks]: the entry
+/// outlives the track.
+@DataClassName('PlaybackQueueRow')
+class PlaybackQueueEntries extends Table {
+  @override
+  String get tableName => 'playback_queue';
+
+  IntColumn get position => integer()();
+
+  TextColumn get diskId => text()();
+
+  TextColumn get relativePath => text()();
+
+  /// Place of the entry in the original order of the shuffle; null when the
+  /// shuffle is off.
+  IntColumn get originPosition => integer().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {position};
+}
+
+@DriftDatabase(
+  tables: [
+    Disks,
+    DiskFolders,
+    Tracks,
+    SettingEntries,
+    PlaybackSessions,
+    PlaybackQueueEntries,
+  ],
+)
 class LibraryDatabase extends _$LibraryDatabase {
   new([QueryExecutor? executor]) : super(executor ?? _open());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -126,6 +180,10 @@ class LibraryDatabase extends _$LibraryDatabase {
       },
       from3To4: (migrator, schema) async {
         await migrator.createTable(schema.appSettings);
+      },
+      from4To5: (migrator, schema) async {
+        await migrator.createTable(schema.playbackSession);
+        await migrator.createTable(schema.playbackQueue);
       },
     ),
     beforeOpen: (details) async {
