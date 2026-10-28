@@ -139,9 +139,9 @@ void main() {
         ..answer = AudioPermissionStatus.granted;
 
       await controller().requestPermission();
-      await controller().openFolderChoice();
 
-      expect(state(), isA<LibraryFolderChoice>());
+      // The settings now open the folder choice as a page (ADR-017).
+      expect(controller().withoutPhoneAccess(), isFalse);
     });
 
     test('Folders without access leads back to the explanation', () async {

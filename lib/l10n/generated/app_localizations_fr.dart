@@ -25,9 +25,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get libraryRefresh => 'Actualiser';
 
   @override
-  String get libraryFolders => 'Dossiers';
-
-  @override
   String get libraryIndexFailed =>
       'L\'actualisation de la bibliothèque a échoué.';
 
@@ -76,9 +73,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get notificationChannelDescription =>
       'Commandes de lecture : précédent, pause, suivant.';
-
-  @override
-  String get libraryDisks => 'Disques amovibles';
 
   @override
   String get removableTitle => 'Disques amovibles';
@@ -151,13 +145,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get demoGallery => 'Galerie de composants';
 
   @override
-  String get foldersBack => 'Retour';
-
-  @override
   String get searchSoon => 'Rechercher (bientôt)';
-
-  @override
-  String get chipDisks => 'Disques';
 
   @override
   String disksAbsentBadge(int count) {
@@ -833,4 +821,155 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get settingsSectionLibrary => 'Bibliothèque';
+
+  @override
+  String get settingsSectionAppearance => 'Apparence';
+
+  @override
+  String get settingsSectionPlayback => 'Lecture';
+
+  @override
+  String get settingsSectionAbout => 'À propos';
+
+  @override
+  String get settingsFoldersNone => 'Aucun dossier';
+
+  @override
+  String settingsFoldersSummary(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dossiers · $names',
+      one: '$count dossier · $names',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get settingsDisksNone => 'Aucun disque';
+
+  @override
+  String settingsDisksMany(int count) {
+    return '$count disques';
+  }
+
+  @override
+  String settingsDiskState(String disk, String state) {
+    return '$disk · $state';
+  }
+
+  @override
+  String get settingsRefreshNow => 'Actualiser maintenant';
+
+  @override
+  String get settingsRefreshNowSub => 'Cherche les nouveaux fichiers';
+
+  @override
+  String get settingsRefreshStart => 'Actualiser au démarrage';
+
+  @override
+  String get settingsRefreshStartSub =>
+      'Cherche les nouveaux fichiers à chaque ouverture';
+
+  @override
+  String get settingsTheme => 'Thème';
+
+  @override
+  String get settingsThemeSystem => 'Système';
+
+  @override
+  String get settingsThemeLight => 'Clair';
+
+  @override
+  String get settingsThemeDark => 'Sombre';
+
+  @override
+  String get settingsDynamic => 'Couleurs du fond d\'écran';
+
+  @override
+  String get settingsDynamicSub =>
+      'Remplace le menthe par les couleurs d\'Android';
+
+  @override
+  String get settingsDynamicUnavailable => 'Android 12 ou plus';
+
+  @override
+  String get settingsIndexLeft => 'Index alphabétique à gauche';
+
+  @override
+  String get settingsIndexLeftSub => 'Pour une utilisation de la main gauche';
+
+  @override
+  String get settingsPauseUnplug => 'Pause si le casque est débranché';
+
+  @override
+  String get settingsPauseUnplugSub =>
+      'Recommandé · câble débranché ou Bluetooth déconnecté, pas la détection de port des écouteurs';
+
+  @override
+  String settingsAbout(String version) {
+    return 'TuneShell $version';
+  }
+
+  @override
+  String get settingsAboutSub => 'Libre · GPL-3.0-or-later · code source';
+
+  @override
+  String get settingsPrivacy => 'Confidentialité';
+
+  @override
+  String get settingsPrivacySub =>
+      'Aucune donnée collectée, aucun compte, aucun réseau';
+
+  @override
+  String get aboutTitle => 'À propos';
+
+  @override
+  String get aboutCopyright => '© 2026 Eloi BERTIN';
+
+  @override
+  String get aboutLicense =>
+      'Logiciel libre sous licence GNU GPL, version 3 ou ultérieure. Il est fourni sans aucune garantie.';
+
+  @override
+  String get aboutSource => 'Code source';
+
+  @override
+  String get aboutLicenses => 'Licences des composants';
+
+  @override
+  String get privacyTitle => 'Confidentialité';
+
+  @override
+  String get privacyIntro =>
+      'TuneShell ne collecte aucune donnée, n\'a pas de compte et n\'utilise pas le réseau.';
+
+  @override
+  String get privacyStaysTitle => 'Ce qui reste sur ton téléphone';
+
+  @override
+  String get privacyStaysBody =>
+      'La liste de tes pistes lue dans tes fichiers, les petites pochettes qui en sont tirées, et ces réglages. Tout est effacé avec les données de l\'application.';
+
+  @override
+  String get privacyAsksTitle => 'Ce que TuneShell demande à Android';
+
+  @override
+  String get privacyAskFiles =>
+      'Lire tes fichiers audio, pour construire ta bibliothèque.';
+
+  @override
+  String get privacyAskNotification =>
+      'Afficher la notification de lecture, pour commander la musique depuis l\'écran verrouillé.';
+
+  @override
+  String get privacyAskFolders =>
+      'L\'accès au dossier d\'un disque amovible, seulement ceux que tu choisis.';
+
+  @override
+  String get privacyAskBackground =>
+      'Maintenir la musique quand l\'écran est éteint.';
 }

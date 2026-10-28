@@ -20,10 +20,6 @@
   "@libraryRefresh": {
     "description": "Action that reindexes the library."
   },
-  "libraryFolders": "Folders",
-  "@libraryFolders": {
-    "description": "Action that reopens the folder choice."
-  },
   "libraryIndexFailed": "The library could not be refreshed.",
   "@libraryIndexFailed": {
     "description": "Shown when indexing failed; the stored library stays visible."
@@ -86,10 +82,6 @@
   },
   "@notificationChannelDescription": {
     "description": "Description of the playback notification channel, shown in the Android settings."
-  },
-  "libraryDisks": "Removable disks",
-  "@libraryDisks": {
-    "description": "Tooltip of the button that opens the removable disks (FR-006)"
   },
   "removableTitle": "Removable disks",
   "@removableTitle": {
@@ -183,17 +175,9 @@
   "@demoGallery": {
     "description": "Entry of the settings tab that opens the component demo page (debug and profile builds only, FR-010)."
   },
-  "foldersBack": "Back",
-  "@foldersBack": {
-    "description": "Tooltip of the back arrow of the folder choice when it was opened from the library (FR-003)."
-  },
   "searchSoon": "Search (soon)",
   "@searchSoon": {
     "description": "Tooltip of the disabled search button of the Tracks header (FR-011.1)."
-  },
-  "chipDisks": "Disks",
-  "@chipDisks": {
-    "description": "Label of the Disks action chip of the Tracks view (FR-011.2)."
   },
   "disksAbsentBadge": "{count} missing",
   "@disksAbsentBadge": {
@@ -964,5 +948,199 @@
         "format": "decimalPattern"
       }
     }
+  },
+  "settingsSectionLibrary": "Library",
+  "@settingsSectionLibrary": {
+    "description": "Heading of the library settings (FR-023.1)."
+  },
+  "settingsSectionAppearance": "Appearance",
+  "@settingsSectionAppearance": {
+    "description": "Heading of the appearance settings (FR-023.1)."
+  },
+  "settingsSectionPlayback": "Playback",
+  "@settingsSectionPlayback": {
+    "description": "Heading of the playback settings (FR-023.1)."
+  },
+  "settingsSectionAbout": "About",
+  "@settingsSectionAbout": {
+    "description": "Heading of the about lines (FR-023.1)."
+  },
+  "settingsFoldersNone": "No folder",
+  "@settingsFoldersNone": {
+    "description": "Subtitle of the music folders line when none is chosen (FR-025.1)."
+  },
+  "settingsFoldersSummary": "{count, plural, one{{count} folder · {names}} other{{count} folders · {names}}}",
+  "@settingsFoldersSummary": {
+    "description": "Subtitle of the music folders line (FR-025.1).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsDisksNone": "No disk",
+  "@settingsDisksNone": {
+    "description": "Subtitle of the removable disks line without disk (FR-025.2)."
+  },
+  "settingsDisksMany": "{count} disks",
+  "@settingsDisksMany": {
+    "description": "Subtitle of the removable disks line with several disks (FR-025.2).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsDiskState": "{disk} · {state}",
+  "@settingsDiskState": {
+    "description": "Subtitle of the removable disks line with one disk (FR-025.2).",
+    "placeholders": {
+      "disk": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsRefreshNow": "Refresh now",
+  "@settingsRefreshNow": {
+    "description": "Action of the library settings (FR-025.5)."
+  },
+  "settingsRefreshNowSub": "Looks for new files",
+  "@settingsRefreshNowSub": {
+    "description": "Explanation of the refresh action (FR-025.5)."
+  },
+  "settingsRefreshStart": "Refresh at start",
+  "@settingsRefreshStart": {
+    "description": "Switch of the library settings (FR-025.6)."
+  },
+  "settingsRefreshStartSub": "Looks for new files at every launch",
+  "@settingsRefreshStartSub": {
+    "description": "Explanation of the refresh at start switch (FR-025.6)."
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Label of the theme choice (FR-024.1)."
+  },
+  "settingsThemeSystem": "System",
+  "@settingsThemeSystem": {
+    "description": "Theme choice: follow the system (FR-024.1)."
+  },
+  "settingsThemeLight": "Light",
+  "@settingsThemeLight": {
+    "description": "Theme choice: light (FR-024.1)."
+  },
+  "settingsThemeDark": "Dark",
+  "@settingsThemeDark": {
+    "description": "Theme choice: dark (FR-024.1)."
+  },
+  "settingsDynamic": "Wallpaper colours",
+  "@settingsDynamic": {
+    "description": "Switch of the appearance settings (FR-024.2)."
+  },
+  "settingsDynamicSub": "Replaces the mint with Android's colours",
+  "@settingsDynamicSub": {
+    "description": "Explanation of the wallpaper colours switch (FR-024.2)."
+  },
+  "settingsDynamicUnavailable": "Android 12 or later",
+  "@settingsDynamicUnavailable": {
+    "description": "Explanation when the system has no dynamic colours (FR-024.3)."
+  },
+  "settingsIndexLeft": "Alphabet index on the left",
+  "@settingsIndexLeft": {
+    "description": "Switch of the appearance settings (FR-024.4)."
+  },
+  "settingsIndexLeftSub": "For left-hand use",
+  "@settingsIndexLeftSub": {
+    "description": "Explanation of the left index switch (FR-024.4)."
+  },
+  "settingsPauseUnplug": "Pause when headphones are unplugged",
+  "@settingsPauseUnplug": {
+    "description": "Switch of the playback settings (FR-025.7)."
+  },
+  "settingsPauseUnplugSub": "Recommended · cable unplugged or Bluetooth disconnected, not the in-ear detection of earbuds",
+  "@settingsPauseUnplugSub": {
+    "description": "Explanation of the pause on unplug switch (FR-025.7)."
+  },
+  "settingsAbout": "TuneShell {version}",
+  "@settingsAbout": {
+    "description": "About line: name and version (FR-026.1).",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAboutSub": "Free · GPL-3.0-or-later · source code",
+  "@settingsAboutSub": {
+    "description": "Subtitle of the about line (FR-026.1)."
+  },
+  "settingsPrivacy": "Privacy",
+  "@settingsPrivacy": {
+    "description": "Privacy line (FR-026.3)."
+  },
+  "settingsPrivacySub": "No data collected, no account, no network",
+  "@settingsPrivacySub": {
+    "description": "Subtitle of the privacy line (FR-026.3)."
+  },
+  "aboutTitle": "About",
+  "@aboutTitle": {
+    "description": "Title of the about page (FR-026.2)."
+  },
+  "aboutCopyright": "© 2026 Eloi BERTIN",
+  "@aboutCopyright": {
+    "description": "Copyright line of the about page (FR-026.2)."
+  },
+  "aboutLicense": "Free software under the GNU General Public License, version 3 or later. It comes with no warranty.",
+  "@aboutLicense": {
+    "description": "Licence text of the about page (FR-026.2)."
+  },
+  "aboutSource": "Source code",
+  "@aboutSource": {
+    "description": "Label of the source address on the about page (FR-026.2)."
+  },
+  "aboutLicenses": "Licences of the components",
+  "@aboutLicenses": {
+    "description": "Line that opens the list of licences (FR-026.2)."
+  },
+  "privacyTitle": "Privacy",
+  "@privacyTitle": {
+    "description": "Title of the privacy page (FR-026.4)."
+  },
+  "privacyIntro": "TuneShell collects no data, has no account and uses no network.",
+  "@privacyIntro": {
+    "description": "First sentence of the privacy page (FR-026.4)."
+  },
+  "privacyStaysTitle": "What stays on your phone",
+  "@privacyStaysTitle": {
+    "description": "Heading of the privacy page (FR-026.4)."
+  },
+  "privacyStaysBody": "The list of your tracks as read from your files, the small covers taken from them, and these settings. All of it is deleted with the data of the app.",
+  "@privacyStaysBody": {
+    "description": "Body of the privacy page (FR-026.4)."
+  },
+  "privacyAsksTitle": "What TuneShell asks Android for",
+  "@privacyAsksTitle": {
+    "description": "Heading of the privacy page (FR-026.4)."
+  },
+  "privacyAskFiles": "Reading your audio files, to build your library.",
+  "@privacyAskFiles": {
+    "description": "Permission explained on the privacy page (FR-026.4)."
+  },
+  "privacyAskNotification": "Showing the playback notification, so that you can control the music from the lock screen.",
+  "@privacyAskNotification": {
+    "description": "Permission explained on the privacy page (FR-026.4)."
+  },
+  "privacyAskFolders": "Access to a folder of a removable disk, only the ones you choose.",
+  "@privacyAskFolders": {
+    "description": "Permission explained on the privacy page (FR-026.4)."
+  },
+  "privacyAskBackground": "Keeping the music going when the screen is off.",
+  "@privacyAskBackground": {
+    "description": "Permission explained on the privacy page (FR-026.4)."
   }
 }

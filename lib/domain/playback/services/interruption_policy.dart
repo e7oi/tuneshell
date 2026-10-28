@@ -14,11 +14,18 @@ class InterruptionPolicy {
   new({
     required this._controller,
     required this._interruptions,
+    this._pauseOnUnplug = _always,
     this._stopGrace = const Duration(milliseconds: 500),
   });
 
+  static bool _always() => true;
+
   final PlayerController _controller;
   final AudioInterruptions _interruptions;
+
+  /// Whether unplugging headphones pauses (FR-025.7); read at each event, so
+  /// that the setting applies at once.
+  final bool Function() _pauseOnUnplug;
 
   /// Choosing another track goes through "stopped" for an instant: the
   /// output is given back only when the player stays stopped this long.
@@ -114,7 +121,11 @@ class InterruptionPolicy {
         _resumeAfter = true;
         await _controller.pause();
       case InterruptionBegan(kind: InterruptionKind.permanent):
+        _resumeAfter = false;
+        if (_controller.state.playing) await _controller.pause();
       case BecameNoisy():
+        // BR-005, rule 5, unless the user turned it off in the settings.
+        if (!_pauseOnUnplug()) return;
         _resumeAfter = false;
         if (_controller.state.playing) await _controller.pause();
       case InterruptionEnded(kind: InterruptionKind.transient):

@@ -5,8 +5,10 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
+import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_list_model.dart';
 import 'package:tuneshell/features/library/library_list_providers.dart';
 import 'package:tuneshell/features/player/player_page.dart';
@@ -194,6 +196,8 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
     final model = widget.model;
     final list = CustomScrollView(
       controller: _scroll,
+      // A short list can be pulled too (FR-025.4).
+      physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverFixedExtentList(
           itemExtent: _rowExtent,
@@ -211,6 +215,9 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
       children: [
         AlphabetScroller(
           letters: model.letters,
+          alignStart: ref.watch(
+            appSettingsProvider.select((s) => s.indexOnLeft),
+          ),
           itemCount: model.total,
           onLetterSelected: _toLetter,
           countLabel: l10n.indexCount,
@@ -222,7 +229,11 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
           },
           child: NotificationListener<ScrollNotification>(
             onNotification: _onScroll,
-            child: list,
+            child: RefreshIndicator(
+              onRefresh: () =>
+                  ref.read(libraryControllerProvider.notifier).refresh(),
+              child: list,
+            ),
           ),
         ),
         PositionedDirectional(

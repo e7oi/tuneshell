@@ -14,6 +14,7 @@ dependencies:
   collection: ^1.19.1
   drift: ^2.35.2
   drift_flutter: ^0.3.1
+  dynamic_color: ^1.9.0
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -37,6 +38,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    # The licence of the application and of its fonts, for the licence page.
+    - LICENSE
+    - assets/fonts/Manrope-OFL.txt
+    - assets/fonts/Inter-OFL.txt
   fonts:
     - family: Manrope
       fonts:

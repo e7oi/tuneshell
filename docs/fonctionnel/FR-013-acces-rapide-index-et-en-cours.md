@@ -34,3 +34,4 @@ Livré par MPL-045 (2026-10-23), test appareil en attente (D14).
 - Limite : au-delà de 1,3 fois le texte, la position est estimée (lignes de 64 dp).
 - MPL-048, 2026-10-23 : l'exigence 2 (poignée exclue du geste Retour seulement quand la vue est au premier plan) ne tenait pas pour un changement d'onglet : `IndexedStack` ne coupe plus les `Ticker`. La vue lit maintenant `Visibility.of` en plus de `TickerMode`, et passe par `GestureRegions` (ADR-016).
 - MPL-047, 2026-10-23 : quand la piste en cours n'est pas dans la liste affichée (`LibraryListModel.currentOutsideList`), le bouton « En cours » est montré sans flèche et ouvre le lecteur plein écran (`_fab` de `LibraryTrackList`). Non testé sur appareil (cas difficile à provoquer : dossier retiré pendant la lecture).
+- MPL-051, 2026-10-25 : le côté gauche de l'index (hors périmètre de l'exigence 1) est livré par le réglage « Index alphabétique à gauche » (FR-024.4).

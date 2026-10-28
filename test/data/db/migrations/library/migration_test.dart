@@ -8,6 +8,7 @@ import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
+import 'generated/schema_v4.dart' as v4;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -163,6 +164,74 @@ void main() {
         validateItems: (newDb) async {
           expect(await newDb.select(newDb.disks).get(), expectedNewDisksData);
           expect(await newDb.select(newDb.tracks).get(), expectedNewTracksData);
+        },
+      );
+    },
+  );
+
+  /// ADR-017: a v3 library keeps its disks and tracks and gets an empty
+  /// settings table, which the app reads as the defaults.
+  test(
+    'migration from v3 to v4 keeps the library and adds the settings',
+    () async {
+      final oldDisks = [
+        const v3.DisksData(id: 1, key: 'internal', label: 'Local', kind: 0),
+        const v3.DisksData(
+          id: 2,
+          key: 'AAAA-1111',
+          label: 'SSD',
+          kind: 1,
+          markIndex: 0,
+        ),
+      ];
+      final oldTracks = [
+        const v3.TracksData(
+          id: 7,
+          diskId: 2,
+          relativePath: 'a.mp3',
+          size: 10,
+          modifiedAt: 1000,
+          indexedAt: 2000,
+          tagsState: 1,
+        ),
+      ];
+      final expectedDisks = [
+        const v4.DisksData(id: 1, key: 'internal', label: 'Local', kind: 0),
+        const v4.DisksData(
+          id: 2,
+          key: 'AAAA-1111',
+          label: 'SSD',
+          kind: 1,
+          markIndex: 0,
+        ),
+      ];
+      final expectedTracks = [
+        const v4.TracksData(
+          id: 7,
+          diskId: 2,
+          relativePath: 'a.mp3',
+          size: 10,
+          modifiedAt: 1000,
+          indexedAt: 2000,
+          tagsState: 1,
+        ),
+      ];
+
+      await verifier.testWithDataIntegrity(
+        oldVersion: 3,
+        newVersion: 4,
+        createOld: v3.DatabaseAtV3.new,
+        createNew: v4.DatabaseAtV4.new,
+        openTestedDatabase: LibraryDatabase.new,
+        createItems: (batch, oldDb) {
+          batch
+            ..insertAll(oldDb.disks, oldDisks)
+            ..insertAll(oldDb.tracks, oldTracks);
+        },
+        validateItems: (newDb) async {
+          expect(await newDb.select(newDb.disks).get(), expectedDisks);
+          expect(await newDb.select(newDb.tracks).get(), expectedTracks);
+          expect(await newDb.select(newDb.appSettings).get(), isEmpty);
         },
       );
     },

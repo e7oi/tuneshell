@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/features/browse/artist_detail_page.dart';
@@ -11,6 +12,7 @@ import 'package:tuneshell/features/browse/artist_list_model.dart';
 import 'package:tuneshell/features/browse/browse_providers.dart';
 import 'package:tuneshell/features/browse/browse_widgets.dart';
 import 'package:tuneshell/features/browse/library_groups.dart';
+import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/features/player/track_menu.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
@@ -92,6 +94,7 @@ class _ArtistsViewState extends ConsumerState<ArtistsView> {
     final unavailable = ref.watch(unavailableDiskIdsProvider);
     return AlphabetScroller(
       letters: groups.artistLetters,
+      alignStart: ref.watch(appSettingsProvider.select((s) => s.indexOnLeft)),
       itemCount: groups.artists.length,
       onLetterSelected: (letter) {
         final offset = model.offsetOf(
@@ -107,31 +110,37 @@ class _ArtistsViewState extends ConsumerState<ArtistsView> {
           l10n.indexLetterItems(letter, l10n.artistsCountShort(count)),
       gridTitle: l10n.indexGoToLetter,
       onHandleRect: _exclusion.handle,
-      child: CustomScrollView(
-        controller: _scroll,
-        slivers: [
-          SliverVariedExtentList(
-            itemExtentBuilder: (index, _) =>
-                model.items[index] is ArtistHeader ? _headerExtent : _rowExtent,
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final item = model.items[index];
-              return switch (item) {
-                ArtistHeader(:final letter) => _LetterHeader(letter),
-                ArtistEntry(:final artist, :final position) => _row(
-                  context,
-                  l10n,
-                  artist,
-                  position,
-                  disks,
-                  unavailable,
-                ),
-              };
-            }, childCount: model.items.length),
-          ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: TsSize.listBottomInset),
-          ),
-        ],
+      child: RefreshIndicator(
+        onRefresh: () => ref.read(libraryControllerProvider.notifier).refresh(),
+        child: CustomScrollView(
+          controller: _scroll,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverVariedExtentList(
+              itemExtentBuilder: (index, _) =>
+                  model.items[index] is ArtistHeader
+                  ? _headerExtent
+                  : _rowExtent,
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final item = model.items[index];
+                return switch (item) {
+                  ArtistHeader(:final letter) => _LetterHeader(letter),
+                  ArtistEntry(:final artist, :final position) => _row(
+                    context,
+                    l10n,
+                    artist,
+                    position,
+                    disks,
+                    unavailable,
+                  ),
+                };
+              }, childCount: model.items.length),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: TsSize.listBottomInset),
+            ),
+          ],
+        ),
       ),
     );
   }

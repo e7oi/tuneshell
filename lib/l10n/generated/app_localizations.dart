@@ -128,12 +128,6 @@ abstract class AppLocalizations {
   /// **'Refresh'**
   String get libraryRefresh;
 
-  /// Action that reopens the folder choice.
-  ///
-  /// In en, this message translates to:
-  /// **'Folders'**
-  String get libraryFolders;
-
   /// Shown when indexing failed; the stored library stays visible.
   ///
   /// In en, this message translates to:
@@ -205,12 +199,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Playback controls: previous, pause, next.'**
   String get notificationChannelDescription;
-
-  /// Tooltip of the button that opens the removable disks (FR-006)
-  ///
-  /// In en, this message translates to:
-  /// **'Removable disks'**
-  String get libraryDisks;
 
   /// Title of the removable disks screen
   ///
@@ -338,23 +326,11 @@ abstract class AppLocalizations {
   /// **'Component gallery'**
   String get demoGallery;
 
-  /// Tooltip of the back arrow of the folder choice when it was opened from the library (FR-003).
-  ///
-  /// In en, this message translates to:
-  /// **'Back'**
-  String get foldersBack;
-
   /// Tooltip of the disabled search button of the Tracks header (FR-011.1).
   ///
   /// In en, this message translates to:
   /// **'Search (soon)'**
   String get searchSoon;
-
-  /// Label of the Disks action chip of the Tracks view (FR-011.2).
-  ///
-  /// In en, this message translates to:
-  /// **'Disks'**
-  String get chipDisks;
 
   /// Badge on the Disks chip when disks are absent or need access (FR-011.2).
   ///
@@ -1087,6 +1063,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one{{count} artist} other{{count} artists}}'**
   String artistsCountShort(int count);
+
+  /// Heading of the library settings (FR-023.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get settingsSectionLibrary;
+
+  /// Heading of the appearance settings (FR-023.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsSectionAppearance;
+
+  /// Heading of the playback settings (FR-023.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Playback'**
+  String get settingsSectionPlayback;
+
+  /// Heading of the about lines (FR-023.1).
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsSectionAbout;
+
+  /// Subtitle of the music folders line when none is chosen (FR-025.1).
+  ///
+  /// In en, this message translates to:
+  /// **'No folder'**
+  String get settingsFoldersNone;
+
+  /// Subtitle of the music folders line (FR-025.1).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} folder · {names}} other{{count} folders · {names}}}'**
+  String settingsFoldersSummary(int count, String names);
+
+  /// Subtitle of the removable disks line without disk (FR-025.2).
+  ///
+  /// In en, this message translates to:
+  /// **'No disk'**
+  String get settingsDisksNone;
+
+  /// Subtitle of the removable disks line with several disks (FR-025.2).
+  ///
+  /// In en, this message translates to:
+  /// **'{count} disks'**
+  String settingsDisksMany(int count);
+
+  /// Subtitle of the removable disks line with one disk (FR-025.2).
+  ///
+  /// In en, this message translates to:
+  /// **'{disk} · {state}'**
+  String settingsDiskState(String disk, String state);
+
+  /// Action of the library settings (FR-025.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh now'**
+  String get settingsRefreshNow;
+
+  /// Explanation of the refresh action (FR-025.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Looks for new files'**
+  String get settingsRefreshNowSub;
+
+  /// Switch of the library settings (FR-025.6).
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh at start'**
+  String get settingsRefreshStart;
+
+  /// Explanation of the refresh at start switch (FR-025.6).
+  ///
+  /// In en, this message translates to:
+  /// **'Looks for new files at every launch'**
+  String get settingsRefreshStartSub;
+
+  /// Label of the theme choice (FR-024.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get settingsTheme;
+
+  /// Theme choice: follow the system (FR-024.1).
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsThemeSystem;
+
+  /// Theme choice: light (FR-024.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// Theme choice: dark (FR-024.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
+  /// Switch of the appearance settings (FR-024.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Wallpaper colours'**
+  String get settingsDynamic;
+
+  /// Explanation of the wallpaper colours switch (FR-024.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Replaces the mint with Android\'s colours'**
+  String get settingsDynamicSub;
+
+  /// Explanation when the system has no dynamic colours (FR-024.3).
+  ///
+  /// In en, this message translates to:
+  /// **'Android 12 or later'**
+  String get settingsDynamicUnavailable;
+
+  /// Switch of the appearance settings (FR-024.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Alphabet index on the left'**
+  String get settingsIndexLeft;
+
+  /// Explanation of the left index switch (FR-024.4).
+  ///
+  /// In en, this message translates to:
+  /// **'For left-hand use'**
+  String get settingsIndexLeftSub;
+
+  /// Switch of the playback settings (FR-025.7).
+  ///
+  /// In en, this message translates to:
+  /// **'Pause when headphones are unplugged'**
+  String get settingsPauseUnplug;
+
+  /// Explanation of the pause on unplug switch (FR-025.7).
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended · cable unplugged or Bluetooth disconnected, not the in-ear detection of earbuds'**
+  String get settingsPauseUnplugSub;
+
+  /// About line: name and version (FR-026.1).
+  ///
+  /// In en, this message translates to:
+  /// **'TuneShell {version}'**
+  String settingsAbout(String version);
+
+  /// Subtitle of the about line (FR-026.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Free · GPL-3.0-or-later · source code'**
+  String get settingsAboutSub;
+
+  /// Privacy line (FR-026.3).
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get settingsPrivacy;
+
+  /// Subtitle of the privacy line (FR-026.3).
+  ///
+  /// In en, this message translates to:
+  /// **'No data collected, no account, no network'**
+  String get settingsPrivacySub;
+
+  /// Title of the about page (FR-026.2).
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutTitle;
+
+  /// Copyright line of the about page (FR-026.2).
+  ///
+  /// In en, this message translates to:
+  /// **'© 2026 Eloi BERTIN'**
+  String get aboutCopyright;
+
+  /// Licence text of the about page (FR-026.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Free software under the GNU General Public License, version 3 or later. It comes with no warranty.'**
+  String get aboutLicense;
+
+  /// Label of the source address on the about page (FR-026.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Source code'**
+  String get aboutSource;
+
+  /// Line that opens the list of licences (FR-026.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Licences of the components'**
+  String get aboutLicenses;
+
+  /// Title of the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacyTitle;
+
+  /// First sentence of the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'TuneShell collects no data, has no account and uses no network.'**
+  String get privacyIntro;
+
+  /// Heading of the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'What stays on your phone'**
+  String get privacyStaysTitle;
+
+  /// Body of the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'The list of your tracks as read from your files, the small covers taken from them, and these settings. All of it is deleted with the data of the app.'**
+  String get privacyStaysBody;
+
+  /// Heading of the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'What TuneShell asks Android for'**
+  String get privacyAsksTitle;
+
+  /// Permission explained on the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Reading your audio files, to build your library.'**
+  String get privacyAskFiles;
+
+  /// Permission explained on the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Showing the playback notification, so that you can control the music from the lock screen.'**
+  String get privacyAskNotification;
+
+  /// Permission explained on the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Access to a folder of a removable disk, only the ones you choose.'**
+  String get privacyAskFolders;
+
+  /// Permission explained on the privacy page (FR-026.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Keeping the music going when the screen is off.'**
+  String get privacyAskBackground;
 }
 
 class _AppLocalizationsDelegate

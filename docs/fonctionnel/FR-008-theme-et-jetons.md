@@ -33,3 +33,4 @@ MPL-016, 2026-10-23. `lib/ui/theme/tuneshell_tokens.dart` (repris de Design, com
 - Jetons ajoutés au fichier de Design : `TsSize.coverDetail` (152 dp, en-tête d'album) et `TsSize.bannerMin` (56 dp, bandeau d'état). Les valeurs de couleur, de rayon et de texte sont celles de Design, inchangées.
 - Les écrans actuels (bibliothèque, disques, barre de lecture) utilisent les espacements de `TsSpace` ; leur comportement ne change pas.
 - Constaté sur le Pixel : titres en Manrope, texte en Inter, thème clair appliqué. **Non testé** : le passage clair/sombre en direct, le thème sombre sur les écrans existants.
+- MPL-051, 2026-10-25 : le réglage de thème (Système, Clair, Sombre) et les couleurs du fond d'écran par `dynamic_color` 1.9.0 sont livrés (FR-024) ; `TsColors` reste fixe.

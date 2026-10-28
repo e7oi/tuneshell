@@ -64,6 +64,8 @@ abstract final class TsSize {
   static const double albumCardTextHeight =
       76; // title, subtitle and track count below a cover
   static const double albumTrackRow = 56; // track of an album detail
+  static const double settingsRow = 64; // a line of the settings, at least
+  static const double settingsMaxWidth = 600; // readable width of the settings
   static const double letterHeader = 40; // letter of the artists list
   static const int albumColumnsMax = 6;
   static const double carouselCard = 120; // album card of an artist detail

@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/playback/services/interruption_policy.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/platform/audio_session_interruptions.dart';
@@ -19,6 +20,7 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
   InterruptionPolicy(
     controller: controller,
     interruptions: await AudioSessionInterruptions.create(),
+    pauseOnUnplug: () => container.read(appSettingsProvider).pauseOnUnplug,
   ).start();
 
   final l10n = lookupAppLocalizations(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/library/ports/internal_audio_source.dart';
 import 'package:tuneshell/domain/library/services/library_indexer.dart';
 import 'package:tuneshell/features/library/removable_controller.dart';
@@ -42,13 +43,7 @@ final class LibraryPermissionNeeded extends LibraryViewState {
 /// The folders of the phone could not be read; [LibraryController.start]
 /// retries.
 final class LibraryLoadFailed extends LibraryViewState {
-  const new({this.whileChoosingFolders = false, this.cancelable = false});
-
-  /// Retry reopens the folder choice rather than restarting.
-  final bool whileChoosingFolders;
-
-  /// The choice was opened from the library: Back returns to it.
-  final bool cancelable;
+  const new();
 }
 
 /// FR-003: the user picks the folders to index.
@@ -156,6 +151,13 @@ class LibraryController extends Notifier<LibraryViewState> {
   /// access to the phone's audio (FR-014.5).
   bool _withoutAccess = false;
 
+  /// True while the library holds only what a disk folder gave, without
+  /// access to the phone's audio (FR-014.5); the settings then lead back to
+  /// the explanation instead of the folder choice (FR-025.1).
+  ///
+  /// @implements FR-025
+  bool withoutPhoneAccess() => _withoutAccess;
+
   /// "Choisir un dossier à la place" (FR-014.5): the Android picker for a
   /// folder of a removable disk; the phone's own folders stay with
   /// MediaStore (D25). From the blocked screen only: a folder that gives
@@ -228,79 +230,38 @@ class LibraryController extends Notifier<LibraryViewState> {
     hasFolders: folders.isNotEmpty,
   );
 
-  /// Ignored while indexing: the end of the index would replace the choice
-  /// being edited.
+  /// "Dossiers de musique" of the settings without access to the phone's
+  /// audio: the folders cannot be listed, the explanation of the access comes
+  /// first (FR-025.1, FR-014.5). With access, the settings open the choice as
+  /// a page (`FolderChoicePage`, ADR-017).
   Future<void> openFolderChoice() async {
     final current = state;
-    if (current is LibraryReady && current.indexing) return;
-    // Without access the phone's folders cannot be listed: ask for it.
-    if (_withoutAccess) {
-      _libraryWithoutAccess = current is LibraryReady ? current : null;
-      showExplanation();
-      return;
-    }
-    // Remembered so that the user can leave the choice unchanged.
-    if (current is LibraryReady) _beforeChoice = current;
-    final cancelable = _beforeChoice != null;
-    state = LibraryFolderChoice(
-      folders: const [],
-      selected: const {},
-      cancelable: cancelable,
-      loading: true,
-    );
-    final loading = state;
+    _libraryWithoutAccess = current is LibraryReady ? current : null;
+    showExplanation();
+  }
+
+  /// "Actualiser" of an empty folder list of the first launch (FR-015.5).
+  Future<void> reloadFolders() => start();
+
+  Future<void> retry() => start();
+
+  bool _refreshing = false;
+
+  /// The user's refresh, by pulling a list or from the settings: unreadable
+  /// files get another chance (FR-007.3). While one runs, another does
+  /// nothing (FR-025.4).
+  ///
+  /// @implements FR-025
+  Future<void> refresh() async {
+    final current = state;
+    if (_refreshing || (current is LibraryReady && current.indexing)) return;
+    _refreshing = true;
     try {
-      final folders = await _indexer.availableFolders();
-      final selected = await _indexer.chosenFolders();
-      // Back may have left the choice while it loaded.
-      if (!ref.mounted || !identical(state, loading)) return;
-      state = LibraryFolderChoice(
-        folders: folders,
-        selected: selected,
-        cancelable: cancelable,
-      );
-    } on Exception {
-      if (!ref.mounted || !identical(state, loading)) return;
-      state = LibraryLoadFailed(
-        whileChoosingFolders: true,
-        cancelable: cancelable,
-      );
+      await _refresh(retryFailed: true);
+    } finally {
+      _refreshing = false;
     }
   }
-
-  /// The library the user left to choose folders; null on first launch, when
-  /// a choice is required (FR-003.3).
-  LibraryReady? _beforeChoice;
-
-  /// Leaves the folder choice without changing it (FR-003.4).
-  void cancelFolderChoice() {
-    final before = _beforeChoice;
-    final current = state;
-    final cancelable = switch (current) {
-      LibraryFolderChoice(:final cancelable) => cancelable,
-      LibraryLoadFailed(:final cancelable) => cancelable,
-      _ => false,
-    };
-    if (before == null || !cancelable) return;
-    _beforeChoice = null;
-    state = before;
-  }
-
-  /// "Actualiser" of an empty folder list (FR-015.5).
-  Future<void> reloadFolders() =>
-      _beforeChoice == null ? start() : openFolderChoice();
-
-  Future<void> retry() async {
-    final current = state;
-    if (current is LibraryLoadFailed && current.whileChoosingFolders) {
-      await openFolderChoice();
-    } else {
-      await start();
-    }
-  }
-
-  /// The user's "Refresh": unreadable files get another chance (FR-007.3).
-  Future<void> refresh() => _refresh(retryFailed: true);
 
   Future<void> _refresh({required bool retryFailed}) async {
     if (_withoutAccess) {
@@ -353,6 +314,14 @@ class LibraryController extends Notifier<LibraryViewState> {
       }
       return;
     }
+    // "Refresh at start" off: the stored library shows as it is; only the
+    // availability of the disks is read (FR-025.6).
+    if (!ref.read(appSettingsProvider).refreshOnStart) {
+      final folders = await _indexer.chosenFolders();
+      state = LibraryReady(hasFolders: folders.isNotEmpty);
+      unawaited(ref.read(removableControllerProvider.notifier).onResumed());
+      return;
+    }
     await _refresh(retryFailed: false);
   }
 
@@ -361,7 +330,6 @@ class LibraryController extends Notifier<LibraryViewState> {
     required bool hasFolders,
     bool retryFailed = false,
   }) async {
-    _beforeChoice = null;
     state = LibraryReady(hasFolders: hasFolders, indexing: true);
     try {
       await index();

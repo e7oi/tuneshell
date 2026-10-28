@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/library/ports/internal_audio_source.dart';
 import 'package:tuneshell/domain/playback/model/engine_issue.dart';
 import 'package:tuneshell/domain/storage/model/media_source.dart';
+import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_page.dart';
 import 'package:tuneshell/features/player/mini_player_bar.dart';
 import 'package:tuneshell/features/shell/home_shell.dart';
@@ -21,6 +23,7 @@ import 'package:tuneshell/ui/widgets/track_tile.dart';
 
 import '../../fakes/fake_audio_engine.dart';
 import '../../fakes/fake_library.dart';
+import '../../fakes/fake_settings_store.dart';
 import '../../fakes/fake_storage.dart';
 
 void main() {
@@ -53,6 +56,7 @@ void main() {
           internalAudioSourceProvider.overrideWithValue(source),
           audioPermissionProvider.overrideWithValue(permission),
           audioEngineProvider.overrideWithValue(engine),
+          settingsStoreProvider.overrideWithValue(FakeSettingsStore()),
           trackSourceOpenerProvider.overrideWithValue(FakeTrackSourceOpener()),
           volumeEventsProvider.overrideWithValue(InternalVolumeEvents()),
           removableAudioSourceProvider.overrideWithValue(
@@ -240,59 +244,12 @@ void main() {
     expect(find.textContaining('damaged file'), findsOneWidget);
   });
 
-  /// @verifies FR-003.4
-  group('leaving the folder choice', () {
-    Future<void> openChoice(WidgetTester tester) async {
-      await pumpPage(tester);
-      await tester.tap(find.text('Continue'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ActionChip, 'Folders'));
-      await tester.pumpAndSettle();
-      expect(find.text('Music folders'), findsOneWidget);
-    }
-
-    testWidgets('the back button returns to the list', (tester) async {
-      await openChoice(tester);
-
-      await tester.tap(find.byTooltip('Back'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Music folders'), findsNothing);
-      expect(find.text('Alpha'), findsOneWidget);
-    });
-
-    testWidgets('the system Back gesture returns to the list', (tester) async {
-      await openChoice(tester);
-
-      expect(await tester.binding.handlePopRoute(), isTrue);
-      await tester.pumpAndSettle();
-
-      expect(find.text('Music folders'), findsNothing);
-      expect(find.text('Alpha'), findsOneWidget);
-    });
-
-    testWidgets('the first choice has no back button', (tester) async {
-      await pumpPage(tester);
-
-      expect(find.text('Music folders'), findsOneWidget);
-      expect(find.byTooltip('Back'), findsNothing);
-    });
-  });
-
-  testWidgets('the playback bar stays while the folders are open', (
-    tester,
-  ) async {
+  /// @verifies FR-003.3 the first choice is required: no way back.
+  testWidgets('the first choice has no back button', (tester) async {
     await pumpPage(tester);
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Alpha'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.widgetWithText(ActionChip, 'Folders'));
-    await tester.pumpAndSettle();
 
     expect(find.text('Music folders'), findsOneWidget);
-    expect(find.byType(MiniPlayerBar), findsOneWidget);
+    expect(find.byTooltip('Back'), findsNothing);
   });
 
   /// @verifies FR-004
@@ -324,17 +281,19 @@ void main() {
   });
 
   /// @verifies UC-001
-  testWidgets('no folder chosen leads back to the folder choice', (
+  /// @verifies FR-025.1
+  testWidgets('no folder chosen leads back to the folder choice, as a page', (
     tester,
   ) async {
     await pumpPage(tester);
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(ActionChip, 'Folders'));
+    await ProviderScope.containerOf(tester.element(find.byType(LibraryPage)))
+        .read(libraryControllerProvider.notifier)
+        .confirmFolders(<String>{});
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Music'));
-    await tester.pump();
-    await tester.tap(find.widgetWithText(FilledButton, 'Confirm'));
+    // The list is handed over at most twice a second (FR-011.11).
+    await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
 
     expect(find.text('No folder chosen'), findsOneWidget);
@@ -342,6 +301,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Music folders'), findsOneWidget);
+    expect(find.text('Confirm'), findsOneWidget);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.text('No folder chosen'), findsOneWidget);
   });
 
   /// @verifies BR-004 rule 5: the tracks of an absent disk are greyed.
@@ -383,7 +346,6 @@ void main() {
 
       expect(find.text('1 track skipped: SSD missing'), findsOneWidget);
       expect(find.text('See'), findsOneWidget);
-      expect(find.text('1 missing'), findsOneWidget);
     });
 
     /// @verifies BR-008.3
@@ -515,6 +477,66 @@ void main() {
       tester.getSize(find.byType(TrackTile).first).height,
       TsSize.trackRow * 2,
     );
+  });
+
+  /// @verifies FR-025.4
+  testWidgets('pulling the list down indexes the library again', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    source.files = [...source.files, info('Music/new.mp3', title: 'Zulu')];
+    final before = source.queries;
+
+    await tester.fling(find.text('Alpha'), const Offset(0, 400), 1000);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    expect(source.queries, before + 1);
+    expect(find.text('Zulu'), findsWidgets);
+  });
+
+  /// @verifies FR-025.3
+  testWidgets('the Tracks header keeps its title and search, no chips', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ActionChip), findsNothing);
+    expect(find.text('Refresh'), findsNothing);
+    expect(find.byTooltip('Search (soon)'), findsOneWidget);
+  });
+
+  /// @verifies FR-024.4
+  testWidgets('the index handle moves to the left with the setting', (
+    tester,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(412, 915)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    source.files = [
+      for (var i = 0; i < 150; i++)
+        info('Music/a$i.mp3', title: 'A${i.toString().padLeft(3, '0')}'),
+    ];
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    final handle = find.byWidgetPredicate(
+      (w) => w is GestureDetector && w.onVerticalDragStart != null,
+    );
+    expect(tester.getCenter(handle).dx, greaterThan(300));
+
+    ProviderScope.containerOf(tester.element(find.byType(LibraryPage)))
+        .read(appSettingsProvider.notifier)
+        .setIndexOnLeft(enabled: true);
+    await tester.pumpAndSettle();
+
+    expect(tester.getCenter(handle).dx, lessThan(100));
   });
 
   /// @verifies FR-013.1

@@ -34,3 +34,4 @@ MPL-018, 2026-10-15. `LibraryIndexer` (`lib/domain/library/services/library_inde
 - Le bouton « Dossiers » est désactivé pendant une indexation ; la barre de lecture reste visible pendant le choix des dossiers.
 - Une lecture impossible de la liste des dossiers affiche un message avec « Réessayer ».
 - Testé sur le Pixel 10 Pro (Android 17, build release) le 2026-10-21, avec environ 2 600 pistes : choix des dossiers, indexation, ajout et suppression d'un fichier puis « Actualiser », cocher et décocher un second dossier : OK. Un fichier copié par `adb push` n'est marqué comme musique qu'après une analyse de MediaStore (`HOWTO.md` §11).
+- MPL-051, 2026-10-25 : la règle 7 (indexation à chaque démarrage) devient un réglage « Actualiser au démarrage », allumé par défaut (FR-025.6). Le choix des dossiers (règle 4) s'ouvre depuis Réglages comme une page (`FolderChoicePage`) et non plus comme un état de la vue Pistes ; « Valider » ou le retour ferment la page.

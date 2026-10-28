@@ -135,6 +135,88 @@ void main() {
     }
   });
 
+  /// @verifies FR-023.3
+  testWidgets('a page opened in Settings closes on Back, then Tracks shows', (
+    tester,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(412, 915)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: TsTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: HomeShell(
+            tracks: const _Probe(),
+            playerBar: const SizedBox(height: 10),
+            settings: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => const Scaffold(body: Text('A sub page')),
+                  ),
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(find.text('A sub page'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
+
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await tester.pumpAndSettle();
+    expect(find.text('A sub page'), findsNothing);
+    expect(find.text('Open'), findsOneWidget);
+
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await tester.pumpAndSettle();
+    expect(find.text('taps 0'), findsOneWidget);
+  });
+
+  /// @verifies UC-009
+  testWidgets('the first-launch screens take the window back to Tracks', (
+    tester,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(412, 915)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    Widget shell({required bool immersive}) => ProviderScope(
+      child: MaterialApp(
+        theme: TsTheme.light(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: HomeShell(
+          immersive: immersive,
+          tracks: const _Probe(),
+          playerBar: const SizedBox(height: 10),
+          settings: const Text('Settings view'),
+        ),
+      ),
+    );
+    await tester.pumpWidget(shell(immersive: false));
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    expect(find.text('Settings view'), findsOneWidget);
+
+    await tester.pumpWidget(shell(immersive: true));
+    await tester.pumpWidget(shell(immersive: false));
+    await tester.pumpAndSettle();
+
+    expect(find.text('taps 0'), findsOneWidget);
+    expect(find.text('Settings view'), findsNothing);
+  });
+
   /// @verifies FR-009.4
   group('state', () {
     testWidgets('a tab keeps its state when another is shown', (tester) async {

@@ -2,11 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/ports/internal_audio_source.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 
 import '../../fakes/fake_library.dart';
+import '../../fakes/fake_settings_store.dart';
 import '../../fakes/fake_storage.dart';
 
 void main() {
@@ -24,6 +26,7 @@ void main() {
       removableAudioSourceProvider.overrideWithValue(removable),
       tagReaderProvider.overrideWithValue(FakeTagReader()),
       volumeEventsProvider.overrideWithValue(FakeVolumeEvents({internalDisk})),
+      settingsStoreProvider.overrideWithValue(FakeSettingsStore()),
     ],
   );
 
@@ -31,12 +34,6 @@ void main() {
 
   LibraryController controller() =>
       container.read(libraryControllerProvider.notifier);
-
-  bool cancelable() => switch (state()) {
-    LibraryFolderChoice(:final cancelable) => cancelable,
-    LibraryLoadFailed(:final cancelable) => cancelable,
-    _ => false,
-  };
 
   setUp(() {
     repository = FakeLibraryRepository();
@@ -349,6 +346,86 @@ void main() {
       );
     });
 
+    /// @verifies FR-025.4
+    test('a refresh while another one runs does nothing', () async {
+      await controller().start();
+      await controller().confirmFolders({'Music'});
+      final before = source.queries;
+
+      final first = controller().refresh();
+      final second = controller().refresh();
+      await Future.wait([first, second]);
+
+      expect(source.queries, before + 1);
+    });
+
+    /// @verifies FR-025.4
+    test('a refresh during an index does nothing', () async {
+      await controller().start();
+      final before = source.queries;
+
+      final confirming = controller().confirmFolders({'Music'});
+      await controller().refresh();
+      await confirming;
+
+      expect(source.queries, before + 1);
+    });
+
+    /// @verifies FR-025.6
+    group('refresh at start', () {
+      test('on (the default): the start indexes again', () async {
+        await controller().start();
+        await controller().confirmFolders({'Music'});
+        source.files = [info('Music/a.mp3')];
+
+        await controller().start();
+
+        expect(repository.tracks, hasLength(1));
+      });
+
+      test('off: the start shows the stored library as it is', () async {
+        await controller().start();
+        await controller().confirmFolders({'Music'});
+        final stored = repository.tracks.length;
+        source.files = [info('Music/a.mp3')];
+        container
+            .read(appSettingsProvider.notifier)
+            .setRefreshOnStart(enabled: false);
+        final before = source.queries;
+
+        await controller().start();
+
+        expect(state(), isA<LibraryReady>());
+        expect((state() as LibraryReady).hasFolders, isTrue);
+        expect((state() as LibraryReady).indexing, isFalse);
+        expect(repository.tracks, hasLength(stored));
+        expect(source.queries, before);
+      });
+
+      test('off: the first choice of folders is still asked', () async {
+        container
+            .read(appSettingsProvider.notifier)
+            .setRefreshOnStart(enabled: false);
+
+        await controller().start();
+
+        expect(state(), isA<LibraryFolderChoice>());
+      });
+
+      test('off: "Refresh now" still reindexes', () async {
+        await controller().start();
+        await controller().confirmFolders({'Music'});
+        container
+            .read(appSettingsProvider.notifier)
+            .setRefreshOnStart(enabled: false);
+        source.files = [info('Music/a.mp3')];
+
+        await controller().refresh();
+
+        expect(repository.tracks, hasLength(1));
+      });
+    });
+
     /// @verifies FR-003
     test('indexing is visible while it runs', () async {
       await controller().start();
@@ -366,52 +443,6 @@ void main() {
       ]);
     });
 
-    /// @verifies FR-003
-    test('the folder choice can be reopened with the current choice', () async {
-      await controller().start();
-      await controller().confirmFolders({'Music', 'Ringtones'});
-
-      await controller().openFolderChoice();
-
-      expect((state() as LibraryFolderChoice).selected, {'Music', 'Ringtones'});
-    });
-
-    /// @verifies FR-003.4 the choice opened by the user can be left unchanged.
-    test('cancelling the folder choice goes back to the library', () async {
-      await controller().start();
-      await controller().confirmFolders({'Music'});
-      await controller().openFolderChoice();
-      expect(cancelable(), isTrue);
-
-      controller().cancelFolderChoice();
-
-      expect(state(), isA<LibraryReady>());
-      expect((state() as LibraryReady).hasFolders, isTrue);
-      expect(cancelable(), isFalse);
-      expect(repository.tracks, hasLength(2));
-    });
-
-    /// @verifies FR-003.3 the first choice is not optional.
-    test('the first folder choice cannot be cancelled', () async {
-      await controller().start();
-
-      expect(state(), isA<LibraryFolderChoice>());
-      expect(cancelable(), isFalse);
-      controller().cancelFolderChoice();
-      expect(state(), isA<LibraryFolderChoice>());
-    });
-
-    test('confirming after reopening ends the choice for good', () async {
-      await controller().start();
-      await controller().confirmFolders({'Music'});
-      await controller().openFolderChoice();
-
-      await controller().confirmFolders({'Music', 'Ringtones'});
-
-      expect(state(), isA<LibraryReady>());
-      expect(cancelable(), isFalse);
-    });
-
     /// @verifies UC-001
     test('a failing folder query on first launch offers a retry', () async {
       container.dispose();
@@ -427,58 +458,6 @@ void main() {
 
       expect(state(), isA<LibraryLoadFailed>());
     });
-
-    /// @verifies FR-003
-    /// @verifies FR-003.4
-    test(
-      'leaving the folder choice while it loads keeps the library',
-      () async {
-        await controller().start();
-        await controller().confirmFolders({'Music'});
-
-        final opening = controller().openFolderChoice();
-        controller().cancelFolderChoice();
-        await opening;
-
-        expect(state(), isA<LibraryReady>());
-      },
-    );
-
-    test('the folder choice does not open while indexing', () async {
-      await controller().start();
-      final confirming = controller().confirmFolders({'Music'});
-
-      await controller().openFolderChoice();
-      await confirming;
-
-      expect(state(), isA<LibraryReady>());
-    });
-
-    /// @verifies UC-001
-    test(
-      'retry after a failed folder list reopens the folder choice',
-      () async {
-        await controller().start();
-        await controller().confirmFolders({'Music'});
-        container.dispose();
-        container = ProviderContainer(
-          overrides: [
-            libraryRepositoryProvider.overrideWithValue(repository),
-            internalAudioSourceProvider.overrideWithValue(FailingAudioSource()),
-            audioPermissionProvider.overrideWithValue(permission),
-          ],
-        );
-        await controller().openFolderChoice();
-        expect(
-          state(),
-          isA<LibraryLoadFailed>().having(
-            (s) => s.whileChoosingFolders,
-            'folders',
-            true,
-          ),
-        );
-      },
-    );
 
     test('resume and request continuing together run once', () async {
       permission.current = AudioPermissionStatus.denied;

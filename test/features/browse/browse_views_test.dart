@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
@@ -12,6 +13,7 @@ import 'package:tuneshell/domain/playback/services/player_controller.dart';
 import 'package:tuneshell/features/browse/albums_view.dart';
 import 'package:tuneshell/features/browse/artists_view.dart';
 import 'package:tuneshell/features/browse/browse_providers.dart';
+import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_list_providers.dart';
 import 'package:tuneshell/features/player/mini_player_bar.dart';
 import 'package:tuneshell/features/player/player_session.dart';
@@ -23,6 +25,8 @@ import 'package:tuneshell/ui/widgets/artist_tile.dart';
 import 'package:tuneshell/ui/widgets/source_mark.dart';
 
 import '../../fakes/fake_audio_engine.dart';
+import '../../fakes/fake_library_controller.dart';
+import '../../fakes/fake_settings_store.dart';
 import '../../fakes/fake_storage.dart';
 
 const ssd = DiskId('ssd');
@@ -72,6 +76,7 @@ void main() {
   late FakeAudioEngine engine;
   late PlayerController player;
   late List<List<Rect>> rects;
+  late LibraryCalls library;
 
   // An album of two discs given in disorder, one of one track, a second
   // artist, and tracks without tags.
@@ -126,10 +131,18 @@ void main() {
     await player.start();
     addTearDown(player.dispose);
     rects = [];
+    library = LibraryCalls();
     final all = tracks ?? lib;
     final container = ProviderContainer(
       overrides: [
         playerControllerProvider.overrideWithValue(player),
+        settingsStoreProvider.overrideWithValue(FakeSettingsStore()),
+        libraryControllerProvider.overrideWith(
+          () => FakeLibraryController(
+            const LibraryReady(hasFolders: true),
+            library,
+          ),
+        ),
         listedTracksProvider.overrideWith(
           (ref) => tracksStream ?? Stream.value(all),
         ),
@@ -774,6 +787,64 @@ void main() {
     await tab(tester, 'Albums');
     await tester.pump();
     expect(rects.every((list) => list.isEmpty), isTrue);
+  });
+
+  /// @verifies FR-024.4
+  group('the index on the left', () {
+    final many = [
+      for (var i = 0; i < 150; i++)
+        t(
+          't$i',
+          albumArtist: 'Artist ${String.fromCharCode(65 + i % 26)}$i',
+          album: 'Album ${String.fromCharCode(65 + i % 26)}$i',
+          number: 1,
+        ),
+    ];
+
+    for (final tabName in ['Albums', 'Artists']) {
+      flow('$tabName: right by default, left when the setting says so', (
+        tester,
+      ) async {
+        await pump(tester, tracks: many);
+        await tab(tester, tabName);
+        await tester.pump();
+        expect(rects.last.single.left, greaterThan(300));
+
+        _container!
+            .read(appSettingsProvider.notifier)
+            .setIndexOnLeft(enabled: true);
+        await tester.pumpAndSettle();
+
+        expect(rects.last.single.left, lessThan(100));
+        expect(rects.last, hasLength(1));
+
+        _container!
+            .read(appSettingsProvider.notifier)
+            .setIndexOnLeft(enabled: false);
+        await tester.pumpAndSettle();
+        expect(rects.last.single.left, greaterThan(300));
+      });
+    }
+  });
+
+  /// @verifies FR-025.4
+  group('pull to refresh', () {
+    for (final tabName in ['Albums', 'Artists']) {
+      flow('$tabName: pulling the list refreshes the library', (tester) async {
+        await pump(tester);
+        await tab(tester, tabName);
+
+        await tester.fling(
+          find.byType(Scrollable).first,
+          const Offset(0, 400),
+          1000,
+        );
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 2));
+
+        expect(library.refreshes, 1);
+      });
+    }
   });
 
   /// @verifies FR-020.12
