@@ -22,7 +22,7 @@ La lecture continue quand l'application n'est plus à l'écran, et Android la co
 
 ## Hors périmètre
 
-Pochettes dans la notification (MPL-037), Android Auto et navigation dans la bibliothèque depuis le système (MPL-005, D12), lecture aléatoire et répétition, reprise de la file après un redémarrage de l'application.
+Pochettes dans la notification (MPL-037, levé par MPL-057, voir l'as-built), Android Auto et navigation dans la bibliothèque depuis le système (MPL-005, D12), lecture aléatoire et répétition, reprise de la file après un redémarrage de l'application.
 
 ## As-built
 
@@ -31,9 +31,11 @@ MPL-036, 2026-10-21. `PlayerAudioHandler` (`lib/platform/media_session/player_au
 - L'arrêt (exigence 7) passe par l'état « inactif » de la session : `audio_service` arrête alors le service et retire la notification. L'état « arrêté » du contrôleur (fin de file, éjection, échecs) y mène aussi.
 - La position n'est envoyée au système que si elle s'écarte de plus de 1,5 s de celle qu'il extrapole (déplacement, changement de piste) : la progression régulière ne réveille pas la session à chaque tic.
 - Le lecteur compact (notification repliée, écran verrouillé) montre précédent, lecture/pause et suivant ; « arrêt » est dans la notification dépliée.
-- Les informations de la piste viennent de la bibliothèque (`libraryTrackIndexProvider`) ; une piste inconnue montre son nom de fichier.
+- Les informations de la piste viennent de la bibliothèque (`trackIndexProvider`, la carte limitée à deux mises à jour par seconde que l'interface utilise) ; une piste inconnue montre son nom de fichier.
 - Exigence 8 : en pause, retirer l'application des récentes arrête le contrôleur et le service. Quand le service s'arrête sans activité ouverte, `audio_service` détruit le moteur Flutter ; l'application termine alors le processus, car mpv ne peut pas être libéré sans l'isolat Dart (plantage de MPL-018). L'application suivante repart de zéro.
 - Exigence 6 : balayer la notification en pause arrête le contrôleur (comportement par défaut d'`audio_service`).
 - Choisir une autre piste passe un instant par l'état « arrêté » du contrôleur : la session n'est libérée que s'il dure plus de 0,5 s, pour que la notification ne disparaisse pas.
 - Risques à vérifier sur le Pixel (`HOWTO.md` §12) : reprise après un long appel en arrière-plan (redémarrage du service au premier plan refusé par Android 12+ ?) ; touche média après la mort du processus (service démarré sans file).
 - Vérifié sur l'émulateur (Android 16, release) : service au premier plan de type `mediaPlayback`, notification sur le canal « Lecture », session `PLAYING` avec titre et commande d'arrêt, touches média, retour arrière, retrait des récentes, arrêt. Pixel : non testé.
+
+MPL-057, 2026-10-27, test appareil non fait (D14). Constaté sur le Pixel : la notification ne montrait que le nom du fichier. Cause : la carte des pistes n'était lue que ponctuellement (`container.read`), donc jamais abonnée au flux de la base et toujours vide (test `test/app/library_track_index_test.dart`) ; et le gestionnaire ne recomposait l'élément qu'au changement de piste ou de durée. `startSystemPlayback` écoute maintenant `trackIndexProvider` en permanence et appelle `PlayerAudioHandler.refreshItem()` à chaque changement : les étiquettes lues après le début de la piste arrivent dans la notification. La pochette est ajoutée (`artUri` = `file:` vers `<dossier des pochettes>/<identifiant>.jpg`, dossier lu une fois au démarrage ; `audio_service` 0.18.19 charge les URI `file:` lui-même) ; sans pochette ou sans dossier connu, aucune image, et le dossier n'est pas relu avant le lancement suivant ; l'image est réduite à 512 px côté Android (`artDownscaleWidth`). La carte est reconstruite au plus deux fois par seconde pendant l'indexation, y compris en arrière-plan : à regarder sur le Pixel. Écart à la fiche, validé par le propriétaire le 2026-10-27 : « Pochettes dans la notification » n'est plus hors périmètre ; les règles 1 à 11 sont inchangées.

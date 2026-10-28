@@ -9,6 +9,10 @@ import 'package:tuneshell/domain/playback/services/player_controller.dart';
 /// Finds the library information of a track; null when it is not known.
 typedef TrackDescriber = LibraryTrack? Function(Track track);
 
+/// Where the image of an artwork identifier is stored; null when the folder
+/// of the images is not known yet.
+typedef ArtworkLocator = Uri? Function(String artwork);
+
 /// The media session of Android (notification, lock screen, media buttons)
 /// over the [PlayerController] (ADR-006). It holds no playback logic: every
 /// command goes to the controller, and the session shows the controller's
@@ -19,6 +23,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   new(
     this._controller, {
     required this._describe,
+    this._artworkOf = _noArtwork,
     this._clock = DateTime.now,
     this._stopGrace = const Duration(milliseconds: 500),
   }) {
@@ -26,12 +31,15 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     _show(_controller.state);
   }
 
+  static Uri? _noArtwork(String artwork) => null;
+
   /// A position this far from the one the system extrapolates is a seek or a
   /// jump: it is sent; regular progress is not.
   static const _positionTolerance = Duration(milliseconds: 1500);
 
   final PlayerController _controller;
   final TrackDescriber _describe;
+  final ArtworkLocator _artworkOf;
   final DateTime Function() _clock;
 
   /// Choosing another track goes through "stopped" for an instant: the
@@ -67,6 +75,18 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> onTaskRemoved() async {
     if (!_controller.state.playing) await stop();
+  }
+
+  /// Shows the current track again with what the library knows now: the tags
+  /// and the artwork are read after the track may already be playing.
+  ///
+  /// @implements FR-005
+  void refreshItem() {
+    final state = _controller.state;
+    final track = state.currentTrack;
+    if (track == null || track != _shownTrack) return;
+    final item = _itemOf(track, state);
+    if (!_sameInfo(item, mediaItem.value)) mediaItem.add(item);
   }
 
   Future<void> dispose() {
@@ -105,15 +125,26 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   bool _durationChanged(PlayerState state) =>
       state.duration != null && mediaItem.value?.duration != state.duration;
 
+  /// [MediaItem] compares by identifier only.
+  static bool _sameInfo(MediaItem a, MediaItem? b) =>
+      b != null &&
+      a.title == b.title &&
+      a.artist == b.artist &&
+      a.album == b.album &&
+      a.duration == b.duration &&
+      a.artUri == b.artUri;
+
   MediaItem _itemOf(Track track, PlayerState state) {
     final known = _describe(track);
     final path = track.relativePath;
+    final artwork = known?.artwork;
     return MediaItem(
       id: '${track.disk.value}/$path',
       title: known?.displayTitle ?? path.substring(path.lastIndexOf('/') + 1),
       artist: known?.info.artist,
       album: known?.info.album,
       duration: state.duration ?? known?.info.duration,
+      artUri: artwork == null ? null : _artworkOf(artwork),
     );
   }
 

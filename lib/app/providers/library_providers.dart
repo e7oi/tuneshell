@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/data/db/drift_library_repository.dart';
 import 'package:tuneshell/data/db/library_database.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
-import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/library/ports/internal_audio_source.dart';
 import 'package:tuneshell/domain/library/ports/library_repository.dart';
 import 'package:tuneshell/domain/library/ports/removable_audio_source.dart';
@@ -68,10 +67,3 @@ final tagReaderProvider = Provider<TagReader>(
 final libraryTracksProvider = StreamProvider<List<LibraryTrack>>(
   (ref) => ref.watch(libraryRepositoryProvider).watchTracks(),
 );
-
-/// The library tracks by identity, for the system media session (FR-005).
-final libraryTrackIndexProvider = Provider<Map<Track, LibraryTrack>>((ref) {
-  final tracks =
-      ref.watch(libraryTracksProvider).value ?? const <LibraryTrack>[];
-  return {for (final t in tracks) t.track: t};
-});
