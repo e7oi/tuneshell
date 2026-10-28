@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
+import 'package:tuneshell/domain/playback/model/media_node.dart';
 import 'package:tuneshell/domain/playback/model/player_state.dart';
+import 'package:tuneshell/domain/playback/ports/media_tree.dart';
 import 'package:tuneshell/domain/playback/services/player_controller.dart';
 
 /// Finds the library information of a track; null when it is not known.
@@ -12,6 +14,10 @@ typedef TrackDescriber = LibraryTrack? Function(Track track);
 /// Where the image of an artwork identifier is stored; null when the folder
 /// of the images is not known yet.
 typedef ArtworkLocator = Uri? Function(String artwork);
+
+/// The media tree of the library as it is now; it may have to wait for the
+/// library to be read (ADR-020).
+typedef MediaTreeLocator = Future<MediaTree> Function();
 
 /// The media session of Android (notification, lock screen, media buttons)
 /// over the [PlayerController] (ADR-006). It holds no playback logic: every
@@ -24,6 +30,8 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     this._controller, {
     required this._describe,
     this._artworkOf = _noArtwork,
+    this._mediaTree,
+    this._onQueueChosen,
     this._clock = DateTime.now,
     this._stopGrace = const Duration(milliseconds: 500),
   }) {
@@ -40,6 +48,12 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   final PlayerController _controller;
   final TrackDescriber _describe;
   final ArtworkLocator _artworkOf;
+
+  /// Null: the session cannot be browsed (no car, in the tests).
+  final MediaTreeLocator? _mediaTree;
+
+  /// Called when a browser replaces the queue, before it is replaced.
+  final void Function()? _onQueueChosen;
   final DateTime Function() _clock;
 
   /// Choosing another track goes through "stopped" for an instant: the
@@ -69,6 +83,58 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> skipToPrevious() => _controller.previous();
+
+  /// What a car browses (BR-013, FR-029).
+  ///
+  /// @implements FR-029
+  @override
+  Future<List<MediaItem>> getChildren(
+    String parentMediaId, [
+    Map<String, dynamic>? options,
+  ]) async {
+    final tree = await _mediaTree?.call();
+    if (tree == null) return const [];
+    return [for (final node in tree.children(parentMediaId)) _browseItem(node)];
+  }
+
+  @override
+  Future<MediaItem?> getMediaItem(String mediaId) async {
+    final node = (await _mediaTree?.call())?.node(mediaId);
+    return node == null ? null : _browseItem(node);
+  }
+
+  /// A car chose [mediaId]: a track of a list, or "Reprendre" (BR-013, rules
+  /// 2 and 5).
+  ///
+  /// @implements FR-029
+  @override
+  Future<void> playFromMediaId(
+    String mediaId, [
+    Map<String, dynamic>? extras,
+  ]) async {
+    final action = (await _mediaTree?.call())?.action(mediaId);
+    switch (action) {
+      case null:
+        return;
+      case ResumeAction():
+        await _controller.play();
+      case PlayTracks(:final queue, :final startIndex):
+        _onQueueChosen?.call();
+        await _controller.setQueue(queue, startIndex: startIndex);
+        await _controller.play();
+    }
+  }
+
+  MediaItem _browseItem(MediaNode node) {
+    final artwork = node.artwork;
+    return MediaItem(
+      id: node.id,
+      title: node.title,
+      artist: node.subtitle,
+      artUri: artwork == null ? null : _artworkOf(artwork),
+      playable: node.playable,
+    );
+  }
 
   /// FR-005, requirement 8: playback outlives the task; a paused player
   /// does not.

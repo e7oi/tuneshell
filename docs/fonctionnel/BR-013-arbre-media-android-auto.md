@@ -4,8 +4,8 @@
 
 ## Règles
 
-1. **Racine fixe.** Quatre entrées navigables : « Reprendre » (la session enregistrée, BR-012), « Albums », « Artistes », « Pistes ». Pas de « Dossiers » : choisir des dossiers est une action du téléphone.
-2. **« Reprendre ».** Un seul élément jouable : la piste courante de la session enregistrée, avec sa position. Le jouer reprend la file enregistrée telle quelle (BR-012). Sans session, l'entrée est absente.
+1. **Racine fixe.** Trois dossiers : « Albums », « Artistes », « Pistes », précédés de la piste courante quand une file existe (règle 2). Pas de « Dossiers » : choisir des dossiers est une action du téléphone.
+2. **Reprendre.** Un seul élément jouable : la piste courante de la file que le contrôleur tient (la session enregistrée, restaurée au lancement, BR-012). Le jouer reprend cette file telle quelle, à sa position. Sans file, l'entrée est absente.
 3. **Mêmes listes que l'application.** Albums et artistes sont ceux de BR-010, dans le même ordre de tri ; les pistes sont triées par titre comme dans l'onglet Pistes. Les pistes d'un album sont dans l'ordre disque puis numéro.
 4. **Listes longues.** Une liste qui dépasse la taille tolérée par Android Auto est découpée en groupes alphabétiques (A à Z et « # ») comme l'index de l'application, un niveau de plus. La taille limite et la profondeur maximale sont celles retenues par ADR-020 ; aucune liste n'est tronquée sans que l'on puisse atteindre le reste.
 5. **File au choix d'une piste.** Choisir une piste d'un album, d'un artiste ou d'un groupe de la liste Pistes met en file toutes les pistes de ce groupe jouables, à partir de la piste choisie (même règle que FR-022). L'aléatoire et la répétition gardent leur état (BR-009).

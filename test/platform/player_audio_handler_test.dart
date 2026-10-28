@@ -2,6 +2,8 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/playback/model/playback_session.dart';
+import 'package:tuneshell/domain/playback/ports/media_tree.dart';
+import 'package:tuneshell/domain/playback/services/library_media_tree.dart';
 import 'package:tuneshell/domain/playback/services/player_controller.dart';
 import 'package:tuneshell/platform/media_session/player_audio_handler.dart';
 
@@ -370,6 +372,115 @@ void main() {
       await stopped();
 
       expect(playback().processingState, AudioProcessingState.idle);
+    });
+  });
+
+  /// @verifies FR-029
+  group('FR-029 browsing from a car', () {
+    late LibraryMediaTree tree;
+    var chosen = 0;
+
+    Future<void> browsable() async {
+      await handler.dispose();
+      tree = LibraryMediaTree(
+        albums: [
+          MediaAlbum(
+            key: 'k',
+            title: 'Album',
+            artist: 'Artist',
+            tracks: [a, b],
+          ),
+        ],
+        artists: const [],
+        tracks: [a, b],
+        labels: const MediaTreeLabels(
+          albums: 'Albums',
+          artists: 'Artists',
+          tracks: 'Tracks',
+          unknownAlbum: '?',
+          unknownArtist: '?',
+          empty: 'Empty',
+        ),
+        fold: (text) => text.toLowerCase(),
+        current: a,
+      );
+      chosen = 0;
+      handler = PlayerAudioHandler(
+        controller,
+        describe: (track) => known[track],
+        mediaTree: () async => tree,
+        onQueueChosen: () => chosen++,
+        clock: () => now,
+        stopGrace: const Duration(milliseconds: 20),
+      );
+    }
+
+    test('the roots of the tree are the ones audio_service asks for', () {
+      expect(MediaTree.rootId, AudioService.browsableRootId);
+      expect(MediaTree.recentId, AudioService.recentRootId);
+    });
+
+    test('lists the children of a folder, folders not playable', () async {
+      await browsable();
+
+      final root = await handler.getChildren(AudioService.browsableRootId);
+
+      expect(root.map((i) => i.title), ['A', 'Albums', 'Artists', 'Tracks']);
+      expect(root.map((i) => i.playable), [true, false, false, false]);
+      final tracks = await handler.getChildren('tracks');
+      expect(tracks.map((i) => i.title), ['A', 'b.mp3']);
+      expect(tracks.first.artist, 'Artist');
+    });
+
+    test('gives one item back by identifier', () async {
+      await browsable();
+      final id = (await handler.getChildren('tracks')).first.id;
+
+      expect((await handler.getMediaItem(id))!.title, 'A');
+      expect(await handler.getMediaItem('garbage'), isNull);
+    });
+
+    test('a session that cannot be browsed has no children', () async {
+      expect(await handler.getChildren('root'), isEmpty);
+      expect(await handler.getMediaItem('root'), isNull);
+      await handler.playFromMediaId('anything');
+      expect(engine.state.playing, isFalse);
+    });
+
+    test('choosing a track queues its list from there and plays', () async {
+      await browsable();
+      final second = (await handler.getChildren('tracks')).last;
+
+      await handler.playFromMediaId(second.id);
+      await settle();
+
+      expect(chosen, 1);
+      expect(controller.state.queue, [a.track, b.track]);
+      expect(controller.state.currentTrack, b.track);
+      expect(controller.state.playing, isTrue);
+    });
+
+    test(
+      '"Reprendre" plays the queue already held, without replacing it',
+      () async {
+        await browsable();
+
+        await handler.playFromMediaId('resume');
+        await settle();
+
+        expect(chosen, 0);
+        expect(controller.state.currentTrack, a.track);
+        expect(controller.state.playing, isTrue);
+      },
+    );
+
+    test('an unknown identifier changes nothing', () async {
+      await browsable();
+
+      await handler.playFromMediaId('t|tracks|x|y');
+
+      expect(chosen, 0);
+      expect(controller.state.playing, isFalse);
     });
   });
 }

@@ -1201,5 +1201,9 @@
   "privacyAskBackground": "Keeping the music going when the screen is off.",
   "@privacyAskBackground": {
     "description": "Permission explained on the privacy page (FR-026.4)."
+  },
+  "carEmptyLibrary": "Open TuneShell on your phone to choose your music",
+  "@carEmptyLibrary": {
+    "description": "The only entry of the car screen while the library is empty (BR-013, rule 8)."
   }
 }

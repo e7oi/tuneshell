@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuneshell/app/media_browsing.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
@@ -42,6 +43,10 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
       artworkOf: (artwork) => artworkFolder == null
           ? null
           : Uri.file('$artworkFolder/$artwork.jpg'),
+      mediaTree: () => currentMediaTree(container),
+      // A car replaces the queue: the player no longer says where it came
+      // from.
+      onQueueChosen: () => container.read(queueOriginProvider.notifier).clear(),
     ),
     config: AudioServiceConfig(
       androidNotificationChannelId: 'net.trtl3.tuneshell.playback',
@@ -55,6 +60,7 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
     ),
   );
 
+  keepMediaTreeReadable(container);
   keepSessionInformed(container, handler);
 }
 
