@@ -8,6 +8,7 @@ import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/library/services/removable_indexer.dart';
 import 'package:tuneshell/domain/playback/model/playback_notice.dart';
 import 'package:tuneshell/features/library/library_list_model.dart';
+import 'package:tuneshell/features/library/library_search_state.dart';
 import 'package:tuneshell/features/library/removable_controller.dart';
 
 /// The registered disks, with their source marks (FR-012).
@@ -106,8 +107,18 @@ final sortedTracksProvider = Provider<List<LibraryTrack>?>((ref) {
 });
 
 /// What the list shows; null until the tracks and the disks are first read.
-final libraryListModelProvider = Provider<LibraryListModel?>((ref) {
-  final tracks = ref.watch(sortedTracksProvider);
+final libraryListModelProvider = Provider<LibraryListModel?>(
+  (ref) => _modelOf(ref, ref.watch(sortedTracksProvider)),
+);
+
+/// What the list shows while a search is open: the tracks that match, as the
+/// rows of the usual list (FR-027). Null when no search is open.
+final searchedListModelProvider = Provider<LibraryListModel?>((ref) {
+  final found = ref.watch(searchedTracksProvider);
+  return found == null ? null : _modelOf(ref, found);
+});
+
+LibraryListModel? _modelOf(Ref ref, List<LibraryTrack>? tracks) {
   final disks = ref.watch(libraryDisksProvider).value;
   if (tracks == null || disks == null) return null;
   return LibraryListModel.build(
@@ -122,4 +133,4 @@ final libraryListModelProvider = Provider<LibraryListModel?>((ref) {
     lastPlayed: ref.watch(lastPlayedProvider),
     dismissedBanner: ref.watch(dismissedBannerProvider),
   );
-});
+}

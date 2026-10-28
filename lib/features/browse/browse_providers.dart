@@ -4,6 +4,8 @@ import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/features/browse/artist_list_model.dart';
 import 'package:tuneshell/features/browse/library_groups.dart';
 import 'package:tuneshell/features/library/library_list_providers.dart';
+import 'package:tuneshell/features/library/library_search.dart';
+import 'package:tuneshell/features/library/library_search_state.dart';
 
 /// The ids of the unavailable disks as one string: a watcher that compares
 /// it is woken only when the set really changes.
@@ -46,4 +48,26 @@ final disksByIdProvider = Provider<Map<DiskId, Disk>>((ref) {
 final artistListModelProvider = Provider<ArtistListModel?>((ref) {
   final groups = ref.watch(libraryGroupsProvider);
   return groups == null ? null : ArtistListModel.build(groups.artists);
+});
+
+/// The albums that match the search; null while it is closed (BR-011).
+final searchedAlbumsProvider = Provider<List<AlbumGroup>?>((ref) {
+  final text = ref.watch(searchTextProvider(SearchView.albums));
+  final groups = ref.watch(libraryGroupsProvider);
+  if (text == null || groups == null) return null;
+  return SearchIndex(groups.albums, albumTexts).filter(SearchQuery.of(text));
+});
+
+/// The artists that match the search; null while it is closed (BR-011).
+final searchedArtistsProvider = Provider<List<ArtistGroup>?>((ref) {
+  final text = ref.watch(searchTextProvider(SearchView.artists));
+  final groups = ref.watch(libraryGroupsProvider);
+  if (text == null || groups == null) return null;
+  return SearchIndex(groups.artists, artistTexts).filter(SearchQuery.of(text));
+});
+
+/// The Artists list of the search results.
+final searchedArtistListModelProvider = Provider<ArtistListModel?>((ref) {
+  final found = ref.watch(searchedArtistsProvider);
+  return found == null ? null : ArtistListModel.build(found);
 });
