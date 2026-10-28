@@ -343,4 +343,40 @@ void main() {
       );
     });
   });
+
+  /// @verifies FR-009.7
+  testWidgets('a tab that is not shown has its tickers off', (tester) async {
+    final seen = <bool>[];
+    tester.view
+      ..physicalSize = const Size(412, 915)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: TsTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: HomeShell(
+            tracks: Builder(
+              builder: (context) {
+                seen.add(TickerMode.valuesOf(context).enabled);
+                return const Text('tracks');
+              },
+            ),
+            playerBar: const SizedBox(height: 10),
+          ),
+        ),
+      ),
+    );
+    expect(seen.last, isTrue);
+
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    expect(seen.last, isFalse);
+
+    await tester.tap(find.text('Tracks'));
+    await tester.pumpAndSettle();
+    expect(seen.last, isTrue);
+  });
 }

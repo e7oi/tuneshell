@@ -732,4 +732,44 @@ void main() {
       expect(find.text('M000'), findsOneWidget);
     },
   );
+
+  /// @verifies FR-009.7
+  testWidgets(
+    'Back from another tab leads to the list, not to the welcome screen',
+    (tester) async {
+      await pumpPage(tester);
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      expect(find.text('Alpha'), findsOneWidget);
+
+      await tester.tap(find.text('Settings'));
+      await tester.pumpAndSettle();
+      expect(await tester.binding.handlePopRoute(), isTrue);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Get started'), findsNothing);
+      expect(find.text('Alpha'), findsOneWidget);
+    },
+  );
+
+  /// @verifies FR-009.7
+  /// @verifies FR-027
+  testWidgets(
+    'Back from another tab does not close the search left open in Tracks',
+    (tester) async {
+      await pumpPage(tester);
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Search'));
+      await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsOneWidget);
+
+      await tester.tap(find.text('Settings'));
+      await tester.pumpAndSettle();
+      expect(await tester.binding.handlePopRoute(), isTrue);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsOneWidget);
+    },
+  );
 }
