@@ -18,6 +18,7 @@ enum ThemeChoice { system, light, dark }
 /// unknown or damaged stored value gives it back, without a message.
 ///
 /// @implements FR-023
+/// @implements FR-028
 @immutable
 final class AppSettings {
   const new({

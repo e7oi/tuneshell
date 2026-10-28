@@ -42,6 +42,8 @@ Future<void> restorePlaybackSession({
     // What was stored is what is in the controller: nothing to write again.
     if (restored && kept.queue.length == session.queue.length) keeper.adopt();
   } on Object catch (error) {
-    debugPrint('session: cannot restore the playback session: $error');
+    debugPrint(
+      'session: cannot restore the playback session: ${error.runtimeType}',
+    );
   }
 }

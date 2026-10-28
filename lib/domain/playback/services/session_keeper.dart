@@ -133,8 +133,9 @@ class SessionKeeper {
         _progressDirty = true;
       }
     }
-    if (_queueDirty || _progressDirty) {
-      _timer?.cancel();
+    // Not re-armed by every position tick: a change made while playing is
+    // written one delay after it, not once the ticks stop.
+    if ((_queueDirty || _progressDirty) && !(_timer?.isActive ?? false)) {
       _timer = Timer(queueDelay, () => unawaited(_writeNow()));
     }
   }

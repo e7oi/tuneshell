@@ -239,6 +239,11 @@ class PlayerController {
     final index = _state.currentIndex;
     if (index == null) return;
     final loaded = _state.status == PlayerStatus.ready;
+    if (!loaded && _resumeAt != null) {
+      // A restored position is for the first play only (BR-012, rule 7).
+      _resumeAt = null;
+      _emit(_state.copyWith(position: Duration.zero));
+    }
     if (index == 0 || (loaded && _state.position > restartThreshold)) {
       if (loaded) await _engine.seek(Duration.zero);
       return;

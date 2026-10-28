@@ -266,6 +266,17 @@ void main() {
       expect(controller.state.position, Duration.zero);
     });
 
+    test('previous on the first track also forgets the position', () async {
+      await controller.restore(saved(current: 0));
+
+      await controller.previous();
+      await controller.play();
+      await settle();
+
+      expect(engine.calls, ['open', 'play']);
+      expect(controller.state.position, Duration.zero);
+    });
+
     test('a new queue forgets the position', () async {
       await controller.restore(saved());
       await controller.setQueue([a, b], startIndex: 1);

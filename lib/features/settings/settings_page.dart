@@ -24,6 +24,7 @@ import 'package:tuneshell/ui/widgets/settings_tiles.dart';
 /// builds it also offers the component gallery (FR-010.7).
 ///
 /// @implements FR-023
+/// @implements FR-028
 /// @implements FR-024
 /// @implements FR-025
 /// @implements FR-026

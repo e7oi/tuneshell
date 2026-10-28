@@ -16,7 +16,7 @@ La **session de lecture** est ce qu'il faut pour retrouver la musique : la file 
 8. **Pistes disparues (BR-004).** À la restauration, chaque entrée est cherchée dans la bibliothèque par (disque, chemin relatif). Une entrée absente de la bibliothèque est retirée de la file, y compris de l'ordre d'origine. Une piste déplacée ou renommée est une autre piste (BR-004 règle 3) : l'ancienne entrée disparaît, la nouvelle n'est pas devinée.
 9. **Piste courante disparue.** La piste courante devient la première entrée restante qui la suivait, à la position zéro. S'il n'en reste aucune après elle, la dernière entrée restante avant elle ; s'il ne reste rien, rien n'est restauré et la session est effacée.
 10. **Disque absent.** Une entrée dont le disque est dans la bibliothèque mais absent (BR-001, BR-008) est gardée : elle revient grisée, et la lecture la saute avec le signalement habituel. Un disque retiré de la bibliothèque n'a plus de pistes : règle 8.
-11. **Données abîmées ou d'une version inconnue.** Une session illisible ou incohérente (index hors de la file, répétition inconnue) est ignorée et effacée, sans message ni plantage ; au pire, l'application démarre comme avant.
+11. **Données abîmées ou d'une version inconnue.** Une session illisible ou incohérente (index hors de la file, répétition inconnue, file trouée) est ignorée et effacée, sans message ni plantage ; au pire, l'application démarre comme avant.
 12. **Réglage désactivé.** Aucune session n'est enregistrée ni restaurée, et celle qui existe est effacée au moment où le réglage est désactivé. Réactivé, l'enregistrement reprend avec la file du moment.
 13. **Confidentialité.** La session contient des chemins de fichiers : elle reste dans la base de l'appareil, n'est jamais journalisée en clair, et n'entre ni dans le dépôt ni dans les journaux d'essai (D27).
 
@@ -50,4 +50,6 @@ MPL-053, 2026-10-28, test appareil non fait (D14). Modèle `PlaybackSession` (`l
 - Une session sans aucune piste connue de la bibliothèque est effacée ; une bibliothèque vide à la lecture laisse la session enregistrée.
 - Le mini-lecteur et le lecteur affichent la durée de la bibliothèque tant que le moteur n'en a pas donné (`shownDurationProvider`), pour que la progression soit visible avant le premier « Lecture » ; le curseur du lecteur reste inactif tant que le moteur ne connaît pas la durée.
 - Écarts levés, validés par le propriétaire le 2026-10-28 : BR-009 (modes entre deux lancements), FR-001 et FR-005 (persistance de la file hors périmètre) ; leurs règles ne changent pas.
-- À vérifier sur le Pixel (HOWTO §21) : `seek` juste après `open` avec `media_kit`, temps d'écriture et de lecture de 7 500 pistes, enregistrement au retrait des récentes en pause.
+- Journaux : seul le type de l'erreur est écrit, jamais son texte (règle 13).
+- Limite : une lecture qui lève une exception (stockage inaccessible) laisse la session en place ; seule une session incohérente est effacée.
+- À vérifier sur le Pixel (HOWTO §21) : `seek` juste après `open` (et s'il fait émettre « fin de piste » quand la position dépasse la durée) avec `media_kit`, temps d'écriture et de lecture de 7 500 pistes, enregistrement au retrait des récentes en pause.

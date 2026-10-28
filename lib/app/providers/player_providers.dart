@@ -94,7 +94,8 @@ final sessionKeeperProvider = Provider<SessionKeeper>((ref) {
     controller: ref.watch(playerControllerProvider),
     store: ref.watch(playbackSessionStoreProvider),
     enabled: ref.read(appSettingsProvider).resumePlayback,
-    onError: (error) => debugPrint('session: cannot write: $error'),
+    onError: (error) =>
+        debugPrint('session: cannot write: ${error.runtimeType}'),
   );
   ref.onDispose(keeper.dispose);
   return keeper;

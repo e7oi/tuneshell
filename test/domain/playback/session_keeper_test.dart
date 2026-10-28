@@ -171,6 +171,22 @@ void main() {
       expect(count('queue'), 0);
     });
 
+    test('a change made while playing is written despite the ticks', () async {
+      await controller.setQueue([a, b, c]);
+      await controller.play();
+      await grouped();
+      store.calls.clear();
+
+      await controller.skipTo(2);
+      for (var i = 1; i <= 25; i++) {
+        engine.emitPosition(Duration(milliseconds: i));
+        await Future<void>.delayed(const Duration(milliseconds: 4));
+      }
+      await pumpEventQueue();
+
+      expect(store.session!.currentIndex, 2);
+    });
+
     test('flush writes what is pending now', () async {
       await controller.setQueue([a, b]);
 
