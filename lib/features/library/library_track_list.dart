@@ -172,7 +172,7 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
     ref
         .read(queueOriginProvider.notifier)
         .set(
-          searchText == null
+          searchText == null || searchText.trim().isEmpty
               ? QueueOrigin.tracksByTitle
               : SearchOrigin(searchText),
         );

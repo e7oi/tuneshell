@@ -397,7 +397,6 @@ void main() {
     expect(find.widgetWithText(OutlinedButton, 'Refresh'), findsOneWidget);
   });
 
-  /// @verifies FR-011.1
   /// @verifies FR-027
   testWidgets('the search button opens the field, Back closes it', (
     tester,
@@ -479,13 +478,42 @@ void main() {
     await tester.enterText(find.byType(TextField), 'a');
     await tester.pumpAndSettle();
 
+    await tester.enterText(find.byType(TextField), 'r');
+    await tester.pumpAndSettle();
+    // Bravo, Charlie: the second result.
     await tester.tap(find.text('Charlie'));
     await tester.pumpAndSettle();
 
     final container = ProviderScope.containerOf(
       tester.element(find.byType(LibraryPage)),
     );
-    expect(container.read(queueOriginProvider), const SearchOrigin('a'));
+    expect(container.read(queueOriginProvider), const SearchOrigin('r'));
+    final state = container.read(playerControllerProvider).state;
+    expect(state.queue.map((t) => t.relativePath), [
+      'Music/b.mp3',
+      'Music/c.mp3',
+    ]);
+    expect(state.currentIndex, 1);
+  });
+
+  /// @verifies FR-027
+  testWidgets('a count that changes is announced after a pause', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'ch');
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.bySemanticsLabel('1 result'), findsNothing);
+
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.bySemanticsLabel('1 result'), findsOneWidget);
+    handle.dispose();
   });
 
   /// @verifies FR-027

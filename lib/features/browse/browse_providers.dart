@@ -50,20 +50,36 @@ final artistListModelProvider = Provider<ArtistListModel?>((ref) {
   return groups == null ? null : ArtistListModel.build(groups.artists);
 });
 
+/// The search indexes of the albums and of the artists, rebuilt when the
+/// groups change and not at each keystroke; built only once a search is open.
+final _albumIndexProvider = Provider<SearchIndex<AlbumGroup>?>((ref) {
+  if (ref.watch(searchTextProvider(SearchView.albums)) == null) return null;
+  final groups = ref.watch(libraryGroupsProvider);
+  return groups == null ? null : SearchIndex(groups.albums, albumTexts);
+});
+
+final _artistIndexProvider = Provider<SearchIndex<ArtistGroup>?>((ref) {
+  if (ref.watch(searchTextProvider(SearchView.artists)) == null) return null;
+  final groups = ref.watch(libraryGroupsProvider);
+  return groups == null ? null : SearchIndex(groups.artists, artistTexts);
+});
+
 /// The albums that match the search; null while it is closed (BR-011).
 final searchedAlbumsProvider = Provider<List<AlbumGroup>?>((ref) {
   final text = ref.watch(searchTextProvider(SearchView.albums));
-  final groups = ref.watch(libraryGroupsProvider);
-  if (text == null || groups == null) return null;
-  return SearchIndex(groups.albums, albumTexts).filter(SearchQuery.of(text));
+  final index = ref.watch(_albumIndexProvider);
+  return text == null || index == null
+      ? null
+      : index.filter(SearchQuery.of(text));
 });
 
 /// The artists that match the search; null while it is closed (BR-011).
 final searchedArtistsProvider = Provider<List<ArtistGroup>?>((ref) {
   final text = ref.watch(searchTextProvider(SearchView.artists));
-  final groups = ref.watch(libraryGroupsProvider);
-  if (text == null || groups == null) return null;
-  return SearchIndex(groups.artists, artistTexts).filter(SearchQuery.of(text));
+  final index = ref.watch(_artistIndexProvider);
+  return text == null || index == null
+      ? null
+      : index.filter(SearchQuery.of(text));
 });
 
 /// The Artists list of the search results.

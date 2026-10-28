@@ -4,7 +4,7 @@
 
 ## Contexte
 
-La recherche porte sur les titres, artistes et albums de plus de 7 500 pistes, à chaque frappe, sans tenir compte de la casse ni des accents. D3 note que le plein texte FTS5 de Drift est possible. Les listes sont déjà chargées en mémoire (`listedTracksProvider`, deux émissions par seconde au plus) et les groupes d'albums et d'artistes sont déjà calculés à partir d'elles (ADR-016).
+La recherche porte sur les titres, artistes et albums de plus de 7 500 pistes, à chaque frappe, sans tenir compte de la casse ni des accents. D3 note que le plein texte FTS5 de Drift est possible. Les listes sont déjà chargées en mémoire (`sortedTracksProvider`, deux émissions par seconde au plus) et les groupes d'albums et d'artistes sont déjà calculés à partir d'elles (ADR-016).
 
 ## Décision
 

@@ -44,7 +44,9 @@ final trackSearchIndexProvider = Provider<SearchIndex<LibraryTrack>?>((ref) {
 /// is open (BR-011).
 final searchedTracksProvider = Provider<List<LibraryTrack>?>((ref) {
   final text = ref.watch(searchTextProvider(SearchView.tracks));
+  // The index is only built once a search is open.
+  if (text == null) return null;
   final index = ref.watch(trackSearchIndexProvider);
-  if (text == null || index == null) return null;
+  if (index == null) return null;
   return index.filter(SearchQuery.of(text));
 });
