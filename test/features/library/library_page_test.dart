@@ -13,10 +13,12 @@ import 'package:tuneshell/domain/storage/model/media_source.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_page.dart';
 import 'package:tuneshell/features/player/mini_player_bar.dart';
+import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/features/shell/home_shell.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/platform/internal_storage.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
+import 'package:tuneshell/ui/widgets/alphabet_scroller.dart';
 import 'package:tuneshell/ui/widgets/jump_to_current_fab.dart';
 import 'package:tuneshell/ui/widgets/source_mark.dart';
 import 'package:tuneshell/ui/widgets/track_tile.dart';
@@ -396,7 +398,10 @@ void main() {
   });
 
   /// @verifies FR-011.1
-  testWidgets('the search button is there, and disabled', (tester) async {
+  /// @verifies FR-027
+  testWidgets('the search button opens the field, Back closes it', (
+    tester,
+  ) async {
     await pumpPage(tester);
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
@@ -404,8 +409,94 @@ void main() {
     final button = tester.widget<IconButton>(
       find.widgetWithIcon(IconButton, Icons.search_rounded),
     );
-    expect(button.onPressed, isNull);
-    expect(find.byTooltip('Search (soon)'), findsOneWidget);
+    expect(button.onPressed, isNotNull);
+
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'ch');
+    await tester.pumpAndSettle();
+    expect(find.text('Charlie'), findsOneWidget);
+    expect(find.text('Alpha'), findsNothing);
+    expect(find.text('1 result'), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsNothing);
+    expect(find.text('Alpha'), findsOneWidget);
+  });
+
+  /// @verifies FR-027
+  testWidgets('the query is kept across tabs, not once closed', (tester) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'br');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Albums').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tracks').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('br'), findsOneWidget);
+    expect(find.text('Bravo'), findsOneWidget);
+    expect(find.text('Alpha'), findsNothing);
+  });
+
+  /// @verifies FR-027
+  testWidgets('no match says so, and the button closes the search', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'zzz');
+    await tester.pumpAndSettle();
+
+    expect(find.text('No results for “zzz”'), findsOneWidget);
+    await tester.tap(find.text('Clear search'));
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsNothing);
+    expect(find.text('Alpha'), findsOneWidget);
+  });
+
+  /// @verifies FR-027
+  testWidgets('touching a result queues the results and names the search', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'a');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Charlie'));
+    await tester.pumpAndSettle();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(LibraryPage)),
+    );
+    expect(container.read(queueOriginProvider), const SearchOrigin('a'));
+  });
+
+  /// @verifies FR-027
+  testWidgets('the alphabet index is hidden while searching', (tester) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlphabetScroller), findsNothing);
   });
 
   /// @verifies FR-013.3
@@ -508,7 +599,7 @@ void main() {
 
     expect(find.byType(ActionChip), findsNothing);
     expect(find.text('Refresh'), findsNothing);
-    expect(find.byTooltip('Search (soon)'), findsOneWidget);
+    expect(find.byTooltip('Search'), findsOneWidget);
   });
 
   /// @verifies FR-024.4

@@ -4,43 +4,6 @@ import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 import 'package:tuneshell/ui/widgets/status_banner.dart';
 
-/// Title and disabled search button of the Tracks view (FR-011.1).
-class LibraryTitleBar extends StatelessWidget {
-  const new({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: TsSpace.screenMargin,
-        right: TsSpace.s,
-      ),
-      child: SizedBox(
-        height: TsSize.touchTarget + TsSpace.s,
-        child: Row(
-          children: [
-            Expanded(
-              child: Semantics(
-                header: true,
-                child: Text(
-                  l10n.navTracks,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ),
-            ),
-            IconButton(
-              tooltip: l10n.searchSoon,
-              icon: const Icon(Icons.search_rounded),
-              onPressed: null,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 /// The banner of unavailable sources (BR-008, rules 2 and 3).
 class SourcesBanner extends StatelessWidget {
   const new({

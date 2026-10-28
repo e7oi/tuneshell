@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:tuneshell/features/shell/coming_soon_page.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
@@ -59,7 +61,24 @@ class _HomeShellState extends State<HomeShell> {
   final GlobalKey<NavigatorState> _artistsNavigator = GlobalKey();
   final GlobalKey<NavigatorState> _settingsNavigator = GlobalKey();
 
-  void _select(int index) => setState(() => _index = index);
+  void _select(int index) {
+    // The keyboard of a search does not follow the user to another tab.
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _index = index);
+  }
+
+  /// Back inside a tab: `maybePop` lets the view in front keep it, for the
+  /// search it has open (FR-027), before the detail or the tab is left.
+  Future<void> _back() async {
+    final navigator = switch (_index) {
+      1 => _albumsNavigator.currentState,
+      2 => _artistsNavigator.currentState,
+      3 => _settingsNavigator.currentState,
+      _ => null,
+    };
+    if (navigator != null && await navigator.maybePop()) return;
+    if (mounted) _select(0);
+  }
 
   @override
   void didUpdateWidget(HomeShell oldWidget) {
@@ -115,19 +134,7 @@ class _HomeShellState extends State<HomeShell> {
     return PopScope(
       canPop: _index == 0,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        // A detail open in the tab closes first (ADR-016).
-        final navigator = switch (_index) {
-          1 => _albumsNavigator.currentState,
-          2 => _artistsNavigator.currentState,
-          3 => _settingsNavigator.currentState,
-          _ => null,
-        };
-        if (navigator != null && navigator.canPop()) {
-          navigator.pop();
-          return;
-        }
-        _select(0);
+        if (!didPop) unawaited(_back());
       },
       child: LayoutBuilder(
         builder: (context, constraints) {

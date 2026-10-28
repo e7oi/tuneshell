@@ -326,11 +326,65 @@ abstract class AppLocalizations {
   /// **'Component gallery'**
   String get demoGallery;
 
-  /// Tooltip of the disabled search button of the Tracks header (FR-011.1).
+  /// Tooltip of the search button of the three views (FR-027).
   ///
   /// In en, this message translates to:
-  /// **'Search (soon)'**
-  String get searchSoon;
+  /// **'Search'**
+  String get searchOpen;
+
+  /// Hint of the search field of the Tracks view (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'Search tracks'**
+  String get searchHintTracks;
+
+  /// Hint of the search field of the Albums view (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'Search albums'**
+  String get searchHintAlbums;
+
+  /// Hint of the search field of the Artists view (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'Search artists'**
+  String get searchHintArtists;
+
+  /// Button that empties the search field (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get searchClear;
+
+  /// Back arrow of the search field: closes the search (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'Close search'**
+  String get searchClose;
+
+  /// Count line while a search is open (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} result} other{{count} results}}'**
+  String searchResults(int count);
+
+  /// Title of the view when nothing matches (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'No results for “{query}”'**
+  String searchNoResults(String query);
+
+  /// Button of the no-results view that closes the search (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get searchClearAction;
+
+  /// Origin of a queue started from search results (FR-027).
+  ///
+  /// In en, this message translates to:
+  /// **'Search · {query}'**
+  String queueOriginSearch(String query);
 
   /// Badge on the Disks chip when disks are absent or need access (FR-011.2).
   ///

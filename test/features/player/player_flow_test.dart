@@ -306,6 +306,18 @@ void main() {
       expect(find.text('Tracks · Title A→Z'), findsOneWidget);
     });
 
+    /// @verifies FR-027
+    flow('a queue started from a search names the search', (tester) async {
+      final container = await pump(tester);
+      container
+          .read(queueOriginProvider.notifier)
+          .set(const SearchOrigin('  clara '));
+      await start(tester);
+      await openPlayerPage(tester);
+
+      expect(find.text('Search · clara'), findsOneWidget);
+    });
+
     /// @verifies FR-017.8
     flow('the up-next button counts the tracks and names the next', (
       tester,

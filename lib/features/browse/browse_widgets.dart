@@ -1,70 +1,72 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/features/browse/library_groups.dart';
+import 'package:tuneshell/features/library/library_search_state.dart';
+import 'package:tuneshell/features/library/search_widgets.dart';
 import 'package:tuneshell/features/player/source_labels.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 
 /// The title of a view with its count and its sort label under it, like the
 /// Tracks view (FR-020.1, FR-021.1).
-class BrowseHeader extends StatelessWidget {
-  const new({required this.title, required this.count, this.sort, super.key});
+class BrowseHeader extends ConsumerWidget {
+  const new({
+    required this.view,
+    required this.title,
+    required this.count,
+    required this.canSearch,
+    this.sort,
+    super.key,
+  });
 
+  final SearchView view;
   final String title;
+
+  /// The count line; while a search is open, the count of results.
   final String count;
+
+  /// False when the view has nothing to search.
+  final bool canSearch;
 
   /// The label of the only sort, not interactive.
   final String? sort;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final text = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
+    final searching = ref.watch(searchTextProvider(view)) != null;
+    final line = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: TsSpace.screenMargin,
+        vertical: TsSpace.s,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              count,
+              style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ),
+          if (sort != null)
+            Text(
+              sort!,
+              style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+        ],
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: TsSpace.screenMargin),
-          child: SizedBox(
-            height: TsSize.touchTarget + TsSpace.s,
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Semantics(
-                header: true,
-                child: Text(title, style: text.headlineSmall),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: TsSpace.screenMargin,
-            vertical: TsSpace.s,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  count,
-                  style: text.bodyMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              if (sort != null)
-                Text(
-                  sort!,
-                  style: text.bodyMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-            ],
-          ),
-        ),
+        SearchTitleBar(view: view, title: title, canSearch: canSearch),
+        if (searching) ResultsAnnouncer(text: count, child: line) else line,
       ],
     );
   }

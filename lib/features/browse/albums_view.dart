@@ -12,6 +12,9 @@ import 'package:tuneshell/features/browse/browse_providers.dart';
 import 'package:tuneshell/features/browse/browse_widgets.dart';
 import 'package:tuneshell/features/browse/library_groups.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
+import 'package:tuneshell/features/library/library_search.dart';
+import 'package:tuneshell/features/library/library_search_state.dart';
+import 'package:tuneshell/features/library/search_widgets.dart';
 import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/features/player/track_menu.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
@@ -69,31 +72,57 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final groups = ref.watch(libraryGroupsProvider);
-    return SafeArea(
-      bottom: false,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BrowseHeader(
-            title: l10n.navAlbums,
-            count: groups == null ? '' : l10n.albumsCount(groups.albums.length),
-            sort: groups == null || groups.albums.isEmpty
-                ? null
-                : l10n.albumsSort,
-          ),
-          Expanded(
-            child: groups == null
-                ? const Center(child: CircularProgressIndicator())
-                : groups.albums.isEmpty
-                ? BrowseEmpty(title: l10n.groupsEmptyAlbums)
-                : _grid(context, groups),
-          ),
-        ],
+    final query = ref.watch(searchTextProvider(SearchView.albums));
+    final found = ref.watch(searchedAlbumsProvider);
+    final shown = groups == null || groups.albums.isEmpty ? null : found;
+    final search = ref.read(searchTextProvider(SearchView.albums).notifier);
+    // Back closes the search before it leaves the tab (FR-027).
+    return PopScope(
+      canPop: query == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) search.close();
+      },
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BrowseHeader(
+              view: SearchView.albums,
+              title: l10n.navAlbums,
+              canSearch: groups != null && groups.albums.isNotEmpty,
+              count: groups == null
+                  ? ''
+                  : shown != null
+                  ? l10n.searchResults(shown.length)
+                  : l10n.albumsCount(groups.albums.length),
+              sort: groups == null || groups.albums.isEmpty
+                  ? null
+                  : l10n.albumsSort,
+            ),
+            Expanded(
+              child: groups == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : groups.albums.isEmpty
+                  ? BrowseEmpty(title: l10n.groupsEmptyAlbums)
+                  : shown != null &&
+                        shown.isEmpty &&
+                        !SearchQuery.of(query ?? '').isEmpty
+                  ? SearchNoResults(query: query!, onClear: search.close)
+                  : _grid(context, groups, shown),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _grid(BuildContext context, LibraryGroups groups) {
+  Widget _grid(
+    BuildContext context,
+    LibraryGroups groups,
+    List<AlbumGroup>? results,
+  ) {
+    final albums = results ?? groups.albums;
     final l10n = AppLocalizations.of(context);
     final colors = TsColors.of(context);
     final disks = ref.watch(disksByIdProvider);
@@ -114,6 +143,40 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
         final card = (usable - (_columns - 1) * gap) / _columns;
         final extent = card + TsSpace.s + TsSize.albumCardTextHeight * scale;
         _rowExtent = extent + gap;
+        final grid = RefreshIndicator(
+          onRefresh: () =>
+              ref.read(libraryControllerProvider.notifier).refresh(),
+          child: GridView.builder(
+            controller: _scroll,
+            physics: const AlwaysScrollableScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.fromLTRB(
+              margin,
+              TsSpace.xs,
+              margin,
+              TsSize.listBottomInset,
+            ),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: _columns,
+              mainAxisSpacing: gap,
+              crossAxisSpacing: gap,
+              mainAxisExtent: extent,
+            ),
+            itemCount: albums.length,
+            itemBuilder: (context, i) {
+              final album = albums[i];
+              return _AlbumGridCard(
+                album: album,
+                size: card,
+                marks: albumMarks(album, disks, colors),
+                diskName: album.available
+                    ? null
+                    : absentDiskName(album.disks, unavailable, disks, l10n),
+              );
+            },
+          ),
+        );
+        if (results != null) return grid;
         return AlphabetScroller(
           letters: groups.albumLetters,
           alignStart: ref.watch(
@@ -126,38 +189,7 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
               l10n.indexLetterItems(letter, l10n.albumsCount(count)),
           gridTitle: l10n.indexGoToLetter,
           onHandleRect: _exclusion.handle,
-          child: RefreshIndicator(
-            onRefresh: () =>
-                ref.read(libraryControllerProvider.notifier).refresh(),
-            child: GridView.builder(
-              controller: _scroll,
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(
-                margin,
-                TsSpace.xs,
-                margin,
-                TsSize.listBottomInset,
-              ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: _columns,
-                mainAxisSpacing: gap,
-                crossAxisSpacing: gap,
-                mainAxisExtent: extent,
-              ),
-              itemCount: groups.albums.length,
-              itemBuilder: (context, i) {
-                final album = groups.albums[i];
-                return _AlbumGridCard(
-                  album: album,
-                  size: card,
-                  marks: albumMarks(album, disks, colors),
-                  diskName: album.available
-                      ? null
-                      : absentDiskName(album.disks, unavailable, disks, l10n),
-                );
-              },
-            ),
-          ),
+          child: grid,
         );
       },
     );

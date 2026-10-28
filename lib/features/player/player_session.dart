@@ -16,7 +16,7 @@ final trackIndexProvider = Provider<Map<Track, LibraryTrack>>((ref) {
 });
 
 /// Where the queue was started from (FR-017.2, FR-022.6): the list of tracks,
-/// an album or an artist.
+/// an album, an artist or the results of a search (FR-027).
 @immutable
 sealed class QueueOrigin {
   const new();
@@ -54,6 +54,20 @@ final class ArtistOrigin extends QueueOrigin {
 
   @override
   int get hashCode => Object.hash(ArtistOrigin, name);
+}
+
+/// The results of a search in the Tracks view; [query] is the text typed.
+final class SearchOrigin extends QueueOrigin {
+  const new(this.query);
+
+  final String query;
+
+  @override
+  bool operator ==(Object other) =>
+      other is SearchOrigin && other.query == query;
+
+  @override
+  int get hashCode => Object.hash(SearchOrigin, query);
 }
 
 class QueueOriginNotifier extends Notifier<QueueOrigin?> {

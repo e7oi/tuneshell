@@ -13,6 +13,9 @@ import 'package:tuneshell/features/browse/browse_providers.dart';
 import 'package:tuneshell/features/browse/browse_widgets.dart';
 import 'package:tuneshell/features/browse/library_groups.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
+import 'package:tuneshell/features/library/library_search.dart';
+import 'package:tuneshell/features/library/library_search_state.dart';
+import 'package:tuneshell/features/library/search_widgets.dart';
 import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/features/player/track_menu.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
@@ -64,34 +67,91 @@ class _ArtistsViewState extends ConsumerState<ArtistsView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final groups = ref.watch(libraryGroupsProvider);
-    return SafeArea(
-      bottom: false,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BrowseHeader(
-            title: l10n.navArtists,
-            count: groups == null
-                ? ''
-                : l10n.artistsCount(groups.artists.length),
-          ),
-          Expanded(
-            child: groups == null
-                ? const Center(child: CircularProgressIndicator())
-                : groups.artists.isEmpty
-                ? BrowseEmpty(title: l10n.groupsEmptyArtists)
-                : _list(context, groups),
-          ),
-        ],
+    final query = ref.watch(searchTextProvider(SearchView.artists));
+    final found = ref.watch(searchedArtistsProvider);
+    final shown = groups == null || groups.artists.isEmpty ? null : found;
+    final search = ref.read(searchTextProvider(SearchView.artists).notifier);
+    // Back closes the search before it leaves the tab (FR-027).
+    return PopScope(
+      canPop: query == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) search.close();
+      },
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BrowseHeader(
+              view: SearchView.artists,
+              title: l10n.navArtists,
+              canSearch: groups != null && groups.artists.isNotEmpty,
+              count: groups == null
+                  ? ''
+                  : shown != null
+                  ? l10n.searchResults(shown.length)
+                  : l10n.artistsCount(groups.artists.length),
+            ),
+            Expanded(
+              child: groups == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : groups.artists.isEmpty
+                  ? BrowseEmpty(title: l10n.groupsEmptyArtists)
+                  : shown != null &&
+                        shown.isEmpty &&
+                        !SearchQuery.of(query ?? '').isEmpty
+                  ? SearchNoResults(query: query!, onClear: search.close)
+                  : _list(context, groups, searching: shown != null),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _list(BuildContext context, LibraryGroups groups) {
+  Widget _list(
+    BuildContext context,
+    LibraryGroups groups, {
+    required bool searching,
+  }) {
     final l10n = AppLocalizations.of(context);
-    final model = ref.watch(artistListModelProvider)!;
+    final model = searching
+        ? ref.watch(searchedArtistListModelProvider)!
+        : ref.watch(artistListModelProvider)!;
     final disks = ref.watch(disksByIdProvider);
     final unavailable = ref.watch(unavailableDiskIdsProvider);
+    final list = RefreshIndicator(
+      onRefresh: () => ref.read(libraryControllerProvider.notifier).refresh(),
+      child: CustomScrollView(
+        controller: _scroll,
+        physics: const AlwaysScrollableScrollPhysics(),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        slivers: [
+          SliverVariedExtentList(
+            itemExtentBuilder: (index, _) =>
+                model.items[index] is ArtistHeader ? _headerExtent : _rowExtent,
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final item = model.items[index];
+              return switch (item) {
+                ArtistHeader(:final letter) => _LetterHeader(letter),
+                ArtistEntry(:final artist, :final position) => _row(
+                  context,
+                  l10n,
+                  artist,
+                  position,
+                  disks,
+                  unavailable,
+                ),
+              };
+            }, childCount: model.items.length),
+          ),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: TsSize.listBottomInset),
+          ),
+        ],
+      ),
+    );
+    if (searching) return list;
     return AlphabetScroller(
       letters: groups.artistLetters,
       alignStart: ref.watch(appSettingsProvider.select((s) => s.indexOnLeft)),
@@ -110,38 +170,7 @@ class _ArtistsViewState extends ConsumerState<ArtistsView> {
           l10n.indexLetterItems(letter, l10n.artistsCountShort(count)),
       gridTitle: l10n.indexGoToLetter,
       onHandleRect: _exclusion.handle,
-      child: RefreshIndicator(
-        onRefresh: () => ref.read(libraryControllerProvider.notifier).refresh(),
-        child: CustomScrollView(
-          controller: _scroll,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverVariedExtentList(
-              itemExtentBuilder: (index, _) =>
-                  model.items[index] is ArtistHeader
-                  ? _headerExtent
-                  : _rowExtent,
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final item = model.items[index];
-                return switch (item) {
-                  ArtistHeader(:final letter) => _LetterHeader(letter),
-                  ArtistEntry(:final artist, :final position) => _row(
-                    context,
-                    l10n,
-                    artist,
-                    position,
-                    disks,
-                    unavailable,
-                  ),
-                };
-              }, childCount: model.items.length),
-            ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: TsSize.listBottomInset),
-            ),
-          ],
-        ),
-      ),
+      child: list,
     );
   }
 
