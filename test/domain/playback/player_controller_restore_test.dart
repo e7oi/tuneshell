@@ -198,16 +198,57 @@ void main() {
 
   /// @verifies BR-012
   group('BR-012 rule 7: the first play', () {
-    test('loads the track, goes to the position, then plays', () async {
+    test(
+      'loads the track, waits for it, goes to the position, plays',
+      () async {
+        await controller.restore(saved());
+
+        await controller.play();
+        await settle();
+
+        expect(loadedPath(), 'internal/b.flac');
+        expect(engine.calls, ['open']);
+        expect(controller.state.playing, isTrue);
+
+        engine.emitDuration(const Duration(minutes: 5));
+        await settle();
+
+        expect(engine.calls, ['open', 'seek', 'play']);
+        expect(controller.state.position, const Duration(seconds: 80));
+      },
+    );
+
+    test(
+      'a pause before the track is loaded goes there and stays paused',
+      () async {
+        await controller.restore(saved());
+        await controller.play();
+        await controller.pause();
+
+        engine.emitDuration(const Duration(minutes: 5));
+        await settle();
+
+        expect(engine.calls, ['open', 'pause', 'seek']);
+        expect(controller.state.position, const Duration(seconds: 80));
+      },
+    );
+
+    test('a duration that never comes does not block the play', () async {
+      await controller.dispose();
+      engine = FakeAudioEngine();
+      controller = PlayerController(
+        engine: engine,
+        opener: FakeTrackSourceOpener(),
+        volumes: FakeVolumeEvents({internal}),
+        resumeWait: const Duration(milliseconds: 30),
+      );
+      await controller.start();
       await controller.restore(saved());
 
       await controller.play();
-      await settle();
+      await Future<void>.delayed(const Duration(milliseconds: 120));
 
-      expect(loadedPath(), 'internal/b.flac');
       expect(engine.calls, ['open', 'seek', 'play']);
-      expect(controller.state.position, const Duration(seconds: 80));
-      expect(controller.state.playing, isTrue);
     });
 
     test('a position of zero asks for no seek', () async {
@@ -226,7 +267,7 @@ void main() {
       engine.emitDuration(const Duration(seconds: 30));
       await settle();
 
-      expect(engine.calls.last, 'seek');
+      expect(engine.calls, ['open', 'play']);
       expect(controller.state.position, Duration.zero);
     });
 
@@ -245,6 +286,8 @@ void main() {
     test('is used once: the track played again starts at zero', () async {
       await controller.restore(saved());
       await controller.play();
+      engine.emitDuration(const Duration(minutes: 5));
+      await settle();
       await controller.stop();
       await settle();
       engine.calls.clear();

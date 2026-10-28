@@ -506,6 +506,8 @@ void main() {
 
       await tester.tap(find.byTooltip('Play'));
       await tester.pump();
+      engine.emitDuration(const Duration(seconds: 90));
+      await tester.pump();
       await tester.pump();
 
       expect(player.state.currentIndex, 1);

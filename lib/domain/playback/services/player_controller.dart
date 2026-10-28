@@ -37,7 +37,12 @@ class PlayerController {
     required this._opener,
     required this._volumes,
     Random? random,
+    this.resumeWait = const Duration(seconds: 3),
   }) : _random = random ?? Random();
+
+  /// How long a restored position waits for the duration of the track, which
+  /// says the engine has loaded it and accepts a seek (BR-012, rule 7).
+  final Duration resumeWait;
 
   /// FR-001: "previous" restarts the track after this much playback.
   static const restartThreshold = Duration(seconds: 3);
@@ -74,9 +79,10 @@ class PlayerController {
   /// (BR-012, rule 7); null once used or when there is none.
   Duration? _resumeAt;
 
-  /// The position just given to the engine for a restored track, kept until
-  /// its duration is known so that a position beyond it can be dropped.
-  Duration? _resumedAt;
+  /// The restored position of the track being loaded, until the engine has
+  /// loaded it: a seek before that is lost (seen on the device).
+  Duration? _resuming;
+  Timer? _resumeTimer;
 
   PlayerState get state => _state;
 
@@ -438,6 +444,7 @@ class PlayerController {
 
   /// Stops following the engine and the volumes. Does not stop the engine.
   Future<void> dispose() async {
+    _stopResuming();
     for (final subscription in _subscriptions) {
       await subscription.cancel();
     }
@@ -469,7 +476,7 @@ class PlayerController {
     Duration? startAt,
   }) async {
     _resumeAt = null;
-    _resumedAt = null;
+    _stopResuming();
     final skipped = <Track>[];
     var wrapped = false;
     var i = index;
@@ -513,19 +520,26 @@ class PlayerController {
         continue;
       }
       await _engine.open(source);
-      var at = Duration.zero;
-      if (startAt != null && i == index) {
-        try {
-          await _engine.seek(startAt);
-          at = startAt;
-          _resumedAt = startAt;
-        } on Object {
-          // The track starts from its beginning (BR-012, rule 7).
-        }
-      }
+      final resume = startAt != null && i == index ? startAt : null;
       // A late position of the previous track must not count for "previous".
-      _emit(_state.copyWith(status: PlayerStatus.ready, position: at));
-      if (_state.playing) await _engine.play();
+      _emit(
+        _state.copyWith(
+          status: PlayerStatus.ready,
+          position: resume ?? Duration.zero,
+        ),
+      );
+      if (resume == null) {
+        if (_state.playing) await _engine.play();
+        return;
+      }
+      // The sound starts once the position is reached, not before.
+      _resuming = resume;
+      final load = _load;
+      _resumeTimer = Timer(
+        resumeWait,
+        () => _enqueueEvent(() => _finishResuming(load, null)),
+      );
+      if (_state.duration != null) await _finishResuming(load, _state.duration);
       return;
     }
     _reportSkipped(skipped);
@@ -589,16 +603,34 @@ class PlayerController {
 
   void _onDuration(Duration? duration) {
     _emit(_state.copyWith(duration: () => duration));
-    final at = _resumedAt;
-    if (at == null || duration == null) return;
-    _resumedAt = null;
-    if (at <= duration) return;
+    if (_resuming == null || duration == null) return;
     final load = _load;
-    _enqueueEvent(() async {
-      if (load != _load || _state.status != PlayerStatus.ready) return;
-      await _engine.seek(Duration.zero);
-      _emit(_state.copyWith(position: Duration.zero));
-    });
+    _enqueueEvent(() => _finishResuming(load, duration));
+  }
+
+  void _stopResuming() {
+    _resuming = null;
+    _resumeTimer?.cancel();
+    _resumeTimer = null;
+  }
+
+  /// Goes to the restored position once the track is loaded, then plays if
+  /// that is what the user wants. A position beyond the duration, or a seek
+  /// the engine refuses, leaves the track at its start (BR-012, rule 7).
+  Future<void> _finishResuming(int load, Duration? duration) async {
+    final wanted = _resuming;
+    if (wanted == null || load != _load) return;
+    _stopResuming();
+    var at = duration != null && wanted > duration ? Duration.zero : wanted;
+    if (at > Duration.zero) {
+      try {
+        await _engine.seek(at);
+      } on Object {
+        at = Duration.zero;
+      }
+    }
+    _emit(_state.copyWith(position: at));
+    if (_state.playing) await _engine.play();
   }
 
   void _onIssue(EngineIssue issue) {

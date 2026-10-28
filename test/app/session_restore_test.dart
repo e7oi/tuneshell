@@ -169,6 +169,7 @@ void main() {
       await restore();
 
       await controller.play();
+      engine.emitDuration(const Duration(minutes: 5));
       await pumpEventQueue();
 
       expect(engine.calls, ['open', 'seek', 'play']);
