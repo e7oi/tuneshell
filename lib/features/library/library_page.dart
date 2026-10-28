@@ -84,19 +84,24 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     });
     // The first-launch screens have their own full-screen design (FR-014).
     final withBar = state is LibraryFolderChoice || state is LibraryLoadFailed;
+    // The tab stays built under the other ones, and the route tells every
+    // PopScope of the window about a Back: only the visible tab acts on it.
+    final visible = TickerMode.valuesOf(context).enabled;
     // Back leaves the explanation of the access before it leaves the app.
-    final explaining = state is LibraryWelcome && state.explaining;
+    final explaining = visible && state is LibraryWelcome && state.explaining;
     // Back closes the search before anything else (FR-027).
-    final searching =
+    // Watched even while hidden: an unwatched search would be forgotten.
+    final searchOpen =
         state is LibraryReady &&
         ref.watch(searchTextProvider(SearchView.tracks)) != null;
+    final searching = visible && searchOpen;
     return PopScope(
       canPop: !explaining && !searching,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         if (searching) {
           ref.read(searchTextProvider(SearchView.tracks).notifier).close();
-        } else {
+        } else if (explaining) {
           _controller.backToWelcome();
         }
       },
