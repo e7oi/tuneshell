@@ -382,6 +382,28 @@ void main() {
       expect(find.text('Plug in SSD to play this track'), findsOneWidget);
       expect(engine.loadedSource, isNull);
     });
+
+    /// @verifies FR-027
+    testWidgets('a track of an absent disk found by a search stays greyed', (
+      tester,
+    ) async {
+      await pumpWithAbsentDisk(tester);
+      await tester.tap(find.byTooltip('Search'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'gone');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Gone'), findsOneWidget);
+      final tile = tester.widget<TrackTile>(
+        find.widgetWithText(TrackTile, 'Gone'),
+      );
+      expect(tile.state, TrackTileState.unavailable);
+      await tester.tap(find.text('Gone'));
+      await tester.pump();
+      expect(find.text('Plug in SSD to play this track'), findsOneWidget);
+      expect(engine.loadedSource, isNull);
+    });
   });
 
   /// @verifies FR-011.9
@@ -395,6 +417,21 @@ void main() {
 
     expect(find.text('Your library is empty'), findsOneWidget);
     expect(find.widgetWithText(OutlinedButton, 'Refresh'), findsOneWidget);
+  });
+
+  /// @verifies FR-027
+  testWidgets('with an empty library the search button is disabled', (
+    tester,
+  ) async {
+    source.files = [info('Ringtones/r.ogg', title: 'Ring')];
+    await repository.ensureDisk(Disk.internal);
+    await repository.setChosenFolders(Disk.internal, {'Music'});
+    await pumpPage(tester);
+
+    final button = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.search_rounded),
+    );
+    expect(button.onPressed, isNull);
   });
 
   /// @verifies FR-027
