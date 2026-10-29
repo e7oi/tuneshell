@@ -273,6 +273,28 @@ void main() {
     });
 
     /// @verifies FR-005
+    test('a track without a cover shows the fallback image', () async {
+      await handler.dispose();
+      handler = PlayerAudioHandler(
+        controller,
+        describe: (_) => tagged,
+        artworkOf: (_) => null,
+        browseFallbackArt: (kind) =>
+            Uri.parse('content://art/${kind.name}.png'),
+        clock: () => now,
+        stopGrace: const Duration(milliseconds: 20),
+      );
+      await controller.setQueue([tagged.track]);
+      await controller.play();
+      await settle();
+
+      expect(
+        handler.mediaItem.value!.artUri,
+        Uri.parse('content://art/track.png'),
+      );
+    });
+
+    /// @verifies FR-005
     test('an artwork folder not known yet shows none', () async {
       await playing((_) => tagged, artworkOf: (_) => null);
 
@@ -429,7 +451,8 @@ void main() {
           controller,
           describe: (track) => known[track],
           artworkOf: (id) => Uri.parse('content://art/$id.jpg'),
-          browseFallbackArt: Uri.parse('content://art/placeholder.png'),
+          browseFallbackArt: (kind) =>
+              Uri.parse('content://art/${kind.name}.png'),
           mediaTree: () async => tree,
           clock: () => now,
           stopGrace: const Duration(milliseconds: 20),
@@ -438,9 +461,12 @@ void main() {
         final root = await handler.getChildren(AudioService.browsableRootId);
 
         expect(root.every((item) => item.artUri != null), isTrue);
-        expect(root.map((item) => item.artUri.toString()).toSet(), {
-          'content://art/placeholder.png',
-        });
+        expect(root.map((item) => item.artUri.toString()), [
+          'content://art/track.png',
+          'content://art/album.png',
+          'content://art/artist.png',
+          'content://art/track.png',
+        ]);
       },
     );
 

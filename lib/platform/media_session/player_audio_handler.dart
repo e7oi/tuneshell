@@ -13,6 +13,9 @@ typedef TrackDescriber = LibraryTrack? Function(Track track);
 
 /// Where the image of an artwork identifier is stored; null when the folder
 /// of the images is not known yet.
+/// What a browse row stands for, to choose its placeholder image.
+enum BrowseKind { album, artist, track }
+
 typedef ArtworkLocator = Uri? Function(String artwork);
 
 /// The media tree of the library as it is now; it may have to wait for the
@@ -50,9 +53,10 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   final TrackDescriber _describe;
   final ArtworkLocator _artworkOf;
 
-  /// The image of a browse row that has none: a car aligns the text of a row
-  /// with an image only when every row of the list has one (FR-029).
-  final Uri? _browseFallbackArt;
+  /// The image of a browse row that has none, by kind of row: a car aligns
+  /// the text of a row with an image only when every row of the list has one
+  /// (FR-029).
+  final Uri? Function(BrowseKind kind)? _browseFallbackArt;
 
   /// Null: the session cannot be browsed (no car, in the tests).
   final MediaTreeLocator? _mediaTree;
@@ -130,6 +134,14 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
+  /// The kind of a row, from the first part of its identifier (BR-013).
+  static BrowseKind _kindOf(String id) =>
+      switch (Uri.decodeComponent(id.split('|').first)) {
+        'albums' || 'album' => BrowseKind.album,
+        'artists' || 'artist' => BrowseKind.artist,
+        _ => BrowseKind.track,
+      };
+
   MediaItem _browseItem(MediaNode node) {
     final artwork = node.artwork;
     return MediaItem(
@@ -137,7 +149,8 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
       title: node.title,
       artist: node.subtitle,
       artUri:
-          (artwork == null ? null : _artworkOf(artwork)) ?? _browseFallbackArt,
+          (artwork == null ? null : _artworkOf(artwork)) ??
+          _browseFallbackArt?.call(_kindOf(node.id)),
       playable: node.playable,
     );
   }
@@ -216,7 +229,9 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
       artist: known?.info.artist,
       album: known?.info.album,
       duration: state.duration ?? known?.info.duration,
-      artUri: artwork == null ? null : _artworkOf(artwork),
+      artUri:
+          (artwork == null ? null : _artworkOf(artwork)) ??
+          _browseFallbackArt?.call(BrowseKind.track),
     );
   }
 

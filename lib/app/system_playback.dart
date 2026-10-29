@@ -48,9 +48,8 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
       artworkOf: (artwork) => artworkFolder == null
           ? null
           : Uri.parse('content://$artworkAuthority/$artwork.jpg'),
-      browseFallbackArt: Uri.parse(
-        'content://$artworkAuthority/placeholder.png',
-      ),
+      browseFallbackArt: (kind) =>
+          Uri.parse('content://$artworkAuthority/placeholder-${kind.name}.png'),
       mediaTree: () => currentMediaTree(container),
       // A car replaces the queue: the player no longer says where it came
       // from.

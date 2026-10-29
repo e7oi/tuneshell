@@ -3,6 +3,8 @@ package net.trtl3.tuneshell
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import java.io.File
@@ -21,19 +23,27 @@ class ArtworkProvider : ContentProvider() {
         if (mode != "r") throw FileNotFoundException("read only")
         val name = uri.lastPathSegment ?: throw FileNotFoundException()
         val file = when {
-            name == PLACEHOLDER -> placeholder()
+            PLACEHOLDER.matches(name) -> placeholder(name)
             NAME.matches(name) -> File(File(context!!.filesDir, "artwork"), name)
             else -> throw FileNotFoundException()
         }
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     }
 
-    private fun placeholder(): File {
-        val file = File(context!!.cacheDir, PLACEHOLDER)
+    /** A placeholder image drawn from a vector, once, in the cache folder. */
+    private fun placeholder(name: String): File {
+        val file = File(context!!.cacheDir, name)
         if (!file.exists()) {
-            context!!.resources.openRawResource(R.drawable.ic_launcher_foreground).use { input ->
-                file.outputStream().use { input.copyTo(it) }
+            val icon = when (PLACEHOLDER.matchEntire(name)!!.groupValues[1]) {
+                "album" -> R.drawable.ic_browse_album
+                "artist" -> R.drawable.ic_browse_artist
+                else -> R.drawable.ic_browse_track
             }
+            val drawable = context!!.getDrawable(icon)!!
+            val bitmap = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888)
+            drawable.setBounds(0, 0, SIZE, SIZE)
+            drawable.draw(Canvas(bitmap))
+            file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
         }
         return file
     }
@@ -60,7 +70,8 @@ class ArtworkProvider : ContentProvider() {
     ) = 0
 
     private companion object {
-        const val PLACEHOLDER = "placeholder.png"
+        const val SIZE = 256
+        val PLACEHOLDER = Regex("placeholder-(album|artist|track)\\.png")
         val NAME = Regex("[A-Za-z0-9_-]+\\.jpg")
     }
 }
