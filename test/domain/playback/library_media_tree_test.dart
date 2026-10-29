@@ -419,15 +419,15 @@ void main() {
       expect(found.length, many.length);
     });
 
-    test('rule 4: a track found in a letter queues that letter', () {
+    test('rule 5: a track found in a letter queues the whole library', () {
       final tree = treeOf(tracks: many, maxChildren: 10);
       final cherry = tree.children('tracks').last;
       final cherries = tree.children(cherry.id);
 
       final play = tree.action(cherries.last.id)! as PlayTracks;
 
-      expect(play.queue.length, 3);
-      expect(play.startIndex, 2);
+      expect(play.queue.length, many.length);
+      expect(play.queue[play.startIndex], many.last.track);
     });
 
     test('a list at the limit stays whole', () {

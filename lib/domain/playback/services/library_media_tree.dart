@@ -276,11 +276,9 @@ class LibraryMediaTree implements MediaTree {
     final parts = _split(parentId);
     switch (parts.first) {
       case _tracksId:
-        final prefix = _prefixOf(parts);
-        return [
-          for (var i = 0; i < _tracks.length; i++)
-            if (_trackKeys[i].startsWith(prefix)) _tracks[i],
-        ];
+        // The whole list, whatever letter the track was found under: the
+        // queue is the library, as when playing from the Tracks view.
+        return _tracks;
       case 'album':
         final album = _albumOf(parts.length > 1 ? parts[1] : '');
         return album == null ? const [] : _playable(album.tracks);
