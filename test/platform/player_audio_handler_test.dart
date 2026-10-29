@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/playback/model/playback_session.dart';
+import 'package:tuneshell/domain/playback/model/repeat_mode.dart';
 import 'package:tuneshell/domain/playback/ports/media_tree.dart';
 import 'package:tuneshell/domain/playback/services/library_media_tree.dart';
 import 'package:tuneshell/domain/playback/services/player_controller.dart';
@@ -97,11 +98,15 @@ void main() {
       await controller.play();
       await settle();
 
-      expect(playback().controls, [
+      expect(playback().controls.take(4), [
         MediaControl.skipToPrevious,
         MediaControl.pause,
         MediaControl.stop,
         MediaControl.skipToNext,
+      ]);
+      expect(playback().controls.skip(4).map((c) => c.customAction?.name), [
+        'shuffle',
+        'repeat',
       ]);
       expect(playback().systemActions, contains(MediaAction.seek));
 
@@ -398,6 +403,63 @@ void main() {
   });
 
   /// @verifies FR-029
+  group('BR-009 shuffle and repeat from a car', () {
+    /// @verifies BR-009
+    test(
+      'the shuffle action toggles the shuffle and shows its state',
+      () async {
+        await controller.setQueue([a.track, b.track]);
+        await settle();
+
+        await handler.customAction('shuffle');
+        await settle();
+
+        expect(controller.state.shuffle, isTrue);
+        expect(
+          handler.playbackState.value.shuffleMode,
+          AudioServiceShuffleMode.all,
+        );
+        await handler.customAction('shuffle');
+        expect(controller.state.shuffle, isFalse);
+      },
+    );
+
+    /// @verifies BR-009
+    test('the repeat action goes through off, all and one', () async {
+      await controller.setQueue([a.track, b.track]);
+      await settle();
+
+      await handler.customAction('repeat');
+      expect(controller.state.repeat, RepeatMode.all);
+      await handler.customAction('repeat');
+      expect(controller.state.repeat, RepeatMode.one);
+      await settle();
+      expect(
+        handler.playbackState.value.repeatMode,
+        AudioServiceRepeatMode.one,
+      );
+      await handler.customAction('repeat');
+      expect(controller.state.repeat, RepeatMode.off);
+    });
+
+    /// @verifies BR-009
+    test('the standard modes of a controller go the same way', () async {
+      await controller.setQueue([a.track, b.track]);
+
+      await handler.setShuffleMode(AudioServiceShuffleMode.all);
+      await handler.setRepeatMode(AudioServiceRepeatMode.all);
+
+      expect(controller.state.shuffle, isTrue);
+      expect(controller.state.repeat, RepeatMode.all);
+    });
+
+    test('an unknown action changes nothing', () async {
+      await handler.customAction('other');
+
+      expect(controller.state.shuffle, isFalse);
+    });
+  });
+
   group('FR-029 browsing from a car', () {
     late LibraryMediaTree tree;
     var chosen = 0;

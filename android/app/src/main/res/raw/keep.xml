@@ -7,7 +7,7 @@
   service never reaches the foreground (no channel, no notification, no controls).
   Only these icons are kept, not every drawable. The small icon of the
   notification is looked up by name too (AudioServiceConfig.androidNotificationIcon).
-  The tab icons of the car are named in android.resource URIs (FR-029).
+  The tab icons of the car are named in android.resource URIs and the shuffle and repeat actions by name (FR-029).
 -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/audio_service_*,@drawable/ic_notification,@drawable/ic_tab_*" />
+    tools:keep="@drawable/audio_service_*,@drawable/ic_notification,@drawable/ic_tab_*,@drawable/ic_shuffle_*,@drawable/ic_repeat_*" />

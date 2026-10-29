@@ -5,6 +5,7 @@ import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/playback/model/media_node.dart';
 import 'package:tuneshell/domain/playback/model/player_state.dart';
+import 'package:tuneshell/domain/playback/model/repeat_mode.dart';
 import 'package:tuneshell/domain/playback/ports/media_tree.dart';
 import 'package:tuneshell/domain/playback/services/player_controller.dart';
 
@@ -95,6 +96,42 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> skipToNext() => _controller.next();
+
+  static const _shuffleAction = 'shuffle';
+  static const _repeatAction = 'repeat';
+
+  /// The two buttons of a car's player: shuffle on or off, repeat through
+  /// off, all, one (BR-009).
+  @override
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) =>
+      switch (name) {
+        _shuffleAction => _controller.setShuffle(
+          enabled: !_controller.state.shuffle,
+        ),
+        _repeatAction => _controller.setRepeat(
+          switch (_controller.state.repeat) {
+            RepeatMode.off => RepeatMode.all,
+            RepeatMode.all => RepeatMode.one,
+            RepeatMode.one => RepeatMode.off,
+          },
+        ),
+        _ => Future<void>.value(),
+      };
+
+  @override
+  Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) =>
+      _controller.setShuffle(
+        enabled: shuffleMode != AudioServiceShuffleMode.none,
+      );
+
+  @override
+  Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) =>
+      _controller.setRepeat(switch (repeatMode) {
+        AudioServiceRepeatMode.none => RepeatMode.off,
+        AudioServiceRepeatMode.one => RepeatMode.one,
+        AudioServiceRepeatMode.all ||
+        AudioServiceRepeatMode.group => RepeatMode.all,
+      });
 
   @override
   Future<void> skipToPrevious() => _controller.previous();
@@ -255,9 +292,39 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
       if (state.playing) MediaControl.pause else MediaControl.play,
       MediaControl.stop,
       MediaControl.skipToNext,
+      // Actions of the player of a car; the notification only shows the
+      // four above (FR-029, BR-009).
+      MediaControl.custom(
+        androidIcon: state.shuffle
+            ? 'drawable/ic_shuffle_on'
+            : 'drawable/ic_shuffle_off',
+        label: 'Shuffle',
+        name: _shuffleAction,
+      ),
+      MediaControl.custom(
+        androidIcon: switch (state.repeat) {
+          RepeatMode.off => 'drawable/ic_repeat_off',
+          RepeatMode.all => 'drawable/ic_repeat_all',
+          RepeatMode.one => 'drawable/ic_repeat_one',
+        },
+        label: 'Repeat',
+        name: _repeatAction,
+      ),
     ],
     androidCompactActionIndices: const [0, 1, 3],
-    systemActions: const {MediaAction.seek},
+    systemActions: const {
+      MediaAction.seek,
+      MediaAction.setShuffleMode,
+      MediaAction.setRepeatMode,
+    },
+    shuffleMode: state.shuffle
+        ? AudioServiceShuffleMode.all
+        : AudioServiceShuffleMode.none,
+    repeatMode: switch (state.repeat) {
+      RepeatMode.off => AudioServiceRepeatMode.none,
+      RepeatMode.all => AudioServiceRepeatMode.all,
+      RepeatMode.one => AudioServiceRepeatMode.one,
+    },
     processingState: switch (state.status) {
       PlayerStatus.idle || PlayerStatus.stopped => AudioProcessingState.idle,
       PlayerStatus.loading => AudioProcessingState.loading,
@@ -272,7 +339,9 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   bool _differs(PlaybackState shown, PlaybackState next) {
     if (shown.playing != next.playing ||
         shown.processingState != next.processingState ||
-        shown.queueIndex != next.queueIndex) {
+        shown.queueIndex != next.queueIndex ||
+        shown.shuffleMode != next.shuffleMode ||
+        shown.repeatMode != next.repeatMode) {
       return true;
     }
     final elapsed = shown.playing
