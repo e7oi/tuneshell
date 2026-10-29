@@ -46,6 +46,12 @@
                 <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
         </service>
+        <!-- Artwork for the media browser of a car, which runs in another
+             process and cannot read the private folder (FR-029). -->
+        <provider
+            android:name=".ArtworkProvider"
+            android:authorities="net.trtl3.tuneshell.artwork"
+            android:exported="true" />
         <receiver
             android:name="com.ryanheise.audioservice.MediaButtonReceiver"
             android:exported="true">
@@ -53,6 +59,11 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
         </receiver>
+        <!-- Android Auto: TuneShell is a media app, browsed through the media
+             service above (FR-029, ADR-020). -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

@@ -213,5 +213,6 @@
   "privacyAskFiles": "Lire tes fichiers audio, pour construire ta bibliothèque.",
   "privacyAskNotification": "Afficher la notification de lecture, pour commander la musique depuis l'écran verrouillé.",
   "privacyAskFolders": "L'accès au dossier d'un disque amovible, seulement ceux que tu choisis.",
-  "privacyAskBackground": "Maintenir la musique quand l'écran est éteint."
+  "privacyAskBackground": "Maintenir la musique quand l'écran est éteint.",
+  "carEmptyLibrary": "Ouvre TuneShell sur le téléphone pour choisir ta musique"
 }

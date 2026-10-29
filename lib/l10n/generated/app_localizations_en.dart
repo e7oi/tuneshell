@@ -1005,4 +1005,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get privacyAskBackground =>
       'Keeping the music going when the screen is off.';
+
+  @override
+  String get carEmptyLibrary =>
+      'Open TuneShell on your phone to choose your music';
 }

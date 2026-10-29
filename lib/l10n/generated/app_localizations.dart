@@ -1381,6 +1381,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keeping the music going when the screen is off.'**
   String get privacyAskBackground;
+
+  /// The only entry of the car screen while the library is empty (BR-013, rule 8).
+  ///
+  /// In en, this message translates to:
+  /// **'Open TuneShell on your phone to choose your music'**
+  String get carEmptyLibrary;
 }
 
 class _AppLocalizationsDelegate

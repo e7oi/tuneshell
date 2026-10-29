@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuneshell/app/media_browsing.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
@@ -11,6 +12,9 @@ import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/platform/audio_session_interruptions.dart';
 import 'package:tuneshell/platform/media_session/player_audio_handler.dart';
+
+/// The authority of the Kotlin `ArtworkProvider`.
+const artworkAuthority = 'net.trtl3.tuneshell.artwork';
 
 /// Hands the player controller of [container] to Android: audio focus
 /// (BR-005) and the media session with its notification (FR-005). Runs once
@@ -39,9 +43,24 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
     builder: () => PlayerAudioHandler(
       controller,
       describe: (track) => container.read(trackIndexProvider)[track],
+      // A content URI: the car's process cannot read the private folder
+      // (ArtworkProvider, FR-029).
       artworkOf: (artwork) => artworkFolder == null
           ? null
-          : Uri.file('$artworkFolder/$artwork.jpg'),
+          : Uri.parse('content://$artworkAuthority/$artwork.jpg'),
+      tabIcon: (kind) => Uri.parse(
+        'android.resource://net.trtl3.tuneshell/drawable/ic_tab_${switch (kind) {
+          BrowseKind.album => 'albums',
+          BrowseKind.artist => 'artists',
+          BrowseKind.track => 'tracks',
+        }}',
+      ),
+      browseFallbackArt: (kind) =>
+          Uri.parse('content://$artworkAuthority/placeholder-${kind.name}.png'),
+      mediaTree: () => currentMediaTree(container),
+      // A car replaces the queue: the player no longer says where it came
+      // from.
+      onQueueChosen: () => container.read(queueOriginProvider.notifier).clear(),
     ),
     config: AudioServiceConfig(
       androidNotificationChannelId: 'net.trtl3.tuneshell.playback',
@@ -55,6 +74,7 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
     ),
   );
 
+  keepMediaTreeReadable(container);
   keepSessionInformed(container, handler);
 }
 

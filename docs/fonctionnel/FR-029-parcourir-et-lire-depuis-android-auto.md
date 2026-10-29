@@ -10,7 +10,7 @@ TuneShell apparaît dans Android Auto, se parcourt à l'écran de la voiture et 
 
 1. **Déclaration.** L'application se déclare application multimédia d'Android Auto ; aucune permission ajoutée, pas d'`INTERNET` (D15). Elle est visible dans le lanceur d'Android Auto.
 2. **Navigation.** La racine et les niveaux suivent BR-013. Chaque élément montre titre, sous-titre (artiste pour un album ou une piste) et pochette quand elle existe ; sans pochette, une icône neutre de la marque.
-3. **Lecture.** Choisir une piste, un album ou un artiste lance la lecture (BR-013, règle 5). « Reprendre » rejoue la session enregistrée (BR-013, règle 2).
+3. **Lecture.** Albums et artistes s'ouvrent comme des dossiers : un artiste donne ses albums, un album donne ses pistes. Choisir une piste lance la lecture avec la file de sa liste (BR-013, règle 5). La première entrée de la racine, quand une file existe, est la piste courante : la choisir reprend cette file telle quelle (BR-013, règle 2).
 4. **Commandes.** Lecture, pause, précédent, suivant et déplacement dans la piste agissent sur la lecture en cours, comme dans la notification (FR-005). L'écran de la voiture montre la piste, l'artiste, l'album, la pochette et la position.
 5. **Téléphone non ouvert.** Tout fonctionne sans que l'écran du téléphone soit allumé et sans que l'application ait été ouverte depuis le démarrage du téléphone (ADR-020).
 6. **Réactivité.** La racine s'affiche sans attente perceptible ; une liste longue s'affiche en un temps que la voiture accepte (seuil mesuré, voir À valider).
@@ -29,4 +29,8 @@ Recherche vocale, commandes vocales, Android Automotive OS, CarPlay, publication
 
 ## As-built
 
-À renseigner à la livraison.
+MPL-060, 2026-10-28, test appareil non fait (D14 : il exige la voiture). Arbre : `LibraryMediaTree` (`lib/domain/playback/services/library_media_tree.dart`, Dart pur, port `MediaTree`, modèle `MediaNode` et actions `ResumeAction` et `PlayTracks`), construit à la demande par `currentMediaTree` (`lib/app/media_browsing.dart`) à partir des vues Albums, Artistes et Pistes. `PlayerAudioHandler` répond à `getChildren`, `getMediaItem` et `playFromMediaId` ; choisir une piste efface la provenance de la file du lecteur (`onQueueChosen`). Déclaration : métadonnée `com.google.android.gms.car.application` et `res/xml/automotive_app_desc.xml`, aucune permission ajoutée. Texte de la bibliothèque vide : clé ARB `carEmptyLibrary`. Tests : `library_media_tree_test`, `player_audio_handler_test` (groupe FR-029), `media_browsing_test`. Protocole : `HOWTO.md` §23.
+
+- Seuil de découpage des longues listes : 100 entrées (`maxChildren`), à mesurer en voiture (exigence 6).
+- `keepMediaTreeReadable` garde les groupes d'albums et d'artistes calculés pendant toute la vie du processus (sinon Riverpod met le flux en pause) : coût processeur à surveiller pendant une indexation.
+- Les pochettes sont données en `file://` (comme la notification) ; si Android Auto ne les affiche pas, passer par un `content://` (ADR-020, risque 2).

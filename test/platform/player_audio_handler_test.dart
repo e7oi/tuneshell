@@ -1,7 +1,11 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
+import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/playback/model/playback_session.dart';
+import 'package:tuneshell/domain/playback/model/repeat_mode.dart';
+import 'package:tuneshell/domain/playback/ports/media_tree.dart';
+import 'package:tuneshell/domain/playback/services/library_media_tree.dart';
 import 'package:tuneshell/domain/playback/services/player_controller.dart';
 import 'package:tuneshell/platform/media_session/player_audio_handler.dart';
 
@@ -95,11 +99,15 @@ void main() {
       await controller.play();
       await settle();
 
-      expect(playback().controls, [
+      expect(playback().controls.take(4), [
         MediaControl.skipToPrevious,
         MediaControl.pause,
         MediaControl.stop,
         MediaControl.skipToNext,
+      ]);
+      expect(playback().controls.skip(4).map((c) => c.customAction?.name), [
+        'shuffle',
+        'repeat',
       ]);
       expect(playback().systemActions, contains(MediaAction.seek));
 
@@ -271,6 +279,28 @@ void main() {
     });
 
     /// @verifies FR-005
+    test('a track without a cover shows the fallback image', () async {
+      await handler.dispose();
+      handler = PlayerAudioHandler(
+        controller,
+        describe: (_) => tagged,
+        artworkOf: (_) => null,
+        browseFallbackArt: (kind) =>
+            Uri.parse('content://art/${kind.name}.png'),
+        clock: () => now,
+        stopGrace: const Duration(milliseconds: 20),
+      );
+      await controller.setQueue([tagged.track]);
+      await controller.play();
+      await settle();
+
+      expect(
+        handler.mediaItem.value!.artUri,
+        Uri.parse('content://art/track.png'),
+      );
+    });
+
+    /// @verifies FR-005
     test('an artwork folder not known yet shows none', () async {
       await playing((_) => tagged, artworkOf: (_) => null);
 
@@ -370,6 +400,246 @@ void main() {
       await stopped();
 
       expect(playback().processingState, AudioProcessingState.idle);
+    });
+  });
+
+  /// @verifies FR-029
+  group('FR-005 the queue shown to the system', () {
+    /// @verifies FR-005
+    test(
+      'shows the queue, the current track in it, and skips to an item',
+      () async {
+        await controller.setQueue([a.track, b.track], startIndex: 1);
+        await settle();
+
+        expect(handler.queue.value.map((i) => i.id), [
+          '${a.track.disk.value}/${a.track.relativePath}',
+          '${b.track.disk.value}/${b.track.relativePath}',
+        ]);
+        expect(handler.playbackState.value.queueIndex, 1);
+
+        await handler.skipToQueueItem(0);
+        await settle();
+
+        expect(controller.state.currentIndex, 0);
+        expect(handler.playbackState.value.queueIndex, 0);
+      },
+    );
+
+    /// @verifies FR-005
+    test(
+      'a long queue is shown as a window around the current track',
+      () async {
+        final tracks = [
+          for (var i = 0; i < 300; i++)
+            Track(disk: internalDisk, relativePath: 'Music/t$i.flac'),
+        ];
+        await controller.setQueue(tracks, startIndex: 150);
+        await settle();
+
+        expect(handler.queue.value.length, 101);
+        expect(handler.queue.value.first.id, endsWith('t130.flac'));
+        expect(handler.playbackState.value.queueIndex, 20);
+
+        await handler.skipToQueueItem(21);
+        await settle();
+
+        expect(controller.state.currentIndex, 151);
+      },
+    );
+  });
+
+  group('BR-009 shuffle and repeat from a car', () {
+    /// @verifies BR-009
+    test(
+      'the shuffle action toggles the shuffle and shows its state',
+      () async {
+        await controller.setQueue([a.track, b.track]);
+        await settle();
+
+        await handler.customAction('shuffle');
+        await settle();
+
+        expect(controller.state.shuffle, isTrue);
+        expect(
+          handler.playbackState.value.shuffleMode,
+          AudioServiceShuffleMode.all,
+        );
+        await handler.customAction('shuffle');
+        expect(controller.state.shuffle, isFalse);
+      },
+    );
+
+    /// @verifies BR-009
+    test('the repeat action goes through off, all and one', () async {
+      await controller.setQueue([a.track, b.track]);
+      await settle();
+
+      await handler.customAction('repeat');
+      expect(controller.state.repeat, RepeatMode.all);
+      await handler.customAction('repeat');
+      expect(controller.state.repeat, RepeatMode.one);
+      await settle();
+      expect(
+        handler.playbackState.value.repeatMode,
+        AudioServiceRepeatMode.one,
+      );
+      await handler.customAction('repeat');
+      expect(controller.state.repeat, RepeatMode.off);
+    });
+
+    /// @verifies BR-009
+    test('the standard modes of a controller go the same way', () async {
+      await controller.setQueue([a.track, b.track]);
+
+      await handler.setShuffleMode(AudioServiceShuffleMode.all);
+      await handler.setRepeatMode(AudioServiceRepeatMode.all);
+
+      expect(controller.state.shuffle, isTrue);
+      expect(controller.state.repeat, RepeatMode.all);
+    });
+
+    test('an unknown action changes nothing', () async {
+      await handler.customAction('other');
+
+      expect(controller.state.shuffle, isFalse);
+    });
+  });
+
+  group('FR-029 browsing from a car', () {
+    late LibraryMediaTree tree;
+    var chosen = 0;
+
+    Future<void> browsable() async {
+      await handler.dispose();
+      tree = LibraryMediaTree(
+        albums: [
+          MediaAlbum(
+            key: 'k',
+            title: 'Album',
+            artist: 'Artist',
+            tracks: [a, b],
+          ),
+        ],
+        artists: const [],
+        tracks: [a, b],
+        labels: const MediaTreeLabels(
+          albums: 'Albums',
+          artists: 'Artists',
+          tracks: 'Tracks',
+          unknownAlbum: '?',
+          unknownArtist: '?',
+          empty: 'Empty',
+        ),
+        fold: (text) => text.toLowerCase(),
+        current: a,
+      );
+      chosen = 0;
+      handler = PlayerAudioHandler(
+        controller,
+        describe: (track) => known[track],
+        mediaTree: () async => tree,
+        onQueueChosen: () => chosen++,
+        clock: () => now,
+        stopGrace: const Duration(milliseconds: 20),
+      );
+    }
+
+    test('the roots of the tree are the ones audio_service asks for', () {
+      expect(MediaTree.rootId, AudioService.browsableRootId);
+      expect(MediaTree.recentId, AudioService.recentRootId);
+    });
+
+    test(
+      'every row has an image: the art of its album or the fallback',
+      () async {
+        await browsable();
+        await handler.dispose();
+        handler = PlayerAudioHandler(
+          controller,
+          describe: (track) => known[track],
+          artworkOf: (id) => Uri.parse('content://art/$id.jpg'),
+          tabIcon: (kind) => Uri.parse('android.resource://x/tab_${kind.name}'),
+          browseFallbackArt: (kind) =>
+              Uri.parse('content://art/${kind.name}.png'),
+          mediaTree: () async => tree,
+          clock: () => now,
+          stopGrace: const Duration(milliseconds: 20),
+        );
+
+        final root = await handler.getChildren(AudioService.browsableRootId);
+
+        expect(root.every((item) => item.artUri != null), isTrue);
+        expect(root.map((item) => item.artUri.toString()), [
+          'content://art/track.png',
+          'android.resource://x/tab_album',
+          'android.resource://x/tab_artist',
+          'android.resource://x/tab_track',
+        ]);
+      },
+    );
+
+    test('lists the children of a folder, folders not playable', () async {
+      await browsable();
+
+      final root = await handler.getChildren(AudioService.browsableRootId);
+
+      expect(root.map((i) => i.title), ['A', 'Albums', 'Artists', 'Tracks']);
+      expect(root.map((i) => i.playable), [true, false, false, false]);
+      final tracks = await handler.getChildren('tracks');
+      expect(tracks.map((i) => i.title), ['A', 'b.mp3']);
+      expect(tracks.first.artist, 'Artist');
+    });
+
+    test('gives one item back by identifier', () async {
+      await browsable();
+      final id = (await handler.getChildren('tracks')).first.id;
+
+      expect((await handler.getMediaItem(id))!.title, 'A');
+      expect(await handler.getMediaItem('garbage'), isNull);
+    });
+
+    test('a session that cannot be browsed has no children', () async {
+      expect(await handler.getChildren('root'), isEmpty);
+      expect(await handler.getMediaItem('root'), isNull);
+      await handler.playFromMediaId('anything');
+      expect(engine.state.playing, isFalse);
+    });
+
+    test('choosing a track queues its list from there and plays', () async {
+      await browsable();
+      final second = (await handler.getChildren('tracks')).last;
+
+      await handler.playFromMediaId(second.id);
+      await settle();
+
+      expect(chosen, 1);
+      expect(controller.state.queue, [a.track, b.track]);
+      expect(controller.state.currentTrack, b.track);
+      expect(controller.state.playing, isTrue);
+    });
+
+    test(
+      '"Reprendre" plays the queue already held, without replacing it',
+      () async {
+        await browsable();
+
+        await handler.playFromMediaId('resume');
+        await settle();
+
+        expect(chosen, 0);
+        expect(controller.state.currentTrack, a.track);
+        expect(controller.state.playing, isTrue);
+      },
+    );
+
+    test('an unknown identifier changes nothing', () async {
+      await browsable();
+
+      await handler.playFromMediaId('t|tracks|x|y');
+
+      expect(chosen, 0);
+      expect(controller.state.playing, isFalse);
     });
   });
 }
