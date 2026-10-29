@@ -48,6 +48,13 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
       artworkOf: (artwork) => artworkFolder == null
           ? null
           : Uri.parse('content://$artworkAuthority/$artwork.jpg'),
+      tabIcon: (kind) => Uri.parse(
+        'android.resource://net.trtl3.tuneshell/drawable/ic_tab_${switch (kind) {
+          BrowseKind.album => 'albums',
+          BrowseKind.artist => 'artists',
+          BrowseKind.track => 'tracks',
+        }}',
+      ),
       browseFallbackArt: (kind) =>
           Uri.parse('content://$artworkAuthority/placeholder-${kind.name}.png'),
       mediaTree: () => currentMediaTree(container),

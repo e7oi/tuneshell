@@ -34,6 +34,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     required this._describe,
     this._artworkOf = _noArtwork,
     this._browseFallbackArt,
+    this._tabIcon,
     this._mediaTree,
     this._onQueueChosen,
     this._clock = DateTime.now,
@@ -57,6 +58,11 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   /// the text of a row with an image only when every row of the list has one
   /// (FR-029).
   final Uri? Function(BrowseKind kind)? _browseFallbackArt;
+
+  /// The icon of a tab of the car: the three folders of the root. A car
+  /// draws a tab from its icon alone, and reads it from a resource of the
+  /// application rather than from a provider.
+  final Uri? Function(BrowseKind kind)? _tabIcon;
 
   /// Null: the session cannot be browsed (no car, in the tests).
   final MediaTreeLocator? _mediaTree;
@@ -142,6 +148,13 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
         _ => BrowseKind.track,
       };
 
+  Uri? _tabIconOf(String id) => switch (id) {
+    'albums' => _tabIcon?.call(BrowseKind.album),
+    'artists' => _tabIcon?.call(BrowseKind.artist),
+    'tracks' => _tabIcon?.call(BrowseKind.track),
+    _ => null,
+  };
+
   MediaItem _browseItem(MediaNode node) {
     final artwork = node.artwork;
     return MediaItem(
@@ -149,6 +162,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
       title: node.title,
       artist: node.subtitle,
       artUri:
+          _tabIconOf(node.id) ??
           (artwork == null ? null : _artworkOf(artwork)) ??
           _browseFallbackArt?.call(_kindOf(node.id)),
       playable: node.playable,

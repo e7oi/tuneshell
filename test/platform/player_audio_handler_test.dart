@@ -451,6 +451,7 @@ void main() {
           controller,
           describe: (track) => known[track],
           artworkOf: (id) => Uri.parse('content://art/$id.jpg'),
+          tabIcon: (kind) => Uri.parse('android.resource://x/tab_${kind.name}'),
           browseFallbackArt: (kind) =>
               Uri.parse('content://art/${kind.name}.png'),
           mediaTree: () async => tree,
@@ -463,9 +464,9 @@ void main() {
         expect(root.every((item) => item.artUri != null), isTrue);
         expect(root.map((item) => item.artUri.toString()), [
           'content://art/track.png',
-          'content://art/album.png',
-          'content://art/artist.png',
-          'content://art/track.png',
+          'android.resource://x/tab_album',
+          'android.resource://x/tab_artist',
+          'android.resource://x/tab_track',
         ]);
       },
     );
