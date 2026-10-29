@@ -25,7 +25,7 @@
 ## Résultats de la mise en œuvre (2026-10-28)
 
 1. **Démarrage sans interface** : déjà couvert. `TuneShellApplication` crée le moteur de `audio_service` et câble les canaux natifs avant toute activité ; le service lance `main()`. Reste à mesurer en voiture le délai de la première racine : `main()` charge les réglages avant d'appeler `startSystemPlayback`.
-2. **Pochettes** : `file://` comme la notification. Non vérifié en voiture ; sinon `content://`.
+2. **Pochettes** : `file://` comme la notification. Vérifié en voiture le 2026-10-28 : affichées sur l'écran de lecture et le tableau de bord, pas dans les listes (suite possible : `content://`).
 3. **Taille des listes** : seuil de 100 entrées par niveau, découpage par lettres successives jusqu'à ce que chaque niveau tienne (le niveau le plus profond peut dépasser s'il n'y a plus de lettre à couper). À mesurer.
 4. **Sources inconnues** : non vérifié.
 5. **Disques amovibles** : même chemin que la notification ; non vérifié depuis la voiture.

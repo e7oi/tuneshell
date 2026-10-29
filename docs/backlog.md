@@ -136,11 +136,11 @@ Fonctionnalité: Écouter dans la voiture avec Android Auto
 **Risques.** Démarrage sans interface assez rapide pour Android Auto, pochettes en `content://`, limite de taille des listes (ADR-020) : à mesurer avant de coder le reste. Le test réel exige la voiture (D14).
 
 #### Livraison — 2026-10-28
-Statut : ⚠️ partiel (tout ce qui se vérifie hors voiture est fait ; la voiture n'est pas testée)
+Statut : ✅ fait (voiture testée le 2026-10-28 ; une limite connue : pas de pochettes dans les listes)
 Résumé : TuneShell déclare Android Auto et répond à la navigation (`getChildren`, `getMediaItem`) et à `playFromMediaId` à partir d'un arbre média pur (`LibraryMediaTree`, BR-013) : Reprendre, Albums, Artistes, Pistes, listes longues découpées par lettres, pistes d'un disque absent masquées. Démarrage sans interface couvert par `TuneShellApplication`.
 Fiches touchées : FR-029 (as-built), BR-013 (règles 1, 2 et 4 reformulées pour coller à ce qui est construit), ADR-020 (résultats) ; HOWTO §23.
 Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → 979 tests verts ; `.github/scripts/check-repo.sh` → vert.
-Test appareil (Pixel, release) : non testé en voiture (HOWTO §23, décision du propriétaire : pas d'émulateur DHU). Inconnues à mesurer sur place : délai de la première racine, pochettes en `file://`, taille et profondeur des listes, démarrage à froid, « Sources inconnues ».
+Test appareil (Pixel, release) : testé en voiture le 2026-10-28 (HOWTO §23). Étapes 1 à 5, 8 et 9 : OK. Étape 6 : pochettes OK sur l'écran de lecture et le tableau de bord, absentes des listes (ADR-020, risque 2 : `file://` lu pour la lecture, pas pour les listes). Étape 7 : OK, la voiture n'a pas de touches lecture/pause/arrêt au volant. Étape 12 : le guidage Google Maps baisse le volume de la musique ; un appel entrant ou sortant arrête la musique, qui reprend après raccrochage (comportement attendu, BR-005). Étapes 10 (pas de SSD) et 11 : non testées, non bloquantes.
 Revue QA : ✅ après un tour de corrections (clés de tri cohérentes avec `trim`, disques amovibles lus au démarrage à froid, chaînes de dossiers à voie unique compressées, caches de clés et mémo de l'arbre, « Reprendre » omis si le disque est absent, identifiants mal formés sans exception) — Non vérifié : tout ce qui dépend d'Android Auto lui-même.
 Description de PR : `feat(android): browse and play from Android Auto (MPL-060)` ; voir le résumé ci-dessus ; limites : voiture non testée.
 Décisions prises en route : le titre d'un dossier de lettres est le préfixe commun en majuscules ; l'arbre est mémoïsé jusqu'à un changement de bibliothèque, de disques, de piste courante ou de langue.
