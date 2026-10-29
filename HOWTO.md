@@ -488,4 +488,5 @@ Build release (D14) installée, bibliothèque réelle, Android Auto installé su
 10. **Disque absent :** SSD débranché, application fermée puis voiture branchée (démarrage à froid : les disques sont lus par la requête de la voiture). Attendu : ses pistes, albums et artistes seuls n'apparaissent pas, et « Reprendre » n'est pas proposé si la piste courante y était. **Non testé** tant que cela n'a pas été vu en voiture.
 11. **Bibliothèque vide :** données effacées. Attendu : un seul message demandant d'ouvrir TuneShell sur le téléphone.
 12. **Aléatoire et répétition (MPL-063) :** sur l'écran de lecture de la voiture, toucher le bouton aléatoire puis le bouton répétition (trois états : aucune, tout, une piste). Attendu : l'icône suit l'état, le lecteur du téléphone affiche le même état. **Non testé** tant que cela n'a pas été vu en voiture.
-13. **Appel et navigation vocale :** pendant la lecture. Attendu : interruptions comme sur le téléphone (BR-005).
+13. **File d'attente :** sur l'écran de lecture de la voiture, ouvrir la file : les pistes précédentes et suivantes apparaissent (une fenêtre de 20 avant et 80 après la piste courante) ; en toucher une la joue. **Non testé** tant que cela n'a pas été vu en voiture.
+14. **Appel et navigation vocale :** pendant la lecture. Attendu : interruptions comme sur le téléphone (BR-005).

@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
+import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/playback/model/playback_session.dart';
 import 'package:tuneshell/domain/playback/model/repeat_mode.dart';
 import 'package:tuneshell/domain/playback/ports/media_tree.dart';
@@ -403,6 +404,51 @@ void main() {
   });
 
   /// @verifies FR-029
+  group('FR-005 the queue shown to the system', () {
+    /// @verifies FR-005
+    test(
+      'shows the queue, the current track in it, and skips to an item',
+      () async {
+        await controller.setQueue([a.track, b.track], startIndex: 1);
+        await settle();
+
+        expect(handler.queue.value.map((i) => i.id), [
+          '${a.track.disk.value}/${a.track.relativePath}',
+          '${b.track.disk.value}/${b.track.relativePath}',
+        ]);
+        expect(handler.playbackState.value.queueIndex, 1);
+
+        await handler.skipToQueueItem(0);
+        await settle();
+
+        expect(controller.state.currentIndex, 0);
+        expect(handler.playbackState.value.queueIndex, 0);
+      },
+    );
+
+    /// @verifies FR-005
+    test(
+      'a long queue is shown as a window around the current track',
+      () async {
+        final tracks = [
+          for (var i = 0; i < 300; i++)
+            Track(disk: internalDisk, relativePath: 'Music/t$i.flac'),
+        ];
+        await controller.setQueue(tracks, startIndex: 150);
+        await settle();
+
+        expect(handler.queue.value.length, 101);
+        expect(handler.queue.value.first.id, endsWith('t130.flac'));
+        expect(handler.playbackState.value.queueIndex, 20);
+
+        await handler.skipToQueueItem(21);
+        await settle();
+
+        expect(controller.state.currentIndex, 151);
+      },
+    );
+  });
+
   group('BR-009 shuffle and repeat from a car', () {
     /// @verifies BR-009
     test(

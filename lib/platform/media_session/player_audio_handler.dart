@@ -82,6 +82,15 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
 
   Track? _shownTrack;
 
+  /// The queue the system shows is a window of the controller's queue around
+  /// the current track: a queue of thousands would weigh on every change.
+  /// [_queueStart] is where the window begins in the controller's queue.
+  static const _windowBefore = 20;
+  static const _windowAfter = 80;
+  List<int>? _shownIds;
+  int _shownIndex = -1;
+  int _queueStart = 0;
+
   @override
   Future<void> play() => _controller.play();
 
@@ -96,6 +105,11 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> skipToNext() => _controller.next();
+
+  @override
+  Future<void> skipToQueueItem(int index) async {
+    await _controller.skipTo(_queueStart + index);
+  }
 
   static const _shuffleAction = 'shuffle';
   static const _repeatAction = 'repeat';
@@ -254,8 +268,43 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
       _shownTrack = track;
       mediaItem.add(track == null ? null : _itemOf(track, state));
     }
+    _showQueue(state);
     final next = _playbackOf(state);
     if (_differs(playbackState.value, next)) playbackState.add(next);
+  }
+
+  void _showQueue(PlayerState state) {
+    final current = state.currentIndex;
+    if (identical(state.entryIds, _shownIds) && current == _shownIndex) return;
+    _shownIds = state.entryIds;
+    _shownIndex = current ?? -1;
+    if (current == null) {
+      _queueStart = 0;
+      queue.add(const []);
+      return;
+    }
+    _queueStart = (current - _windowBefore).clamp(0, state.queue.length);
+    final end = (current + _windowAfter + 1).clamp(0, state.queue.length);
+    queue.add([
+      for (final track in state.queue.sublist(_queueStart, end))
+        _queueItemOf(track),
+    ]);
+  }
+
+  MediaItem _queueItemOf(Track track) {
+    final known = _describe(track);
+    final path = track.relativePath;
+    final artwork = known?.artwork;
+    return MediaItem(
+      id: '${track.disk.value}/$path',
+      title: known?.displayTitle ?? path.substring(path.lastIndexOf('/') + 1),
+      artist: known?.info.artist,
+      album: known?.info.album,
+      duration: known?.info.duration,
+      artUri:
+          (artwork == null ? null : _artworkOf(artwork)) ??
+          _browseFallbackArt?.call(BrowseKind.track),
+    );
   }
 
   bool _durationChanged(PlayerState state) =>
@@ -314,6 +363,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     androidCompactActionIndices: const [0, 1, 3],
     systemActions: const {
       MediaAction.seek,
+      MediaAction.skipToQueueItem,
       MediaAction.setShuffleMode,
       MediaAction.setRepeatMode,
     },
@@ -333,7 +383,9 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     playing: state.playing,
     updatePosition: state.position,
     updateTime: _clock(),
-    queueIndex: state.currentIndex,
+    queueIndex: state.currentIndex == null
+        ? null
+        : state.currentIndex! - _queueStart,
   );
 
   bool _differs(PlaybackState shown, PlaybackState next) {
