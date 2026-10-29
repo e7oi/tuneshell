@@ -13,6 +13,9 @@ import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/platform/audio_session_interruptions.dart';
 import 'package:tuneshell/platform/media_session/player_audio_handler.dart';
 
+/// The authority of the Kotlin `ArtworkProvider`.
+const artworkAuthority = 'net.trtl3.tuneshell.artwork';
+
 /// Hands the player controller of [container] to Android: audio focus
 /// (BR-005) and the media session with its notification (FR-005). Runs once
 /// per process: the Flutter engine outlives the activity, and the process
@@ -40,9 +43,14 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
     builder: () => PlayerAudioHandler(
       controller,
       describe: (track) => container.read(trackIndexProvider)[track],
+      // A content URI: the car's process cannot read the private folder
+      // (ArtworkProvider, FR-029).
       artworkOf: (artwork) => artworkFolder == null
           ? null
-          : Uri.file('$artworkFolder/$artwork.jpg'),
+          : Uri.parse('content://$artworkAuthority/$artwork.jpg'),
+      browseFallbackArt: Uri.parse(
+        'content://$artworkAuthority/placeholder.png',
+      ),
       mediaTree: () => currentMediaTree(container),
       // A car replaces the queue: the player no longer says where it came
       // from.

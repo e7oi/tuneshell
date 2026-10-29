@@ -46,6 +46,12 @@
                 <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
         </service>
+        <!-- Artwork for the media browser of a car, which runs in another
+             process and cannot read the private folder (FR-029). -->
+        <provider
+            android:name=".ArtworkProvider"
+            android:authorities="net.trtl3.tuneshell.artwork"
+            android:exported="true" />
         <receiver
             android:name="com.ryanheise.audioservice.MediaButtonReceiver"
             android:exported="true">

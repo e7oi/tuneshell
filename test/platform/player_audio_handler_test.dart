@@ -420,6 +420,30 @@ void main() {
       expect(MediaTree.recentId, AudioService.recentRootId);
     });
 
+    test(
+      'every row has an image: the art of its album or the fallback',
+      () async {
+        await browsable();
+        await handler.dispose();
+        handler = PlayerAudioHandler(
+          controller,
+          describe: (track) => known[track],
+          artworkOf: (id) => Uri.parse('content://art/$id.jpg'),
+          browseFallbackArt: Uri.parse('content://art/placeholder.png'),
+          mediaTree: () async => tree,
+          clock: () => now,
+          stopGrace: const Duration(milliseconds: 20),
+        );
+
+        final root = await handler.getChildren(AudioService.browsableRootId);
+
+        expect(root.every((item) => item.artUri != null), isTrue);
+        expect(root.map((item) => item.artUri.toString()).toSet(), {
+          'content://art/placeholder.png',
+        });
+      },
+    );
+
     test('lists the children of a folder, folders not playable', () async {
       await browsable();
 

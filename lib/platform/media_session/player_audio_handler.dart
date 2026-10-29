@@ -30,6 +30,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     this._controller, {
     required this._describe,
     this._artworkOf = _noArtwork,
+    this._browseFallbackArt,
     this._mediaTree,
     this._onQueueChosen,
     this._clock = DateTime.now,
@@ -48,6 +49,10 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   final PlayerController _controller;
   final TrackDescriber _describe;
   final ArtworkLocator _artworkOf;
+
+  /// The image of a browse row that has none: a car aligns the text of a row
+  /// with an image only when every row of the list has one (FR-029).
+  final Uri? _browseFallbackArt;
 
   /// Null: the session cannot be browsed (no car, in the tests).
   final MediaTreeLocator? _mediaTree;
@@ -131,7 +136,8 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
       id: node.id,
       title: node.title,
       artist: node.subtitle,
-      artUri: artwork == null ? null : _artworkOf(artwork),
+      artUri:
+          (artwork == null ? null : _artworkOf(artwork)) ?? _browseFallbackArt,
       playable: node.playable,
     );
   }
