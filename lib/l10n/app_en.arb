@@ -1202,6 +1202,10 @@
   "@privacyAskBackground": {
     "description": "Permission explained on the privacy page (FR-026.4)."
   },
+  "carMore": "More…",
+  "@carMore": {
+    "description": "Last row of a long list in the car browser: opens the rest of the list."
+  },
   "carEmptyLibrary": "Open TuneShell on your phone to choose your music",
   "@carEmptyLibrary": {
     "description": "The only entry of the car screen while the library is empty (BR-013, rule 8)."
