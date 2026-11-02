@@ -23,6 +23,9 @@ void keepMediaTreeReadable(ProviderContainer container) {
     ..listen(sortedTracksProvider, (_, _) {});
 }
 
+/// More entries than any list of a library has: no list is cut.
+const int _wholeLists = 1 << 30;
+
 /// The last tree made and what it was made from: a car asks again for every
 /// folder it opens, and a tree of a big library is not cheap to build.
 final _memo = Expando<_Made>();
@@ -89,6 +92,9 @@ Future<MediaTree> currentMediaTree(ProviderContainer container) async {
       empty: l10n.carEmptyLibrary,
     ),
     fold: foldText,
+    // BR-013, rule 4: the lists are shown whole, with no folders by letter;
+    // the cut stays available if a car cannot take a list that long.
+    maxChildren: _wholeLists,
     unavailable: unavailable,
     current: current,
   );
