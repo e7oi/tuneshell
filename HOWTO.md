@@ -478,7 +478,7 @@ Build release (D14) installée, bibliothèque réelle, Android Auto installé su
 
 1. **Présence :** ouvrir les applications multimédia de la voiture. Attendu : TuneShell, avec son icône.
 2. **Racine :** ouvrir TuneShell. Attendu : « Albums », « Artistes », « Pistes », et en premier la piste courante si une lecture a eu lieu.
-3. **Vitesse :** noter le délai d'affichage de la racine, puis de « Pistes » (plusieurs milliers de pistes) : lettres A, B, C…, puis une lettre. Attendu : listes sans coupure, atteignables.
+3. **Vitesse :** noter le délai d'affichage de la racine, puis de « Pistes » (plusieurs milliers de pistes), affichée en une seule liste sans dossiers par lettres (MPL-064). Attendu : liste complète, défilement fluide, aucune coupure ni erreur ; sinon noter la taille à partir de laquelle cela casse (rétablir le découpage de BR-013, règle 4).
 4. **Album :** Albums, un album, la troisième piste. Attendu : elle joue, la file est l'album à partir de cette piste ; le lecteur du téléphone n'affiche plus de provenance.
 5. **Artiste :** Artistes, un artiste, un album, une piste. Attendu : lecture de l'album.
 6. **Pochettes :** noter si elles s'affichent dans les listes et sur l'écran de lecture. Sinon : ADR-020, risque 2.
@@ -489,5 +489,5 @@ Build release (D14) installée, bibliothèque réelle, Android Auto installé su
 11. **Bibliothèque vide :** données effacées. Attendu : un seul message demandant d'ouvrir TuneShell sur le téléphone.
 12. **Aléatoire et répétition (MPL-063) :** sur l'écran de lecture de la voiture, toucher le bouton aléatoire puis le bouton répétition (trois états : aucune, tout, une piste). Attendu : l'icône suit l'état, le lecteur du téléphone affiche le même état. **Non testé** tant que cela n'a pas été vu en voiture.
 13. **Aléatoire sur toute la collection :** dans Pistes, choisir une piste sous une lettre, puis activer l'aléatoire. Attendu : la file contient toute la bibliothèque (et non la lettre) et la lecture suivante en est tirée. **Non testé** tant que cela n'a pas été vu en voiture.
-14. **File d'attente :** sur l'écran de lecture de la voiture, ouvrir la file : les pistes précédentes et suivantes apparaissent (une fenêtre de 20 avant et 80 après la piste courante) ; en toucher une la joue. **Non testé** tant que cela n'a pas été vu en voiture.
+14. **File d'attente :** sur l'écran de lecture de la voiture, ouvrir la file : les pistes précédentes et suivantes apparaissent (une fenêtre de 20 avant et 80 après la piste courante) ; en toucher une la joue. Avec l'aléatoire actif, la liste commence par la piste en cours (MPL-064). **Non testé** tant que cela n'a pas été vu en voiture.
 15. **Appel et navigation vocale :** pendant la lecture. Attendu : interruptions comme sur le téléphone (BR-005).

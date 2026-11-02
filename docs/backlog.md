@@ -1,44 +1,61 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-064 · Dernière MAJ : 2026-10-28
+Préfixe : MPL · Prochaine clé : MPL-074 · Dernière MAJ : 2026-11-01
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
 
 ## Actifs
+Ordre de travail proposé (réorganisation du 2026-11-01) : épiques, puis les tickets dans l'ordre de priorité ; les idées et les éléments parqués sont dans leurs sections.
+
 | Clé | Type | Prio | Titre | Statut | Parent | Bloqué par |
 |---|---|---|---|---|---|---|
 | MPL-001 | Épique | P0 | Épique « Lecture locale » | En cours | — | — |
-| MPL-004 | Épique | P1 | Épique « Expérience de type streaming » | À faire | — | — |
-| MPL-005 | Épique | P2 | Épique « Voiture / Android Auto » 🔗 dépend de 001 ⚠️ D6 | À faire | — | — |
-| MPL-010 | Bug | P2 | Avertissements de décodage `media_kit` sans effet audible constaté : FLAC avec étiquettes ID3 ; MP3 avec données non-MPEG après la dernière trame (MP3 A, MP3 B ; voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.5) — (origine des octets et fréquence dans la bibliothèque non établies ; pas de changement de code) | À faire | — | — |
-| MPL-014 | Tâche technique | P2 | Prototype audio Windows et macOS (en pause) | À faire | — | — |
-| MPL-015 | Tâche technique | P2 | Revoir dialogue et bandeau de permission ⚠️ un seul appareil testé | À faire | — | — |
-| MPL-046 | Récit | P1 | Design lot 3 — Disques amovibles : écran 4 refait (4a–4e), repère de source modifiable, détection du branchement en direct, parcours dans un service au premier plan avec notification et « Arrêter » ; recoupe MPL-035 et MPL-038. À cadrer après MPL-016 | À faire | MPL-001 | MPL-045 |
-| MPL-052 | Récit | P2 | Design lot 5 — Paysage et écrans larges (écran 6e) : panneau lecteur permanent de 280 dp à droite (pochette, contrôles, file d'attente) à partir de 840 dp, liste au centre, sans mini-lecteur ; panneau repliable de 600 à 839 dp ; réutilise les éléments du lecteur plein écran (FR-017). Découpé de MPL-048 le 2026-10-23. À cadrer | À faire | MPL-001 | MPL-048 |
-| MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | — |
-| MPL-054 | Récit | P2 | Ignorer les fichiers courts (moins de 30 s : sonneries, notes vocales) : réglage de l'indexation ; à cadrer (durée connue tout de suite pour MediaStore, seulement après la lecture des étiquettes sur un disque ; pistes déjà indexées ; effet sur les listes et les compteurs ; seuil réglable ou fixe). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | MPL-051 |
-| MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-001 | — |
-| MPL-059 | Tâche technique | P2 | Design lot 6b — Finitions : liste de contrôle d'accessibilité (TalkBack, texte à 200 %), profilage. Reçoit les essais TalkBack et texte à 200 % de tous les lots de design (décision du 2026-10-24, auparavant dans MPL-049). À cadrer le moment venu | À faire | MPL-001 | MPL-048, MPL-051, MPL-052 |
-| MPL-060 | Récit | P1 | Android Auto : parcourir Albums, Artistes et Pistes, reprendre la dernière lecture et commander la lecture depuis l'écran de la voiture, sans écran de téléphone ; sortie de l'épique MPL-005 (priorité du propriétaire du 2026-10-28). Cadré le 2026-10-28 (UC-012, FR-029, BR-013, ADR-020) ; test final en voiture | À tester | MPL-005, MPL-053 | — |
-| MPL-062 | Récit | P2 | (fait dans MPL-060, à tester en voiture ; ticket à clore avec lui) Pochettes dans les listes d'Android Auto : elles s'affichent sur l'écran de lecture et le tableau de bord mais pas dans les listes (test en voiture du 2026-10-28, ADR-020 risque 2) ; piste : servir les pochettes en `content://` (fournisseur natif) ; inclut l'alignement des lignes sans pochette, qui décale le texte dans les listes de la voiture (constaté par le propriétaire le 2026-10-28) ; à cadrer | À faire | MPL-060 | — |
-| MPL-063 | Récit | P2 | (fait dans MPL-060, à tester en voiture ; ticket à clore avec lui) Lecture aléatoire et répétition dans Android Auto : actions du lecteur de la voiture (exclues de MPL-060) ; absentes lors du test en voiture du 2026-10-28 ; à cadrer (actions personnalisées d'`audio_service`, BR-009) | À faire | MPL-060 | — |
+| MPL-072 | Épique | P1 | Épique « Disques amovibles » : éjection native (MPL-035), réassociation et retrait (MPL-038), design lot 3 (MPL-046), désactivation d'un disque (MPL-056) ; regroupement du 2026-11-01 | À faire | — | — |
+| MPL-064 | Bug | P1 | Android Auto : avec l'aléatoire, la liste de la file commence par la piste en cours ; listes (Albums, Artistes, Pistes) affichées entières, sans dossiers par lettres (demandes du propriétaire après usage en voiture, 2026-11-01) | À tester | — | — |
+| MPL-035 | Tâche technique | P1 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-072 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
-| MPL-038 | Récit | P1 | Réassociation d'un nouveau disque dont les chemins relatifs correspondent à ceux d'un disque absent (D23) et retrait d'un disque externe de la bibliothèque (demande du propriétaire du 2026-10-15 ; sort des playlists, favoris et statistiques du disque à trancher au cadrage). Repris de MPL-018 le 2026-10-15 | À faire | MPL-001 | — |
-| MPL-019 | Récit | P2 | Normalisation du volume (ReplayGain, préampli) | À faire | MPL-004 | — |
+| MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-072 | — |
+| MPL-038 | Récit | P1 | Réassociation d'un nouveau disque dont les chemins relatifs correspondent à ceux d'un disque absent (D23) et retrait d'un disque externe de la bibliothèque (demande du propriétaire du 2026-10-15 ; sort des playlists, favoris et statistiques du disque à trancher au cadrage). Repris de MPL-018 le 2026-10-15 | À faire | MPL-072 | — |
+| MPL-046 | Récit | P1 | Design lot 3 — Disques amovibles : écran 4 refait (4a–4e), repère de source modifiable, détection du branchement en direct, parcours dans un service au premier plan avec notification et « Arrêter » ; recoupe MPL-035 et MPL-038. À cadrer après MPL-016 | À faire | MPL-072 | MPL-045 |
 | MPL-020 | Épique | P0 | Épique « Qualité, CI et documentation » | En cours | — | — |
 | MPL-026 | Tâche technique | P1 | CI code Flutter : format, analyse, tests, vulnérabilités, licences, **liste blanche des permissions** du manifest, vérification de l'empreinte de libmpv 🔗 | À faire | MPL-020 | — |
 | MPL-027 | Tâche technique | P1 | Tests fonctionnels `integration_test` + procédure appareil réel 🔗 | À faire | MPL-020 | — |
 | MPL-028 | Tâche technique | P1 | Fraîcheur des docs (en-têtes, modèle de PR, étape `/endSprint`) | À faire | MPL-020 | — |
-| MPL-029 | Récit | P2 | Enrichissement en ligne opt-in (pochettes, paroles, métadonnées manquantes) 🔗 ⚠️ | Bloqué | MPL-004 | D20, MPL-018 |
-| MPL-030 | Récit | P2 | Support Linux (desktop) — nice to have, non engagé 🔗 | Bloqué | — | D2 |
+| MPL-052 | Récit | P2 | Design lot 5 — Paysage et écrans larges (écran 6e) : panneau lecteur permanent de 280 dp à droite (pochette, contrôles, file d'attente) à partir de 840 dp, liste au centre, sans mini-lecteur ; panneau repliable de 600 à 839 dp ; réutilise les éléments du lecteur plein écran (FR-017). Découpé de MPL-048 le 2026-10-23. À cadrer | À faire | MPL-001 | — |
+| MPL-054 | Récit | P2 | Ignorer les fichiers courts (moins de 30 s : sonneries, notes vocales) : réglage de l'indexation ; à cadrer (durée connue tout de suite pour MediaStore, seulement après la lecture des étiquettes sur un disque ; pistes déjà indexées ; effet sur les listes et les compteurs ; seuil réglable ou fixe). Idée du design (écran 8e), découpée de MPL-048 le 2026-10-23 | À faire | MPL-001 | — |
+| MPL-059 | Tâche technique | P2 | Design lot 6b — Finitions : liste de contrôle d'accessibilité (TalkBack, texte à 200 %), profilage. Reçoit les essais TalkBack et texte à 200 % de tous les lots de design (décision du 2026-10-24, auparavant dans MPL-049). À cadrer le moment venu | À faire | MPL-001 | MPL-052 |
+| MPL-010 | Bug | P2 | Avertissements de décodage `media_kit` sans effet audible constaté : FLAC avec étiquettes ID3 ; MP3 avec données non-MPEG après la dernière trame (MP3 A, MP3 B ; voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.5) — (origine des octets et fréquence dans la bibliothèque non établies ; pas de changement de code) | À faire | — | — |
+| MPL-015 | Tâche technique | P2 | Revoir dialogue et bandeau de permission ⚠️ un seul appareil testé | À faire | — | — |
 | MPL-031 | Tâche technique | P2 | Test négatif de la CI dans un dépôt privé jetable | À faire | MPL-020 | — |
+| MPL-034 | Tâche technique | P2 | Auto-test : davantage de MP3 dans l'échantillon (92 % de la bibliothèque), un MP3 illisible gardé comme témoin, pistes en erreur signalées (« flaggées ») dans l'interface — (possible depuis MPL-003) | À faire | MPL-020 | — |
+| MPL-073 | Tâche technique | P2 | Mises à jour des dépendances : Dependabot hebdomadaire, test rapide sur appareil des versions majeures de `media_kit`, `audio_service`, Gradle et AGP, revue de `docs/dependency-exceptions.md` (D30) ; à cadrer | À faire | MPL-020 | — |
+| MPL-004 | Épique | P1 | Épique « Expérience de type streaming » (gelée tant que D20 et D26 sont ouvertes) | À faire | — | — |
+| MPL-019 | Récit | P2 | Normalisation du volume (ReplayGain, préampli) | À faire | MPL-004 | — |
+| MPL-029 | Récit | P2 | Enrichissement en ligne opt-in (pochettes, paroles, métadonnées manquantes) 🔗 ⚠️ | Bloqué | MPL-004 | D20, MPL-018 |
 | MPL-033 | Récit | P2 | Lecture de web-radio (France Info, Radio-Canada, France Inter, Radio Nova, CBC...), Phase 2 🔗 | Bloqué | MPL-004 | D26 |
+| MPL-070 | Récit | P2 | Mises à jour dans l'application : téléchargement en arrière-plan et installation d'un toucher ; exige la variante de build en ligne (D15, D26) et une source de distribution (D5) ; à cadrer | Bloqué | MPL-004 | D26, D5 |
+
+## Idées à cadrer
+Idées sans fiche ni `/cadrer` : à cadrer le moment venu, sans ordre.
+
+| Clé | Type | Prio | Titre | Statut | Parent | Bloqué par |
+|---|---|---|---|---|---|---|
 | MPL-040 | Récit | P2 | Doublons de la bibliothèque : repérer les pistes présentes plusieurs fois (même morceau sur le téléphone et sur le SSD, copies d'un même fichier) pour les filtrer ou les nettoyer ; à cadrer (critère de doublon, effet sur playlists et statistiques). Demandé par le propriétaire le 2026-10-23 après le test de MPL-037 (7 562 pistes, nombreux doublons) | À faire | MPL-001 | MPL-037 |
-| MPL-041 | Récit | P2 | Pastille de source sur chaque ligne de piste (titre, artiste, album) : petit repère de couleur ou de forme propre à chaque source (« Local », chaque disque amovible), réglable par source pour reconnaître d'un coup d'œil d'où vient la piste, doublons compris ; à cadrer avec les maquettes (MPL-016) et le nom des disques (libellé ou choix de l'utilisateur). Demandé par le propriétaire le 2026-10-23 pendant le test de MPL-037 Couvert par le lot 2 du design (MPL-045) pour la liste, et par les lots 3 à 5 pour les autres vues. | À faire | MPL-001 | MPL-037 |
-| MPL-042 | Récit | P2 | Bouton « aller à la piste en cours » dans la liste : fait défiler la bibliothèque jusqu'à la piste qui joue, ou à défaut la dernière jouée (qu'il faudra donc retenir) ; à cadrer avec les maquettes (MPL-016). Demandé par le propriétaire le 2026-10-23 pendant le test de MPL-037 Couvert par le lot 2 du design (MPL-045). | À faire | MPL-001 | — |
-| MPL-043 | Récit | P2 | Accès rapide aux longues listes : un index alphabétique sur le bord de l'écran qui apparaît au glissé du doigt (à la manière du dock de macOS : la lettre sous le doigt s'agrandit) pour sauter à une lettre ; à cadrer avec les maquettes (MPL-016) : tri actif (titre, artiste, album), caractères non alphabétiques et accents, retour haptique. Demandé par le propriétaire le 2026-10-23 (bibliothèque de 7 562 pistes) Couvert par le lot 2 du design (MPL-045) ; aussi dans Albums et Artistes (MPL-048). | À faire | MPL-001 | — |
-| MPL-034 | Tâche technique | P2 | Auto-test : davantage de MP3 dans l'échantillon (92 % de la bibliothèque), un MP3 illisible gardé comme témoin, pistes en erreur signalées (« flaggées ») dans l'interface — (possible depuis MPL-003) | À faire | MPL-001 | — |
-| MPL-035 | Tâche technique | P2 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-001 | — |
+| MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | — |
+| MPL-065 | Récit | P2 | Historique d'écoute et favoris ; à cadrer | À faire | MPL-001 | — |
+| MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », « Redécouvrir », à partir de l'historique, sans réseau ; à cadrer | À faire | MPL-001 | MPL-065 |
+| MPL-067 | Récit | P2 | Éditeur de tags : modifier titre, artiste, album des fichiers ; à cadrer (écriture SAF sur le SSD, aucune perte de données) | À faire | MPL-001 | — |
+| MPL-068 | Récit | P2 | Liste noire : exclure des morceaux de la bibliothèque et de la lecture ; à cadrer | À faire | MPL-001 | — |
+| MPL-069 | Récit | P2 | Paroles synchronisées mot à mot, voix d'accompagnement sous la ligne qu'elles suivent ; à cadrer : tags intégrés seulement, ou en ligne (D15, D20, D26) | À faire | MPL-004 | D20 |
+| MPL-071 | Récit | P2 | Thème « Flou » : la pochette en fond, floutée et en mouvement lent, sous le lecteur ; à cadrer avec le design (couleurs, performances, accessibilité du contraste) | À faire | MPL-001 | — |
+
+## Parqué, hors périmètre
+Pas engagé : D10 (Android d'abord).
+
+| Clé | Type | Prio | Titre | Statut | Parent | Bloqué par |
+|---|---|---|---|---|---|---|
+| MPL-014 | Tâche technique | P2 | Prototype audio Windows et macOS (en pause) | À faire | — | — |
+| MPL-030 | Récit | P2 | Support Linux (desktop) — nice to have, non engagé 🔗 | Bloqué | — | D2 |
 
 ## Détails
 ### MPL-061
@@ -147,6 +164,40 @@ Revue QA : ✅ après un tour de corrections (clés de tri cohérentes avec `tri
 Description de PR : `feat(android): browse and play from Android Auto (MPL-060)` ; voir le résumé ci-dessus ; limites : voiture non testée.
 Décisions prises en route : le titre d'un dossier de lettres est le préfixe commun en majuscules ; l'arbre est mémoïsé jusqu'à un changement de bibliothèque, de disques, de piste courante ou de langue.
 À valider (PO) : BR-013 règle 4 reformulée (dossiers par préfixe commun plutôt que A à Z et « # ») ; règle 2 (« Reprendre » en premier) et règle 6 (disque absent masqué) : « Reprendre » disparaît aussi si la piste courante est sur un disque absent.
+
+### MPL-064
+**Description.** Deux demandes du propriétaire après usage d'Android Auto (2026-11-01) : avec l'aléatoire actif, la liste de la file commence par la piste en cours (aujourd'hui elle montre 20 pistes avant, dans l'ordre d'origine) ; les listes Albums, Artistes et Pistes sont affichées entières, sans sous-dossiers par lettres.
+
+**Exclusions.** Rien d'autre dans le parcours de la voiture (aléatoire du contrôleur, BR-009, inchangé).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: File et listes de la voiture
+
+  Scénario: L'aléatoire commence par la piste en cours
+    Soit une file en lecture, l'aléatoire activé
+    Quand j'ouvre la file dans la voiture
+    Alors la première ligne est la piste en cours
+
+  Scénario: Listes entières
+    Soit une bibliothèque de plusieurs milliers de pistes
+    Quand j'ouvre Pistes dans la voiture
+    Alors toutes les pistes sont dans une seule liste, sans dossiers par lettres
+```
+
+**Fiches liées.** BR-013 (règle 4 remplacée, À valider), FR-029, BR-009. **Risque.** Une liste de plusieurs milliers de lignes peut être lente ou refusée par la voiture : à mesurer, le découpage reste codé (`maxChildren`) et se rétablit en une ligne.
+
+#### Livraison — 2026-11-01
+Statut : ⚠️ partiel (voiture non testée)
+Résumé : la file publiée à la session commence à la piste en cours quand l'aléatoire est actif ; les listes ne sont plus découpées (seuil à 2³⁰ dans `media_browsing.dart`).
+Fiches touchées : BR-013 (règle 4 réécrite), HOWTO §23 (étapes 3 et 14).
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → 991 tests verts ; `.github/scripts/check-repo.sh` → vert.
+Test appareil (Pixel, release) : non testé en voiture. À observer : la liste Pistes entière (délai, coupure, erreur), la file mélangée.
+Revue QA : non requise (réglage d'un seuil et d'une fenêtre d'affichage, sans lecture, stockage ni permission) — Non vérifié : comportement d'Android Auto sur une liste de plusieurs milliers de lignes.
+Description de PR : `fix(android): shuffled car queue starts at the current track, lists shown whole (MPL-064)`.
+Décisions prises en route : aucune.
+À valider (PO) : BR-013 règle 4 remplacée (listes entières, découpage désactivé).
 
 ### MPL-049
 **Description.** Mettre en place l'identité finale de TuneShell : icône d'application adaptative (avant-plan, fond, monochrome), icône de notification, écran de démarrage, même logo dans l'application. Cadrage du 2026-10-28, sur demande du propriétaire ; l'accessibilité et le profilage sont séparés (MPL-059).
@@ -1885,6 +1936,7 @@ Décisions prises en route : Flutter mis à jour de 3.47.6 à 3.47.7 sur le Mac 
 | MPL-053 | « Reprendre là où j'en étais » : la file, la piste, la position, l'aléatoire (avec son ordre d'origine) et la répétition sont enregistrés (schéma v5) et rétablis au lancement, en pause, sans son ni notification avant « Lecture » ; interrupteur dans Réglages (UC-011, BR-012, FR-028, ADR-019) | 28/10/2026 | Validé par le propriétaire après test sur le Pixel (release), PR 27. Essais par adb : arrêt forcé, retrait des récentes, modes, réglage. Non essayés : disque absent dans la file, pistes disparues, file de 7 500 pistes, mort brutale en lecture. Limites : une lecture qui lève une exception laisse la session en place ; file et avancement écrits en deux transactions ; idée de gestion améliorée de la file : MPL-058 |
 | MPL-049 | Design lot 6a — Identité : icône d'application adaptative, icône de notification, écran de démarrage et logo de l'accueil à partir des images du propriétaire | 28/10/2026 | Validé par le propriétaire après test sur le Pixel (release), PR 28 fusionnée (28/10/2026). Accessibilité et profilage : MPL-059 |
 | MPL-061 | Le geste Retour depuis Albums, Artistes ou Réglages ramène à l'écran de bienvenue au lieu de la liste des pistes | 28/10/2026 | Validé par le propriétaire après test sur le Pixel (release), PR 29 fusionnée (28/10/2026) |
+| MPL-060 | Android Auto : parcourir Albums, Artistes et Pistes, reprendre la dernière lecture et commander la lecture depuis l'écran de la voiture | 28/10/2026 | Validé par le propriétaire après test en voiture, PR 30 fusionnée (28/10/2026). Inclut les pochettes et icônes dans les listes (ex-MPL-062), l'aléatoire, la répétition et la file d'attente dans le lecteur (ex-MPL-063). Plein écran : disposition d'Android Auto, hors du contrôle de l'application |
 | MPL-051 | Design lot 5 — Réglages : écran Réglages à quatre sections (Bibliothèque, Apparence, Lecture, À propos), réglages stockés dans la base (schéma v4) et lus avant le premier écran, thème Système / Clair / Sombre, couleurs du fond d'écran (`dynamic_color` 1.9.0), index à gauche, pause au débranchement, actualiser au démarrage ; « Dossiers » (page poussée) et « Disques » dans Réglages, tirer-pour-actualiser, À propos, licences et Confidentialité | 27/10/2026 | Validé par le propriétaire après test sur le Pixel (release, HOWTO §19), PR 21. `dynamic_color` 1.9.0 et non 2.1.0 (ADR-017, dérogation à revoir avant le 23/01/2027) ; TalkBack et texte à 200 % reportés à MPL-049 ; première indexation interrompue reprise au lancement suivant ; retrait d'un dossier d'un disque absent ajouté à MPL-056 |
 | MPL-048 | Design lot 5 — Albums et Artistes : onglets refaits (grille d'albums triée par titre avec nombre de pistes, liste d'artistes, index alphabétique, détails dans l'onglet), lire / aléatoire / tout lire, « Lire ensuite » et « Ajouter à la file » d'un album ou d'un artiste en ordre disque puis piste | 25/10/2026 | Validé par le propriétaire, PR #20 fusionnée (25/10/2026). Pixel 10 Pro, release : grille, détails, lecture, Retour, artistes, index, ajout à la file et fluidité vus par le propriétaire (« très bonne ») ; tri par titre et nombre de pistes demandés après le test et faits ; TalkBack et texte à 200 % reportés à MPL-049. Limites : une compilation sans artiste d'album se découpe par artiste de piste ; groupes recalculés au plus deux fois par seconde même onglet caché ; recherche (MPL-055) et désactivation des disques (MPL-056) ouvertes |
 | MPL-047 | Design lot 4 — Lecture : mini-lecteur dans la coquille, lecteur plein écran, file d'attente en feuille (réordonner, retirer, vider), aléatoire et répétition, menu d'appui long « Lire ensuite » / « Ajouter à la file », bouton « En cours » vers le lecteur | 23/10/2026 | Validé par le propriétaire, PR #19 fusionnée (23/10/2026). Pixel 10 Pro, release : passage partiel par adb (mini-lecteur, lecteur, informations, aléatoire, feuille de 2 625 pistes, retrait par glissé, « Vider la suite ») ; message de retrait caché sous la feuille corrigé pendant le test ; non vus : curseur, répéter, fichier illisible, disque débranché, menu d'appui long, paysage, TalkBack, 200 %. Limites : pas de panneau lecteur permanent (MPL-048), notification inchangée, file et modes non conservés ; revue QA ⚠️ (restes dans le bloc Livraison) |
@@ -1902,6 +1954,10 @@ Décisions prises en route : Flutter mis à jour de 3.47.6 à 3.47.7 sur le Mac 
 | MPL-023 | `main` orpheline, dépôts séparés, protection de branche | 08/10/2026 | Résolu (08/10/2026) : `main` orpheline, deux dépôts, ruleset `protect-main` appliqué ; push direct refusé (test réel) |
 | MPL-024 | CI documentaire (markdownlint, liens, gitleaks, cohérence) | 07/10/2026 | Résolu (07/10/2026) |
 | MPL-025 | Audit avant publication (historique, e-mails), puis dépôt public 🔗 | 08/10/2026 | Résolu (08/10/2026) : audit fait, dépôt public depuis le 08/10/2026 |
+| MPL-005 | Épique « Voiture / Android Auto » | 28/10/2026 | Livrée par MPL-060 (testé en voiture, PR 30). La question du Play Store reste la décision D6 |
+| MPL-041 | Pastille de source sur chaque ligne de piste | 01/11/2026 | Couvert par le lot 2 du design (MPL-045, repère de source par disque) ; validé par le propriétaire |
+| MPL-042 | Bouton « aller à la piste en cours » dans la liste | 01/11/2026 | Livré par MPL-045 ; validé par le propriétaire |
+| MPL-043 | Accès rapide aux longues listes (index alphabétique) | 01/11/2026 | Livré par MPL-045 (Pistes) et MPL-048 (Albums et Artistes) ; validé par le propriétaire |
 
 ## Décisions
 | Code | Titre | Statut | Justification · items liés |
