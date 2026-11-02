@@ -98,6 +98,20 @@ void main() {
       expect(titles(tree.children('tracks')), ['One', 'Solo', 'Two']);
     });
 
+    test('rule 4: a long list is shown whole, with no folders', () async {
+      await library.applyIndex(internalDisk, [
+        for (var i = 0; i < 130; i++)
+          tagged('M/t$i.flac', title: 'Track $i', artist: 'Ann', album: 'A'),
+      ]);
+      final container = await start();
+
+      final tree = await currentMediaTree(container);
+
+      final tracks = tree.children('tracks');
+      expect(tracks.length, 130);
+      expect(tracks.every((n) => n.playable), isTrue);
+    });
+
     test('an unchanged library gives the same tree again', () async {
       await library.applyIndex(internalDisk, [
         tagged('M/a1.flac', title: 'Solo', artist: 'Ann', album: 'Alpha'),

@@ -89,6 +89,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   static const _windowAfter = 80;
   List<int>? _shownIds;
   int _shownIndex = -1;
+  bool _shownShuffle = false;
   int _queueStart = 0;
 
   @override
@@ -275,15 +276,23 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void _showQueue(PlayerState state) {
     final current = state.currentIndex;
-    if (identical(state.entryIds, _shownIds) && current == _shownIndex) return;
+    if (identical(state.entryIds, _shownIds) &&
+        current == _shownIndex &&
+        state.shuffle == _shownShuffle) {
+      return;
+    }
     _shownIds = state.entryIds;
     _shownIndex = current ?? -1;
+    _shownShuffle = state.shuffle;
     if (current == null) {
       _queueStart = 0;
       queue.add(const []);
       return;
     }
-    _queueStart = (current - _windowBefore).clamp(0, state.queue.length);
+    // Shuffled, what came before is not part of the order to come: the list
+    // starts at the current track (FR-029).
+    final before = state.shuffle ? 0 : _windowBefore;
+    _queueStart = (current - before).clamp(0, state.queue.length);
     final end = (current + _windowAfter + 1).clamp(0, state.queue.length);
     queue.add([
       for (final track in state.queue.sublist(_queueStart, end))
