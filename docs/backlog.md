@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-074 · Dernière MAJ : 2026-11-01
+Préfixe : MPL · Prochaine clé : MPL-074 · Dernière MAJ : 2026-11-03
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -42,7 +42,7 @@ Idées sans fiche ni `/cadrer` : à cadrer le moment venu, sans ordre.
 |---|---|---|---|---|---|---|
 | MPL-040 | Récit | P2 | Doublons de la bibliothèque : repérer les pistes présentes plusieurs fois (même morceau sur le téléphone et sur le SSD, copies d'un même fichier) pour les filtrer ou les nettoyer ; à cadrer (critère de doublon, effet sur playlists et statistiques). Demandé par le propriétaire le 2026-10-23 après le test de MPL-037 (7 562 pistes, nombreux doublons) | À faire | MPL-001 | MPL-037 |
 | MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | — |
-| MPL-065 | Récit | P2 | Historique d'écoute et favoris ; à cadrer | À faire | MPL-001 | — |
+| MPL-065 | Récit | P2 | Favoris et historique d'écoute : cœur du lecteur et appui long pour marquer, pastilles « Toutes / Favoris / Récentes » sous la recherche de Pistes, historique réglable et effaçable, tout sur l'appareil. Cadré le 2026-11-03 (UC-013, BR-014, FR-031, ADR-021) ; un lot de design court à prévoir | À faire | MPL-001 | — |
 | MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », « Redécouvrir », à partir de l'historique, sans réseau ; à cadrer | À faire | MPL-001 | MPL-065 |
 | MPL-067 | Récit | P2 | Éditeur de tags : modifier titre, artiste, album des fichiers ; à cadrer (écriture SAF sur le SSD, aucune perte de données) | À faire | MPL-001 | — |
 | MPL-068 | Récit | P2 | Liste noire : exclure des morceaux de la bibliothèque et de la lecture ; à cadrer | À faire | MPL-001 | — |
@@ -164,6 +164,62 @@ Revue QA : ✅ après un tour de corrections (clés de tri cohérentes avec `tri
 Description de PR : `feat(android): browse and play from Android Auto (MPL-060)` ; voir le résumé ci-dessus ; limites : voiture non testée.
 Décisions prises en route : le titre d'un dossier de lettres est le préfixe commun en majuscules ; l'arbre est mémoïsé jusqu'à un changement de bibliothèque, de disques, de piste courante ou de langue.
 À valider (PO) : BR-013 règle 4 reformulée (dossiers par préfixe commun plutôt que A à Z et « # ») ; règle 2 (« Reprendre » en premier) et règle 6 (disque absent masqué) : « Reprendre » disparaît aussi si la piste courante est sur un disque absent.
+
+### MPL-065
+**Description.** Marquer des pistes en favoris et retrouver ce qu'on a écouté récemment, dans l'onglet Pistes, sans nouvel onglet. Cadrage du 2026-11-03 : placement choisi par le propriétaire (pastilles sous le champ de recherche). Prépare MPL-066 (suggestions), qui lit l'historique.
+
+**Inclus.**
+- Favoris : cœur du lecteur plein écran (aujourd'hui inactif, FR-017) et appui long d'une ligne ; identité (disque, chemin) (BR-014).
+- Pastilles « Toutes », « Favoris », « Récentes » sous la recherche de Pistes, combinées avec la recherche.
+- Historique : écoute comptée après 30 s, avec l'heure ; réglage « Enregistrer l'historique », « Effacer l'historique » ; 20 000 écoutes au plus.
+- Schéma Drift v6 (`favorites`, `play_events`), `PlayCounter` testé d'abord (ADR-021).
+
+**Exclusions.** Playlists, favoris d'albums ou d'artistes, statistiques affichées, suggestions (MPL-066), Android Auto, export, synchronisation.
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Favoris et historique d'écoute
+
+  Scénario: Marquer un favori depuis le lecteur
+    Soit une piste en cours dans le lecteur plein écran
+    Quand je touche le cœur
+    Alors la piste est favorite et le cœur est plein
+
+  Scénario: Retrouver mes favoris
+    Soit trois pistes favorites
+    Quand je touche « Favoris » sous la recherche de Pistes
+    Alors seules ces pistes sont listées, triées par titre
+
+  Scénario: Une écoute est comptée après 30 secondes
+    Soit une piste jouée 31 secondes
+    Quand j'ouvre « Récentes »
+    Alors la piste est en tête de la liste
+
+  Scénario: Un saut rapide ne compte pas
+    Soit une piste sautée après 5 secondes
+    Quand j'ouvre « Récentes »
+    Alors la piste n'y figure pas
+
+  Scénario: Favori sur un disque absent
+    Soit un favori sur un disque débranché
+    Quand j'ouvre « Favoris »
+    Alors la piste est listée, grisée
+
+  Scénario: Effacer l'historique
+    Soit un historique non vide et deux favoris
+    Quand j'efface l'historique après confirmation
+    Alors « Récentes » est vide et les deux favoris restent
+
+  Scénario: Historique désactivé
+    Soit « Enregistrer l'historique d'écoute » désactivé
+    Quand j'écoute une piste jusqu'au bout
+    Alors « Récentes » ne change pas
+```
+
+**Fiches liées.** UC-013, BR-014, FR-031, ADR-021 (toutes `Brouillon`) ; lisent BR-004, BR-001, BR-008, BR-011, BR-012, FR-009, FR-011, FR-017, FR-019, FR-023, FR-027. **Écarts aux fiches `Active`** (FR-017 exigence 5, FR-009, FR-011, FR-023) : lignes « À valider » dans BR-014.
+
+**Risques.** Placement et textes sans maquette (lot de design court à prévoir avant le code) ; coût du filtre « Récentes » sur 7 500 pistes ; migration v5 vers v6 sur la base réelle (ADR-021).
 
 ### MPL-064
 **Description.** Deux demandes du propriétaire après usage d'Android Auto (2026-11-01) : avec l'aléatoire actif, la liste de la file commence par la piste en cours (aujourd'hui elle montre 20 pistes avant, dans l'ordre d'origine) ; les listes Albums, Artistes et Pistes sont affichées entières, sans sous-dossiers par lettres.
