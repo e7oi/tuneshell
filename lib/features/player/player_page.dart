@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
@@ -17,6 +18,7 @@ import 'package:tuneshell/features/player/source_labels.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 import 'package:tuneshell/ui/widgets/artwork_tile.dart';
+import 'package:tuneshell/ui/widgets/favorite_button.dart';
 import 'package:tuneshell/ui/widgets/mini_player.dart';
 import 'package:tuneshell/ui/widgets/status_banner.dart';
 import 'package:tuneshell/ui/widgets/toggle_icon_button.dart';
@@ -176,6 +178,8 @@ class _Header extends ConsumerWidget {
         name.isEmpty ? l10n.trackUnknownArtist : name,
       ),
       SearchOrigin(:final query) => l10n.queueOriginSearch(query.trim()),
+      FavoritesOrigin() => '${l10n.navTracks} · ${l10n.filterFavorites}',
+      RecentOrigin() => '${l10n.navTracks} · ${l10n.filterRecent}',
       null => null,
     };
     return Padding(
@@ -296,6 +300,9 @@ class _Info extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     final now = NowPlaying.of(track, ref.watch(trackIndexProvider));
+    final favorite = ref.watch(
+      favoriteTracksProvider.select((marked) => marked.contains(track)),
+    );
     final disk = ref
         .watch(playerDisksProvider)
         .where((d) => d.id == track.disk)
@@ -367,12 +374,11 @@ class _Info extends ConsumerWidget {
               ],
             ),
           ),
-          SizedBox.square(
-            dimension: TsSize.touchTarget,
-            child: IconButton(
-              tooltip: l10n.playerFavoriteSoon,
-              icon: const Icon(Icons.favorite_border_rounded),
-              onPressed: null,
+          FavoriteButton(
+            selected: favorite,
+            label: favorite ? l10n.favoriteRemove : l10n.favoriteAdd,
+            onPressed: () => unawaited(
+              ref.read(favoriteTracksProvider.notifier).toggle(track),
             ),
           ),
         ],

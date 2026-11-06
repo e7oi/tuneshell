@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/playback/model/playback_notice.dart';
 import 'package:tuneshell/features/library/first_launch_pages.dart';
@@ -19,6 +20,7 @@ import 'package:tuneshell/features/library/removable_controller.dart';
 import 'package:tuneshell/features/library/removable_messages.dart';
 import 'package:tuneshell/features/library/removable_page.dart';
 import 'package:tuneshell/features/library/search_widgets.dart';
+import 'package:tuneshell/features/library/track_filter_chips.dart';
 import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
@@ -192,7 +194,17 @@ class _ReadyView extends ConsumerWidget {
     final model = ref.watch(libraryListModelProvider);
     final tagProgress = ref.watch(tagProgressProvider).value;
     final searching = state.indexing && (model == null || model.total == 0);
-    final empty = model != null && model.total == 0 && !state.indexing;
+    final filter = ref.watch(trackFilterProvider);
+    final stored = ref.watch(sortedTracksProvider);
+    // The library itself is empty, whatever the pastille keeps (FR-011.9).
+    final empty =
+        model != null && stored != null && stored.isEmpty && !state.indexing;
+    final filterEmpty =
+        !empty &&
+        model != null &&
+        filter != TrackFilter.all &&
+        model.total == 0 &&
+        ref.watch(searchTextProvider(SearchView.tracks)) == null;
     final banner = model?.banner;
     final query = ref.watch(searchTextProvider(SearchView.tracks));
     final found = ref.watch(searchedListModelProvider);
@@ -234,7 +246,12 @@ class _ReadyView extends ConsumerWidget {
                   .read(dismissedBannerProvider.notifier)
                   .dismiss(banner.fingerprint),
             ),
-          if (!empty)
+          if (!empty && !searching && model != null)
+            TrackFilterChips(
+              selected: filter,
+              onSelected: ref.read(trackFilterProvider.notifier).choose,
+            ),
+          if (!empty && !filterEmpty)
             if (resultsText != null)
               ResultsAnnouncer(
                 text: resultsText,
@@ -256,6 +273,13 @@ class _ReadyView extends ConsumerWidget {
                     onChooseFolders: onFolders,
                     onRefresh: onRefresh,
                   )
+                : filterEmpty
+                ? TrackFilterEmpty(
+                    filter: filter,
+                    historyOff: !ref.watch(
+                      appSettingsProvider.select((s) => s.recordHistory),
+                    ),
+                  )
                 : noMatch
                 ? SearchNoResults(
                     query: query,
@@ -266,6 +290,7 @@ class _ReadyView extends ConsumerWidget {
                 : LibraryTrackList(
                     model: searchOn ? found : model,
                     searchText: searchOn ? query : null,
+                    showIndex: filter != TrackFilter.recent,
                   ),
           ),
         ],

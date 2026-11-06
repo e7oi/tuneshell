@@ -557,9 +557,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playerPlayingFrom => 'Lecture depuis';
 
   @override
-  String get playerFavoriteSoon => 'Favoris (bientôt)';
-
-  @override
   String get playerShuffle => 'Aléatoire';
 
   @override
@@ -955,6 +952,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsResumeSub => 'Restaure la file d\'attente au démarrage';
 
   @override
+  String get settingsRecordHistory => 'Enregistrer l\'historique d\'écoute';
+
+  @override
+  String get settingsRecordHistorySub =>
+      'Garde les pistes écoutées, pour le filtre Récentes';
+
+  @override
+  String get settingsClearHistory => 'Effacer l\'historique';
+
+  @override
+  String get settingsClearHistorySub => 'Les favoris sont conservés';
+
+  @override
+  String get settingsClearHistoryConfirmTitle =>
+      'Effacer l\'historique d\'écoute ?';
+
+  @override
+  String get settingsClearHistoryConfirmBody =>
+      'La liste Récentes sera vidée. Vos favoris ne sont pas touchés.';
+
+  @override
+  String get settingsClearHistoryConfirm => 'Effacer';
+
+  @override
+  String get settingsClearHistoryCancel => 'Annuler';
+
+  @override
   String settingsAbout(String version) {
     return 'TuneShell $version';
   }
@@ -1021,4 +1045,50 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get carEmptyLibrary =>
       'Ouvre TuneShell sur le téléphone pour choisir ta musique';
+
+  @override
+  String get filterAll => 'Toutes';
+
+  @override
+  String get filterFavorites => 'Favoris';
+
+  @override
+  String get filterRecent => 'Récentes';
+
+  @override
+  String get filterGroupLabel => 'Filtrer la liste des pistes';
+
+  @override
+  String get emptyFavoritesTitle => 'Aucun favori pour l\'instant';
+
+  @override
+  String get emptyFavoritesBody =>
+      'Touche le cœur dans le lecteur, ou garde le doigt sur une piste, pour l\'ajouter ici.';
+
+  @override
+  String get emptyRecentTitle => 'Rien d\'écouté pour l\'instant';
+
+  @override
+  String get emptyRecentBody =>
+      'Les pistes que tu écoutes apparaîtront ici, la dernière en premier.';
+
+  @override
+  String get emptyRecentOffBody =>
+      'L\'historique d\'écoute est désactivé dans les réglages.';
+
+  @override
+  String get favoriteAdd => 'Ajouter aux favoris';
+
+  @override
+  String get favoriteRemove => 'Retirer des favoris';
+
+  @override
+  String favoriteAdded(String name) {
+    return 'Ajouté aux favoris : $name';
+  }
+
+  @override
+  String favoriteRemoved(String name) {
+    return 'Retiré des favoris : $name';
+  }
 }

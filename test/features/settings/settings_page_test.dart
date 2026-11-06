@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
+import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
@@ -15,6 +16,7 @@ import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 
 import '../../fakes/fake_library.dart';
 import '../../fakes/fake_library_controller.dart';
+import '../../fakes/fake_listening_store.dart';
 import '../../fakes/fake_settings_store.dart';
 
 class _Removable extends RemovableController {
@@ -45,6 +47,7 @@ void main() {
   late LibraryCalls library;
   late FakeInternalAudioSource source;
   late ProviderContainer container;
+  late FakeListeningStore listening;
 
   Future<void> pump(
     WidgetTester tester, {
@@ -60,6 +63,7 @@ void main() {
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     store = FakeSettingsStore();
+    listening = FakeListeningStore();
     library = LibraryCalls();
     source = FakeInternalAudioSource()
       ..files = [
@@ -69,6 +73,7 @@ void main() {
     container = ProviderContainer(
       overrides: [
         settingsStoreProvider.overrideWithValue(store),
+        listeningStoreProvider.overrideWithValue(listening),
         chosenFoldersProvider.overrideWith((ref) => folders),
         dynamicColorsSupportedProvider.overrideWith((ref) => dynamicSupported),
         libraryControllerProvider.overrideWith(
@@ -218,6 +223,44 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(settings().resumePlayback, isFalse);
+  });
+
+  /// @verifies FR-031.6
+  testWidgets('the history switch is on and can be turned off', (tester) async {
+    await pump(tester);
+    await scrollTo(tester, 'Record listening history');
+    expect(settings().recordHistory, isTrue);
+
+    await tester.tap(find.text('Record listening history'));
+    await tester.pumpAndSettle();
+
+    expect(settings().recordHistory, isFalse);
+  });
+
+  /// @verifies FR-031.6
+  testWidgets('clearing the history asks first and keeps the favorites', (
+    tester,
+  ) async {
+    const a = Track(disk: DiskId('internal'), relativePath: 'Music/a.mp3');
+    await pump(tester);
+    await listening.setFavorite(a, favorite: true);
+    await listening.recordPlay(a, DateTime.utc(2026));
+    await scrollTo(tester, 'Clear listening history');
+
+    await tester.tap(find.text('Clear listening history'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(listening.plays, hasLength(1));
+
+    await tester.tap(find.text('Clear listening history'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Clear'));
+    await tester.pumpAndSettle();
+
+    expect(listening.plays, isEmpty);
+    expect(listening.marked, {a});
   });
 
   /// @verifies FR-025.6

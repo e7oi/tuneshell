@@ -491,3 +491,19 @@ Build release (D14) installée, bibliothèque réelle, Android Auto installé su
 13. **Aléatoire sur toute la collection :** dans Pistes, choisir une piste sous une lettre, puis activer l'aléatoire. Attendu : la file contient toute la bibliothèque (et non la lettre) et la lecture suivante en est tirée. **Non testé** tant que cela n'a pas été vu en voiture.
 14. **File d'attente :** sur l'écran de lecture de la voiture, ouvrir la file : les pistes précédentes et suivantes apparaissent (une fenêtre de 20 avant et 80 après la piste courante) ; en toucher une la joue. Avec l'aléatoire actif, la liste commence par la piste en cours (MPL-064). **Non testé** tant que cela n'a pas été vu en voiture.
 15. **Appel et navigation vocale :** pendant la lecture. Attendu : interruptions comme sur le téléphone (BR-005).
+
+## 24. Tester les favoris et l'historique (MPL-065)
+
+Build release (D14) installée par-dessus la précédente : la base passe de la version 5 à la version 6 sans perdre la bibliothèque ni la session. Consigner le résultat de chaque étape (testé / non testé).
+
+1. **Migration :** ouvrir l'application. Attendu : la liste de pistes est intacte, la reprise de lecture aussi.
+2. **Cœur du lecteur :** lancer une piste, ouvrir le lecteur plein écran, toucher le cœur. Attendu : cœur plein, léger retour haptique ; le toucher à nouveau le retire. TalkBack annonce « Ajouter aux favoris » puis « Retirer des favoris ».
+3. **Appui long :** garder le doigt sur une ligne de Pistes. Attendu : « Ajouter aux favoris » (ou « Retirer… ») dans le menu, avec une confirmation.
+4. **Pastille Favoris :** sous le titre de Pistes, toucher « Favoris ». Attendu : seules les pistes favorites, dans l'ordre de la liste, avec l'index ; toucher une piste la lance et met en file la liste filtrée. Sans favori : message vide.
+5. **Écoute comptée :** jouer une piste 35 s sans toucher l'écran, puis une autre piste seulement 5 s. Ouvrir « Récentes ». Attendu : la première en tête, la seconde absente, pas d'index alphabétique.
+6. **Recherche et pastille :** ouvrir la recherche avec « Favoris » choisi. Attendu : la recherche ne parcourt que les favoris.
+7. **Disque absent :** marquer une piste du SSD, retirer le SSD. Attendu : la piste reste dans « Favoris », grisée, avec le message habituel au toucher.
+8. **Réglages :** dans « Lecture », éteindre « Enregistrer l'historique d'écoute », jouer 35 s une nouvelle piste. Attendu : « Récentes » ne change pas. Rallumer le réglage.
+9. **Effacer l'historique :** toucher la ligne, annuler, puis recommencer et confirmer. Attendu : « Récentes » vide, favoris intacts.
+10. **Redémarrage :** forcer l'arrêt et rouvrir. Attendu : favoris et historique conservés.
+11. **Texte à 200 % et paysage :** les pastilles restent lisibles et à 48 dp. **Non testé** tant que cela n'a pas été vu sur le Pixel.

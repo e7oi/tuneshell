@@ -2423,6 +2423,582 @@ class PlaybackQueueEntriesCompanion extends UpdateCompanion<PlaybackQueueRow> {
   }
 }
 
+class $FavoritesTable extends Favorites
+    with TableInfo<$FavoritesTable, FavoriteRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FavoritesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _diskIdMeta = const VerificationMeta('diskId');
+  @override
+  late final GeneratedColumn<String> diskId = GeneratedColumn<String>(
+    'disk_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _relativePathMeta = const VerificationMeta(
+    'relativePath',
+  );
+  @override
+  late final GeneratedColumn<String> relativePath = GeneratedColumn<String>(
+    'relative_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _addedAtMeta = const VerificationMeta(
+    'addedAt',
+  );
+  @override
+  late final GeneratedColumn<int> addedAt = GeneratedColumn<int>(
+    'added_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [diskId, relativePath, addedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'favorites';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FavoriteRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('disk_id')) {
+      context.handle(
+        _diskIdMeta,
+        diskId.isAcceptableOrUnknown(data['disk_id']!, _diskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_diskIdMeta);
+    }
+    if (data.containsKey('relative_path')) {
+      context.handle(
+        _relativePathMeta,
+        relativePath.isAcceptableOrUnknown(
+          data['relative_path']!,
+          _relativePathMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_relativePathMeta);
+    }
+    if (data.containsKey('added_at')) {
+      context.handle(
+        _addedAtMeta,
+        addedAt.isAcceptableOrUnknown(data['added_at']!, _addedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_addedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {diskId, relativePath};
+  @override
+  FavoriteRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FavoriteRow(
+      diskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}disk_id'],
+      )!,
+      relativePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relative_path'],
+      )!,
+      addedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}added_at'],
+      )!,
+    );
+  }
+
+  @override
+  $FavoritesTable createAlias(String alias) {
+    return $FavoritesTable(attachedDatabase, alias);
+  }
+}
+
+class FavoriteRow extends DataClass implements Insertable<FavoriteRow> {
+  final String diskId;
+  final String relativePath;
+
+  /// Epoch milliseconds.
+  final int addedAt;
+  const FavoriteRow({
+    required this.diskId,
+    required this.relativePath,
+    required this.addedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['disk_id'] = Variable<String>(diskId);
+    map['relative_path'] = Variable<String>(relativePath);
+    map['added_at'] = Variable<int>(addedAt);
+    return map;
+  }
+
+  FavoritesCompanion toCompanion(bool nullToAbsent) {
+    return FavoritesCompanion(
+      diskId: Value(diskId),
+      relativePath: Value(relativePath),
+      addedAt: Value(addedAt),
+    );
+  }
+
+  factory FavoriteRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FavoriteRow(
+      diskId: serializer.fromJson<String>(json['diskId']),
+      relativePath: serializer.fromJson<String>(json['relativePath']),
+      addedAt: serializer.fromJson<int>(json['addedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'diskId': serializer.toJson<String>(diskId),
+      'relativePath': serializer.toJson<String>(relativePath),
+      'addedAt': serializer.toJson<int>(addedAt),
+    };
+  }
+
+  FavoriteRow copyWith({String? diskId, String? relativePath, int? addedAt}) =>
+      FavoriteRow(
+        diskId: diskId ?? this.diskId,
+        relativePath: relativePath ?? this.relativePath,
+        addedAt: addedAt ?? this.addedAt,
+      );
+  FavoriteRow copyWithCompanion(FavoritesCompanion data) {
+    return FavoriteRow(
+      diskId: data.diskId.present ? data.diskId.value : this.diskId,
+      relativePath: data.relativePath.present
+          ? data.relativePath.value
+          : this.relativePath,
+      addedAt: data.addedAt.present ? data.addedAt.value : this.addedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FavoriteRow(')
+          ..write('diskId: $diskId, ')
+          ..write('relativePath: $relativePath, ')
+          ..write('addedAt: $addedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(diskId, relativePath, addedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FavoriteRow &&
+          other.diskId == this.diskId &&
+          other.relativePath == this.relativePath &&
+          other.addedAt == this.addedAt);
+}
+
+class FavoritesCompanion extends UpdateCompanion<FavoriteRow> {
+  final Value<String> diskId;
+  final Value<String> relativePath;
+  final Value<int> addedAt;
+  final Value<int> rowid;
+  const FavoritesCompanion({
+    this.diskId = const Value.absent(),
+    this.relativePath = const Value.absent(),
+    this.addedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FavoritesCompanion.insert({
+    required String diskId,
+    required String relativePath,
+    required int addedAt,
+    this.rowid = const Value.absent(),
+  }) : diskId = Value(diskId),
+       relativePath = Value(relativePath),
+       addedAt = Value(addedAt);
+  static Insertable<FavoriteRow> custom({
+    Expression<String>? diskId,
+    Expression<String>? relativePath,
+    Expression<int>? addedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (diskId != null) 'disk_id': diskId,
+      if (relativePath != null) 'relative_path': relativePath,
+      if (addedAt != null) 'added_at': addedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FavoritesCompanion copyWith({
+    Value<String>? diskId,
+    Value<String>? relativePath,
+    Value<int>? addedAt,
+    Value<int>? rowid,
+  }) {
+    return FavoritesCompanion(
+      diskId: diskId ?? this.diskId,
+      relativePath: relativePath ?? this.relativePath,
+      addedAt: addedAt ?? this.addedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (diskId.present) {
+      map['disk_id'] = Variable<String>(diskId.value);
+    }
+    if (relativePath.present) {
+      map['relative_path'] = Variable<String>(relativePath.value);
+    }
+    if (addedAt.present) {
+      map['added_at'] = Variable<int>(addedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FavoritesCompanion(')
+          ..write('diskId: $diskId, ')
+          ..write('relativePath: $relativePath, ')
+          ..write('addedAt: $addedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PlayEventsTable extends PlayEvents
+    with TableInfo<$PlayEventsTable, PlayEventRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlayEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _diskIdMeta = const VerificationMeta('diskId');
+  @override
+  late final GeneratedColumn<String> diskId = GeneratedColumn<String>(
+    'disk_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _relativePathMeta = const VerificationMeta(
+    'relativePath',
+  );
+  @override
+  late final GeneratedColumn<String> relativePath = GeneratedColumn<String>(
+    'relative_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _playedAtMeta = const VerificationMeta(
+    'playedAt',
+  );
+  @override
+  late final GeneratedColumn<int> playedAt = GeneratedColumn<int>(
+    'played_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, diskId, relativePath, playedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'play_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PlayEventRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('disk_id')) {
+      context.handle(
+        _diskIdMeta,
+        diskId.isAcceptableOrUnknown(data['disk_id']!, _diskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_diskIdMeta);
+    }
+    if (data.containsKey('relative_path')) {
+      context.handle(
+        _relativePathMeta,
+        relativePath.isAcceptableOrUnknown(
+          data['relative_path']!,
+          _relativePathMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_relativePathMeta);
+    }
+    if (data.containsKey('played_at')) {
+      context.handle(
+        _playedAtMeta,
+        playedAt.isAcceptableOrUnknown(data['played_at']!, _playedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_playedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PlayEventRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlayEventRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      diskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}disk_id'],
+      )!,
+      relativePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relative_path'],
+      )!,
+      playedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}played_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PlayEventsTable createAlias(String alias) {
+    return $PlayEventsTable(attachedDatabase, alias);
+  }
+}
+
+class PlayEventRow extends DataClass implements Insertable<PlayEventRow> {
+  final int id;
+  final String diskId;
+  final String relativePath;
+
+  /// Epoch milliseconds.
+  final int playedAt;
+  const PlayEventRow({
+    required this.id,
+    required this.diskId,
+    required this.relativePath,
+    required this.playedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['disk_id'] = Variable<String>(diskId);
+    map['relative_path'] = Variable<String>(relativePath);
+    map['played_at'] = Variable<int>(playedAt);
+    return map;
+  }
+
+  PlayEventsCompanion toCompanion(bool nullToAbsent) {
+    return PlayEventsCompanion(
+      id: Value(id),
+      diskId: Value(diskId),
+      relativePath: Value(relativePath),
+      playedAt: Value(playedAt),
+    );
+  }
+
+  factory PlayEventRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlayEventRow(
+      id: serializer.fromJson<int>(json['id']),
+      diskId: serializer.fromJson<String>(json['diskId']),
+      relativePath: serializer.fromJson<String>(json['relativePath']),
+      playedAt: serializer.fromJson<int>(json['playedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'diskId': serializer.toJson<String>(diskId),
+      'relativePath': serializer.toJson<String>(relativePath),
+      'playedAt': serializer.toJson<int>(playedAt),
+    };
+  }
+
+  PlayEventRow copyWith({
+    int? id,
+    String? diskId,
+    String? relativePath,
+    int? playedAt,
+  }) => PlayEventRow(
+    id: id ?? this.id,
+    diskId: diskId ?? this.diskId,
+    relativePath: relativePath ?? this.relativePath,
+    playedAt: playedAt ?? this.playedAt,
+  );
+  PlayEventRow copyWithCompanion(PlayEventsCompanion data) {
+    return PlayEventRow(
+      id: data.id.present ? data.id.value : this.id,
+      diskId: data.diskId.present ? data.diskId.value : this.diskId,
+      relativePath: data.relativePath.present
+          ? data.relativePath.value
+          : this.relativePath,
+      playedAt: data.playedAt.present ? data.playedAt.value : this.playedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlayEventRow(')
+          ..write('id: $id, ')
+          ..write('diskId: $diskId, ')
+          ..write('relativePath: $relativePath, ')
+          ..write('playedAt: $playedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, diskId, relativePath, playedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlayEventRow &&
+          other.id == this.id &&
+          other.diskId == this.diskId &&
+          other.relativePath == this.relativePath &&
+          other.playedAt == this.playedAt);
+}
+
+class PlayEventsCompanion extends UpdateCompanion<PlayEventRow> {
+  final Value<int> id;
+  final Value<String> diskId;
+  final Value<String> relativePath;
+  final Value<int> playedAt;
+  const PlayEventsCompanion({
+    this.id = const Value.absent(),
+    this.diskId = const Value.absent(),
+    this.relativePath = const Value.absent(),
+    this.playedAt = const Value.absent(),
+  });
+  PlayEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required String diskId,
+    required String relativePath,
+    required int playedAt,
+  }) : diskId = Value(diskId),
+       relativePath = Value(relativePath),
+       playedAt = Value(playedAt);
+  static Insertable<PlayEventRow> custom({
+    Expression<int>? id,
+    Expression<String>? diskId,
+    Expression<String>? relativePath,
+    Expression<int>? playedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (diskId != null) 'disk_id': diskId,
+      if (relativePath != null) 'relative_path': relativePath,
+      if (playedAt != null) 'played_at': playedAt,
+    });
+  }
+
+  PlayEventsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? diskId,
+    Value<String>? relativePath,
+    Value<int>? playedAt,
+  }) {
+    return PlayEventsCompanion(
+      id: id ?? this.id,
+      diskId: diskId ?? this.diskId,
+      relativePath: relativePath ?? this.relativePath,
+      playedAt: playedAt ?? this.playedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (diskId.present) {
+      map['disk_id'] = Variable<String>(diskId.value);
+    }
+    if (relativePath.present) {
+      map['relative_path'] = Variable<String>(relativePath.value);
+    }
+    if (playedAt.present) {
+      map['played_at'] = Variable<int>(playedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlayEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('diskId: $diskId, ')
+          ..write('relativePath: $relativePath, ')
+          ..write('playedAt: $playedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$LibraryDatabase extends GeneratedDatabase {
   _$LibraryDatabase(QueryExecutor e) : super(e);
   $LibraryDatabaseManager get managers => $LibraryDatabaseManager(this);
@@ -2435,9 +3011,19 @@ abstract class _$LibraryDatabase extends GeneratedDatabase {
   );
   late final $PlaybackQueueEntriesTable playbackQueueEntries =
       $PlaybackQueueEntriesTable(this);
+  late final $FavoritesTable favorites = $FavoritesTable(this);
+  late final $PlayEventsTable playEvents = $PlayEventsTable(this);
   late final Index disksMarkIndex = Index(
     'disks_mark_index',
     'CREATE UNIQUE INDEX disks_mark_index ON disks (mark_index)',
+  );
+  late final Index playEventsPlayedAtIndex = Index(
+    'play_events_played_at_index',
+    'CREATE INDEX play_events_played_at_index ON play_events (played_at)',
+  );
+  late final Index playEventsTrackIndex = Index(
+    'play_events_track_index',
+    'CREATE INDEX play_events_track_index ON play_events (disk_id, relative_path)',
   );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -2450,7 +3036,11 @@ abstract class _$LibraryDatabase extends GeneratedDatabase {
     settingEntries,
     playbackSessions,
     playbackQueueEntries,
+    favorites,
+    playEvents,
     disksMarkIndex,
+    playEventsPlayedAtIndex,
+    playEventsTrackIndex,
   ];
 }
 
@@ -4222,6 +4812,361 @@ typedef $$PlaybackQueueEntriesTableProcessedTableManager =
       PlaybackQueueRow,
       PrefetchHooks Function()
     >;
+typedef $$FavoritesTableCreateCompanionBuilder = FavoritesCompanion Function({
+  required String diskId,
+  required String relativePath,
+  required int addedAt,
+  Value<int> rowid,
+});
+typedef $$FavoritesTableUpdateCompanionBuilder = FavoritesCompanion Function({
+  Value<String> diskId,
+  Value<String> relativePath,
+  Value<int> addedAt,
+  Value<int> rowid,
+});
+
+class $$FavoritesTableFilterComposer
+    extends Composer<_$LibraryDatabase, $FavoritesTable> {
+  $$FavoritesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get diskId => $composableBuilder(
+    column: $table.diskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FavoritesTableOrderingComposer
+    extends Composer<_$LibraryDatabase, $FavoritesTable> {
+  $$FavoritesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get diskId => $composableBuilder(
+    column: $table.diskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FavoritesTableAnnotationComposer
+    extends Composer<_$LibraryDatabase, $FavoritesTable> {
+  $$FavoritesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get diskId =>
+      $composableBuilder(column: $table.diskId, builder: (column) => column);
+
+  GeneratedColumn<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get addedAt =>
+      $composableBuilder(column: $table.addedAt, builder: (column) => column);
+}
+
+class $$FavoritesTableTableManager
+    extends
+        RootTableManager<
+          _$LibraryDatabase,
+          $FavoritesTable,
+          FavoriteRow,
+          $$FavoritesTableFilterComposer,
+          $$FavoritesTableOrderingComposer,
+          $$FavoritesTableAnnotationComposer,
+          $$FavoritesTableCreateCompanionBuilder,
+          $$FavoritesTableUpdateCompanionBuilder,
+          (
+            FavoriteRow,
+            BaseReferences<_$LibraryDatabase, $FavoritesTable, FavoriteRow>,
+          ),
+          FavoriteRow,
+          PrefetchHooks Function()
+        > {
+  $$FavoritesTableTableManager(_$LibraryDatabase db, $FavoritesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FavoritesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FavoritesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FavoritesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> diskId = const Value.absent(),
+                Value<String> relativePath = const Value.absent(),
+                Value<int> addedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FavoritesCompanion(
+                diskId: diskId,
+                relativePath: relativePath,
+                addedAt: addedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String diskId,
+                required String relativePath,
+                required int addedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => FavoritesCompanion.insert(
+                diskId: diskId,
+                relativePath: relativePath,
+                addedAt: addedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FavoritesTable, FavoriteRow>(table),
+                  BaseReferences<
+                    _$LibraryDatabase,
+                    $FavoritesTable,
+                    FavoriteRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FavoritesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$LibraryDatabase,
+      $FavoritesTable,
+      FavoriteRow,
+      $$FavoritesTableFilterComposer,
+      $$FavoritesTableOrderingComposer,
+      $$FavoritesTableAnnotationComposer,
+      $$FavoritesTableCreateCompanionBuilder,
+      $$FavoritesTableUpdateCompanionBuilder,
+      (
+        FavoriteRow,
+        BaseReferences<_$LibraryDatabase, $FavoritesTable, FavoriteRow>,
+      ),
+      FavoriteRow,
+      PrefetchHooks Function()
+    >;
+typedef $$PlayEventsTableCreateCompanionBuilder = PlayEventsCompanion Function({
+  Value<int> id,
+  required String diskId,
+  required String relativePath,
+  required int playedAt,
+});
+typedef $$PlayEventsTableUpdateCompanionBuilder = PlayEventsCompanion Function({
+  Value<int> id,
+  Value<String> diskId,
+  Value<String> relativePath,
+  Value<int> playedAt,
+});
+
+class $$PlayEventsTableFilterComposer
+    extends Composer<_$LibraryDatabase, $PlayEventsTable> {
+  $$PlayEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get diskId => $composableBuilder(
+    column: $table.diskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get playedAt => $composableBuilder(
+    column: $table.playedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlayEventsTableOrderingComposer
+    extends Composer<_$LibraryDatabase, $PlayEventsTable> {
+  $$PlayEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get diskId => $composableBuilder(
+    column: $table.diskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get playedAt => $composableBuilder(
+    column: $table.playedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlayEventsTableAnnotationComposer
+    extends Composer<_$LibraryDatabase, $PlayEventsTable> {
+  $$PlayEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get diskId =>
+      $composableBuilder(column: $table.diskId, builder: (column) => column);
+
+  GeneratedColumn<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get playedAt =>
+      $composableBuilder(column: $table.playedAt, builder: (column) => column);
+}
+
+class $$PlayEventsTableTableManager
+    extends
+        RootTableManager<
+          _$LibraryDatabase,
+          $PlayEventsTable,
+          PlayEventRow,
+          $$PlayEventsTableFilterComposer,
+          $$PlayEventsTableOrderingComposer,
+          $$PlayEventsTableAnnotationComposer,
+          $$PlayEventsTableCreateCompanionBuilder,
+          $$PlayEventsTableUpdateCompanionBuilder,
+          (
+            PlayEventRow,
+            BaseReferences<_$LibraryDatabase, $PlayEventsTable, PlayEventRow>,
+          ),
+          PlayEventRow,
+          PrefetchHooks Function()
+        > {
+  $$PlayEventsTableTableManager(_$LibraryDatabase db, $PlayEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlayEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlayEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlayEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> diskId = const Value.absent(),
+                Value<String> relativePath = const Value.absent(),
+                Value<int> playedAt = const Value.absent(),
+              }) => PlayEventsCompanion(
+                id: id,
+                diskId: diskId,
+                relativePath: relativePath,
+                playedAt: playedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String diskId,
+                required String relativePath,
+                required int playedAt,
+              }) => PlayEventsCompanion.insert(
+                id: id,
+                diskId: diskId,
+                relativePath: relativePath,
+                playedAt: playedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PlayEventsTable, PlayEventRow>(table),
+                  BaseReferences<
+                    _$LibraryDatabase,
+                    $PlayEventsTable,
+                    PlayEventRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlayEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$LibraryDatabase,
+      $PlayEventsTable,
+      PlayEventRow,
+      $$PlayEventsTableFilterComposer,
+      $$PlayEventsTableOrderingComposer,
+      $$PlayEventsTableAnnotationComposer,
+      $$PlayEventsTableCreateCompanionBuilder,
+      $$PlayEventsTableUpdateCompanionBuilder,
+      (
+        PlayEventRow,
+        BaseReferences<_$LibraryDatabase, $PlayEventsTable, PlayEventRow>,
+      ),
+      PlayEventRow,
+      PrefetchHooks Function()
+    >;
 
 class $LibraryDatabaseManager {
   final _$LibraryDatabase _db;
@@ -4238,4 +5183,8 @@ class $LibraryDatabaseManager {
       $$PlaybackSessionsTableTableManager(_db, _db.playbackSessions);
   $$PlaybackQueueEntriesTableTableManager get playbackQueueEntries =>
       $$PlaybackQueueEntriesTableTableManager(_db, _db.playbackQueueEntries);
+  $$FavoritesTableTableManager get favorites =>
+      $$FavoritesTableTableManager(_db, _db.favorites);
+  $$PlayEventsTableTableManager get playEvents =>
+      $$PlayEventsTableTableManager(_db, _db.playEvents);
 }

@@ -52,6 +52,9 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
   void setResumePlayback({required bool enabled}) =>
       _change((s) => s.copyWith(resumePlayback: enabled));
 
+  void setRecordHistory({required bool enabled}) =>
+      _change((s) => s.copyWith(recordHistory: enabled));
+
   void _change(AppSettings Function(AppSettings) change) {
     final before = state;
     final after = change(before);

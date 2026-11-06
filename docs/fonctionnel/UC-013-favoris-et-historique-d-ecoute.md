@@ -1,6 +1,6 @@
 # UC-013 — Garder ses favoris et retrouver ce qu'on a écouté
 
-**Statut :** Brouillon · **Créée le :** 2026-11-03 · **Ticket :** MPL-065 · **Lié :** UC-005, UC-007, UC-010, FR-011, FR-017, FR-019, FR-023, FR-027, FR-031, BR-004, BR-011, BR-014, ADR-021
+**Statut :** Active (validée le 2026-11-05) · **Créée le :** 2026-11-03 · **Ticket :** MPL-065 · **Lié :** UC-005, UC-007, UC-010, FR-011, FR-017, FR-019, FR-023, FR-027, FR-031, BR-004, BR-011, BR-014, ADR-021
 
 ## Acteur et but
 

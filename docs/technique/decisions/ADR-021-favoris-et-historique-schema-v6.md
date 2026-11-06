@@ -1,6 +1,6 @@
 # ADR-021 — Favoris et historique d'écoute dans la base (schéma v6)
 
-**Statut :** Brouillon · **Date :** 2026-11-03 · **Ticket :** MPL-065 · **Décisions :** D3, D15, D23, D27, D30 · **Fiches :** UC-013, BR-014, FR-031 · **Complète :** ADR-004, ADR-017, ADR-019
+**Statut :** Active (validée le 2026-11-05) · **Date :** 2026-11-03 · **Ticket :** MPL-065 · **Décisions :** D3, D15, D23, D27, D30 · **Fiches :** UC-013, BR-014, FR-031 · **Complète :** ADR-004, ADR-017, ADR-019
 
 ## Contexte
 

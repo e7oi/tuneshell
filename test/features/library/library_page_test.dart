@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
+import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
@@ -25,6 +26,7 @@ import 'package:tuneshell/ui/widgets/track_tile.dart';
 
 import '../../fakes/fake_audio_engine.dart';
 import '../../fakes/fake_library.dart';
+import '../../fakes/fake_listening_store.dart';
 import '../../fakes/fake_settings_store.dart';
 import '../../fakes/fake_storage.dart';
 
@@ -33,6 +35,7 @@ void main() {
   late FakeInternalAudioSource source;
   late FakeAudioPermission permission;
   late FakeAudioEngine engine;
+  late FakeListeningStore listening;
 
   setUp(() {
     repository = FakeLibraryRepository();
@@ -45,6 +48,7 @@ void main() {
       ];
     permission = FakeAudioPermission(AudioPermissionStatus.granted);
     engine = FakeAudioEngine();
+    listening = FakeListeningStore();
   });
 
   Future<void> pumpPage(
@@ -58,6 +62,7 @@ void main() {
           internalAudioSourceProvider.overrideWithValue(source),
           audioPermissionProvider.overrideWithValue(permission),
           audioEngineProvider.overrideWithValue(engine),
+          listeningStoreProvider.overrideWithValue(listening),
           settingsStoreProvider.overrideWithValue(FakeSettingsStore()),
           trackSourceOpenerProvider.overrideWithValue(FakeTrackSourceOpener()),
           volumeEventsProvider.overrideWithValue(InternalVolumeEvents()),
@@ -136,7 +141,105 @@ void main() {
     );
   });
 
-  /// @verifies FR-019
+  const alpha = Track(disk: internalDisk, relativePath: 'Music/a.mp3');
+  const bravo = Track(disk: internalDisk, relativePath: 'Music/b.mp3');
+  const charlie = Track(disk: internalDisk, relativePath: 'Music/c.mp3');
+
+  Future<void> openTracks(WidgetTester tester) async {
+    await pumpPage(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+  }
+
+  /// @verifies FR-031.1
+  /// @verifies FR-031.2
+  testWidgets('the Favorites pastille keeps the favorites, in list order', (
+    tester,
+  ) async {
+    listening.marked.addAll({charlie, alpha});
+    await openTracks(tester);
+
+    await tester.tap(find.text('Favorites'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alpha'), findsOneWidget);
+    expect(find.text('Charlie'), findsOneWidget);
+    expect(find.text('Bravo'), findsNothing);
+    expect(
+      tester.getTopLeft(find.text('Alpha')).dy,
+      lessThan(tester.getTopLeft(find.text('Charlie')).dy),
+    );
+
+    await tester.tap(find.text('Charlie'));
+    await tester.pumpAndSettle();
+    final player = ProviderScope.containerOf(
+      tester.element(find.byType(LibraryPage)),
+    ).read(playerControllerProvider);
+    expect(player.state.queue, [alpha, charlie]);
+  });
+
+  /// @verifies FR-031.1
+  /// @verifies FR-031.5
+  testWidgets('Recent lists the latest listen first, without the index, and '
+      'says so when empty', (tester) async {
+    await openTracks(tester);
+
+    await tester.tap(find.text('Recent'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nothing listened to yet'), findsOneWidget);
+
+    await tester.tap(find.text('All'));
+    await tester.pumpAndSettle();
+    await listening.recordPlay(alpha, DateTime.utc(2026));
+    await listening.recordPlay(bravo, DateTime.utc(2026, 1, 2));
+    ProviderScope.containerOf(tester.element(find.byType(LibraryPage)))
+        .read(recentTracksProvider.notifier)
+        .refresh()
+        .ignore();
+    await tester.tap(find.text('Recent'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlphabetScroller), findsNothing);
+    expect(
+      tester.getTopLeft(find.text('Bravo')).dy,
+      lessThan(tester.getTopLeft(find.text('Alpha')).dy),
+    );
+    expect(find.text('Charlie'), findsNothing);
+  });
+
+  /// @verifies FR-031.5
+  testWidgets('Favorites without a favorite shows its message', (tester) async {
+    await openTracks(tester);
+
+    await tester.tap(find.text('Favorites'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('No favorites yet'), findsOneWidget);
+  });
+
+  /// @verifies FR-031.4
+  testWidgets('the long-press menu adds and removes a favorite', (
+    tester,
+  ) async {
+    await openTracks(tester);
+
+    await tester.longPress(find.text('Bravo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add to favorites'));
+    await tester.pumpAndSettle();
+
+    expect(listening.marked, {bravo});
+
+    await tester.longPress(find.text('Bravo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Remove from favorites'));
+    await tester.pumpAndSettle();
+
+    expect(listening.marked, isEmpty);
+  });
+
+  /// @verifies FR-011
   testWidgets('a long press offers Play next and Add to queue', (tester) async {
     await pumpPage(tester);
     await tester.tap(find.text('Continue'));

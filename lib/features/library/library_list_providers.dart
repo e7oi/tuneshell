@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
+import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/throttle.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
@@ -106,9 +107,46 @@ final sortedTracksProvider = Provider<List<LibraryTrack>?>((ref) {
   return tracks == null ? null : LibraryListModel.sortTracks(tracks);
 });
 
+/// The pastille chosen above the list (FR-031.1). Kept for the session.
+enum TrackFilter { all, favorites, recent }
+
+class TrackFilterNotifier extends Notifier<TrackFilter> {
+  @override
+  TrackFilter build() => TrackFilter.all;
+
+  // ignore: use_setters_to_change_properties, the notifier API is a method
+  void choose(TrackFilter filter) => state = filter;
+}
+
+final trackFilterProvider = NotifierProvider<TrackFilterNotifier, TrackFilter>(
+  TrackFilterNotifier.new,
+);
+
+/// The tracks the pastille keeps, in the order it shows them (BR-014,
+/// rule 8): the favorites in the order of the list, the recent ones from the
+/// latest listen. A favorite or a listen whose file is not in the library is
+/// not shown and stays stored (BR-014, rule 2).
+final filteredTracksProvider = Provider<List<LibraryTrack>?>((ref) {
+  final sorted = ref.watch(sortedTracksProvider);
+  if (sorted == null) return null;
+  switch (ref.watch(trackFilterProvider)) {
+    case TrackFilter.all:
+      return sorted;
+    case TrackFilter.favorites:
+      final marked = ref.watch(favoriteTracksProvider);
+      return [
+        for (final track in sorted)
+          if (marked.contains(track.track)) track,
+      ];
+    case TrackFilter.recent:
+      final byId = {for (final track in sorted) track.track: track};
+      return [for (final id in ref.watch(recentTracksProvider)) ?byId[id]];
+  }
+});
+
 /// What the list shows; null until the tracks and the disks are first read.
 final libraryListModelProvider = Provider<LibraryListModel?>(
-  (ref) => _modelOf(ref, ref.watch(sortedTracksProvider)),
+  (ref) => _modelOf(ref, ref.watch(filteredTracksProvider)),
 );
 
 /// What the list shows while a search is open: the tracks that match, as the

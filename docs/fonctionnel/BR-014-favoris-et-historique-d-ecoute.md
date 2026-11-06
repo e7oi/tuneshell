@@ -1,6 +1,6 @@
 # BR-014 — Favoris et historique d'écoute
 
-**Statut :** Brouillon · **Créée le :** 2026-11-03 · **Ticket :** MPL-065 · **Décisions :** D15, D23, D27 · **Lié :** UC-013, FR-031, BR-001, BR-004, BR-008, BR-012, ADR-021
+**Statut :** Active (validée le 2026-11-05) · **Créée le :** 2026-11-03 · **Ticket :** MPL-065 · **Décisions :** D15, D23, D27 · **Lié :** UC-013, FR-031, BR-001, BR-004, BR-008, BR-012, ADR-021
 
 ## Règle
 
@@ -18,6 +18,8 @@ Un **favori** est une piste que l'utilisateur a marquée. L'**historique** est l
 10. **Hors voiture.** Android Auto ne montre ni favoris ni historique dans ce ticket (BR-013 règle 2 reste).
 
 ## À valider (PO)
+
+Validé le 2026-11-05 par le propriétaire (« pour le reste c'est ok »), sans changement.
 
 - Règle 4 : le seuil (30 secondes, ou la moitié d'une piste de moins de 60 secondes).
 - Règle 6 : la borne de 20 000 écoutes.

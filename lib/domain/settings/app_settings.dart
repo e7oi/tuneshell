@@ -9,6 +9,7 @@ abstract final class SettingKey {
   static const pauseOnUnplug = 'pause_on_unplug';
   static const refreshOnStart = 'refresh_on_start';
   static const resumePlayback = 'resume_playback';
+  static const recordHistory = 'record_history';
 }
 
 /// The theme the user chose: the system's, or one of the two.
@@ -19,6 +20,7 @@ enum ThemeChoice { system, light, dark }
 ///
 /// @implements FR-023
 /// @implements FR-028
+/// @implements FR-031
 @immutable
 final class AppSettings {
   const new({
@@ -28,6 +30,7 @@ final class AppSettings {
     this.pauseOnUnplug = true,
     this.refreshOnStart = true,
     this.resumePlayback = true,
+    this.recordHistory = true,
   });
 
   /// Reads the stored texts leniently, setting by setting (FR-023.7).
@@ -55,6 +58,10 @@ final class AppSettings {
         entries[SettingKey.resumePlayback],
         defaults.resumePlayback,
       ),
+      recordHistory: _bool(
+        entries[SettingKey.recordHistory],
+        defaults.recordHistory,
+      ),
     );
   }
 
@@ -76,6 +83,9 @@ final class AppSettings {
   /// BR-012).
   final bool resumePlayback;
 
+  /// The listens are recorded (FR-031, BR-014 rule 7).
+  final bool recordHistory;
+
   AppSettings copyWith({
     ThemeChoice? theme,
     bool? dynamicColors,
@@ -83,6 +93,7 @@ final class AppSettings {
     bool? pauseOnUnplug,
     bool? refreshOnStart,
     bool? resumePlayback,
+    bool? recordHistory,
   }) => AppSettings(
     theme: theme ?? this.theme,
     dynamicColors: dynamicColors ?? this.dynamicColors,
@@ -90,6 +101,7 @@ final class AppSettings {
     pauseOnUnplug: pauseOnUnplug ?? this.pauseOnUnplug,
     refreshOnStart: refreshOnStart ?? this.refreshOnStart,
     resumePlayback: resumePlayback ?? this.resumePlayback,
+    recordHistory: recordHistory ?? this.recordHistory,
   );
 
   /// Every setting as the text that is stored.
@@ -100,6 +112,7 @@ final class AppSettings {
     SettingKey.pauseOnUnplug: '$pauseOnUnplug',
     SettingKey.refreshOnStart: '$refreshOnStart',
     SettingKey.resumePlayback: '$resumePlayback',
+    SettingKey.recordHistory: '$recordHistory',
   };
 
   /// The entries that differ from [before]: the only ones to write.
@@ -119,7 +132,8 @@ final class AppSettings {
       other.indexOnLeft == indexOnLeft &&
       other.pauseOnUnplug == pauseOnUnplug &&
       other.refreshOnStart == refreshOnStart &&
-      other.resumePlayback == resumePlayback;
+      other.resumePlayback == resumePlayback &&
+      other.recordHistory == recordHistory;
 
   @override
   int get hashCode => Object.hash(
@@ -129,6 +143,7 @@ final class AppSettings {
     pauseOnUnplug,
     refreshOnStart,
     resumePlayback,
+    recordHistory,
   );
 
   @override

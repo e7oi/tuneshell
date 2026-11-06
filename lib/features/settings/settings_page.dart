@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
+import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/library/services/removable_indexer.dart';
 import 'package:tuneshell/domain/settings/app_info.dart';
@@ -134,6 +135,17 @@ class SettingsPage extends ConsumerWidget {
                       onChanged: (on) =>
                           notifier.setResumePlayback(enabled: on),
                     ),
+                    SettingsSwitchTile(
+                      title: l10n.settingsRecordHistory,
+                      subtitle: l10n.settingsRecordHistorySub,
+                      value: settings.recordHistory,
+                      onChanged: (on) => notifier.setRecordHistory(enabled: on),
+                    ),
+                    SettingsNavTile(
+                      title: l10n.settingsClearHistory,
+                      subtitle: l10n.settingsClearHistorySub,
+                      onTap: () => unawaited(_confirmClear(context, ref)),
+                    ),
                     SettingsSectionHeader(l10n.settingsSectionAbout),
                     SettingsNavTile(
                       title: l10n.settingsAbout(appVersion),
@@ -180,6 +192,32 @@ class SettingsPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+/// FR-031.6: asks before forgetting the listening history; the favorites
+/// stay.
+Future<void> _confirmClear(BuildContext context, WidgetRef ref) async {
+  final l10n = AppLocalizations.of(context);
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(l10n.settingsClearHistoryConfirmTitle),
+      content: Text(l10n.settingsClearHistoryConfirmBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.settingsClearHistoryCancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.settingsClearHistoryConfirm),
+        ),
+      ],
+    ),
+  );
+  if (confirmed ?? false) {
+    await ref.read(recentTracksProvider.notifier).clear();
   }
 }
 

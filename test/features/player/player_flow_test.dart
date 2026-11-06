@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
@@ -19,6 +20,7 @@ import 'package:tuneshell/ui/widgets/mini_player.dart';
 import 'package:tuneshell/ui/widgets/source_mark.dart';
 
 import '../../fakes/fake_audio_engine.dart';
+import '../../fakes/fake_listening_store.dart';
 import '../../fakes/fake_storage.dart';
 
 const ssd = DiskId('ssd');
@@ -62,6 +64,7 @@ void flow(String name, Future<void> Function(WidgetTester tester) body) {
 
 void main() {
   late FakeAudioEngine engine;
+  late FakeListeningStore listening;
   late FakeVolumeEvents volumes;
   late FakeTrackSourceOpener opener;
   late PlayerController player;
@@ -94,6 +97,7 @@ void main() {
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     engine = FakeAudioEngine();
+    listening = FakeListeningStore();
     volumes = FakeVolumeEvents(available);
     opener = FakeTrackSourceOpener();
     player = PlayerController(engine: engine, opener: opener, volumes: volumes);
@@ -102,6 +106,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         playerControllerProvider.overrideWithValue(player),
+        listeningStoreProvider.overrideWithValue(listening),
         trackIndexProvider.overrideWithValue({for (final t in all) t.track: t}),
         playerDisksProvider.overrideWithValue(disks),
         artworkDirectoryProvider.overrideWith((ref) => '/artwork'),
@@ -280,11 +285,26 @@ void main() {
       expect(find.text('Alpha'), findsWidgets);
       expect(find.text('Mists · Shore'), findsOneWidget);
       expect(find.text('Local · Track 3'), findsOneWidget);
-      expect(find.byTooltip('Favorites (coming soon)'), findsOneWidget);
-      final heart = tester.widget<IconButton>(
-        find.widgetWithIcon(IconButton, Icons.favorite_border_rounded),
-      );
-      expect(heart.onPressed, isNull);
+      expect(find.byTooltip('Add to favorites'), findsOneWidget);
+    });
+
+    /// @verifies FR-031.3
+    flow('the heart marks and unmarks the current track', (tester) async {
+      await pump(tester);
+      await start(tester);
+      await openPlayerPage(tester);
+
+      await tester.tap(find.byTooltip('Add to favorites'));
+      await tester.pump();
+
+      expect(find.byTooltip('Remove from favorites'), findsOneWidget);
+      expect(listening.marked, hasLength(1));
+
+      await tester.tap(find.byTooltip('Remove from favorites'));
+      await tester.pump();
+
+      expect(find.byTooltip('Add to favorites'), findsOneWidget);
+      expect(listening.marked, isEmpty);
     });
 
     flow('a disk track names its disk', (tester) async {
