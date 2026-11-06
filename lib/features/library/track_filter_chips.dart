@@ -28,20 +28,15 @@ class TrackFilterChips extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: TsSpace.screenMargin),
         child: Wrap(
           spacing: TsSpace.s,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             for (final filter in TrackFilter.values)
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: TsSize.touchTarget,
-                ),
-                child: Center(
-                  child: ChoiceChip(
-                    label: Text(labels[filter]!),
-                    selected: selected == filter,
-                    materialTapTargetSize: MaterialTapTargetSize.padded,
-                    onSelected: (_) => onSelected(filter),
-                  ),
-                ),
+              ChoiceChip(
+                label: Text(labels[filter]!),
+                selected: selected == filter,
+                // The padded target is 48 dp high (BR-007).
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                onSelected: (_) => onSelected(filter),
               ),
           ],
         ),

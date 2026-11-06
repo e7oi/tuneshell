@@ -223,11 +223,11 @@ Fonctionnalité: Favoris et historique d'écoute
 **Risques.** Placement et textes sans maquette (lot de design court à prévoir avant le code) ; coût du filtre « Récentes » sur 7 500 pistes ; migration v5 vers v6 sur la base réelle (ADR-021).
 
 #### Livraison — 2026-11-05
-Statut : ⚠️ partiel (code complet et vert ; rien testé sur appareil)
+Statut : ⚠️ partiel (code complet et vert ; test appareil partiel, voir ci-dessous)
 Résumé : cœur du lecteur, appui long, pastilles Toutes/Favoris/Récentes sous la recherche de Pistes, historique (écoute comptée après 30 s) réglable et effaçable, schéma Drift v6.
 Fiches touchées : UC-013, BR-014, ADR-021 inchangées ; FR-031 as-built ajouté ; HOWTO §24.
 Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → tout vert (1024 tests) ; `.github/scripts/check-repo.sh` → OK.
-Test appareil (Pixel, release) : non testé
+Test appareil (Pixel, release) : fait par Claude le 2026-11-05 en `adb` + captures (HOWTO §24 étapes 1, 2, 3, 4, 5 en partie, 9, 10) : migration v5→v6 sans perte (1 621 pistes), pastilles (défaut corrigé : elles étaient empilées, mises sur une ligne), menu d'appui long, favori ajouté, cœur plein/vide, origine « Pistes · Favoris », écoute comptée à 38 s, Récentes sans index, effacement avec confirmation (favoris conservés), persistance après arrêt forcé. **Non testé** : saut à 5 s, historique désactivé, disque absent, recherche avec pastille, retour haptique, TalkBack, 200 % et paysage. Confirmation du propriétaire (D14) toujours attendue.
 Revue QA : ⚠️ (sous-agent, aucun bloquant) — dette : pas de test de données v5→v6 (seul le test de schéma générique), pas de test favori sur disque absent ni de double marquage, courses d'écriture étroites sur le cœur (deux bascules rapides), `recent()` relit tout l'historique à chaque écoute (non mesuré), heure stockée en millisecondes epoch sans fuseau (BR-014 règle 5 à préciser pour MPL-066). Non vérifié : cadence réelle des états du moteur (le temps écouté est plafonné à 5 s entre deux états), annonce TalkBack du cœur, taille tactile des pastilles.
 Description de PR : feat(library): add favorites and listening history (MPL-065) — voir la PR.
 Décisions prises en route : origines de file `FavoritesOrigin` et `RecentOrigin` ; message « Récentes » vide qui dit que l'historique est désactivé.

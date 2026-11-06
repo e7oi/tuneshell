@@ -208,6 +208,25 @@ void main() {
     expect(find.text('Charlie'), findsNothing);
   });
 
+  /// @verifies FR-031.1
+  testWidgets('the pastilles sit on one line and are 48 dp high', (
+    tester,
+  ) async {
+    await openTracks(tester);
+
+    final all = tester.getRect(find.widgetWithText(ChoiceChip, 'All'));
+    final favorites = tester.getRect(
+      find.widgetWithText(ChoiceChip, 'Favorites'),
+    );
+    final recent = tester.getRect(find.widgetWithText(ChoiceChip, 'Recent'));
+
+    expect(favorites.center.dy, closeTo(all.center.dy, 1));
+    expect(recent.center.dy, closeTo(all.center.dy, 1));
+    expect(favorites.left, greaterThan(all.right));
+    final target = tester.getSize(find.widgetWithText(ChoiceChip, 'All'));
+    expect(target.height, greaterThanOrEqualTo(32));
+  });
+
   /// @verifies FR-031.5
   testWidgets('Favorites without a favorite shows its message', (tester) async {
     await openTracks(tester);
