@@ -4,8 +4,8 @@ import 'package:tuneshell/data/db/library_database.steps.dart';
 
 part 'library_database.g.dart';
 
-/// Schema of ADR-004; version 2 is ADR-008's, version 4 ADR-017's. Every
-/// change bumps
+/// Schema of ADR-004; version 2 is ADR-008's, version 4 ADR-017's, version 6
+/// ADR-021's. Every change bumps
 /// [LibraryDatabase.schemaVersion], adds a dump with
 /// `dart run drift_dev make-migrations` and a migration test (CLAUDE.md,
 /// Tests).
@@ -142,6 +142,36 @@ class PlaybackQueueEntries extends Table {
   Set<Column<Object>> get primaryKey => {position};
 }
 
+/// A favorite track (ADR-021, BR-014), by disk and path (BR-004), not by a row
+/// of [Tracks]: the favorite outlives the track and the disk.
+@DataClassName('FavoriteRow')
+class Favorites extends Table {
+  TextColumn get diskId => text()();
+
+  TextColumn get relativePath => text()();
+
+  /// Epoch milliseconds.
+  IntColumn get addedAt => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {diskId, relativePath};
+}
+
+/// One listen (ADR-021, BR-014), by disk and path like [Favorites].
+@DataClassName('PlayEventRow')
+@TableIndex(name: 'play_events_played_at_index', columns: {#playedAt})
+@TableIndex(name: 'play_events_track_index', columns: {#diskId, #relativePath})
+class PlayEvents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  TextColumn get diskId => text()();
+
+  TextColumn get relativePath => text()();
+
+  /// Epoch milliseconds.
+  IntColumn get playedAt => integer()();
+}
+
 @DriftDatabase(
   tables: [
     Disks,
@@ -150,13 +180,15 @@ class PlaybackQueueEntries extends Table {
     SettingEntries,
     PlaybackSessions,
     PlaybackQueueEntries,
+    Favorites,
+    PlayEvents,
   ],
 )
 class LibraryDatabase extends _$LibraryDatabase {
   new([QueryExecutor? executor]) : super(executor ?? _open());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -184,6 +216,12 @@ class LibraryDatabase extends _$LibraryDatabase {
       from4To5: (migrator, schema) async {
         await migrator.createTable(schema.playbackSession);
         await migrator.createTable(schema.playbackQueue);
+      },
+      from5To6: (migrator, schema) async {
+        await migrator.createTable(schema.favorites);
+        await migrator.createTable(schema.playEvents);
+        await migrator.createIndex(schema.playEventsPlayedAtIndex);
+        await migrator.createIndex(schema.playEventsTrackIndex);
       },
     ),
     beforeOpen: (details) async {

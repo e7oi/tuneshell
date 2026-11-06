@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/gesture_providers.dart';
+import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
@@ -27,13 +28,22 @@ import 'package:tuneshell/ui/widgets/track_tile.dart';
 /// @implements FR-011
 /// @implements FR-013
 class LibraryTrackList extends ConsumerStatefulWidget {
-  const new({required this.model, this.searchText, super.key});
+  const new({
+    required this.model,
+    this.searchText,
+    this.showIndex = true,
+    super.key,
+  });
 
   final LibraryListModel model;
 
   /// The text of the open search, whose results the list shows; the index is
   /// then hidden (FR-027).
   final String? searchText;
+
+  /// False for the recent tracks, which are not sorted by title (BR-014,
+  /// rule 8).
+  final bool showIndex;
 
   @override
   ConsumerState<LibraryTrackList> createState() => _LibraryTrackListState();
@@ -173,7 +183,11 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
         .read(queueOriginProvider.notifier)
         .set(
           searchText == null || searchText.trim().isEmpty
-              ? QueueOrigin.tracksByTitle
+              ? switch (ref.read(trackFilterProvider)) {
+                  TrackFilter.all => QueueOrigin.tracksByTitle,
+                  TrackFilter.favorites => const FavoritesOrigin(),
+                  TrackFilter.recent => const RecentOrigin(),
+                }
               : SearchOrigin(searchText),
         );
     // UC-001: the queue is the whole list, in the displayed order.
@@ -225,7 +239,7 @@ class _LibraryTrackListState extends ConsumerState<LibraryTrackList> {
     );
     return Stack(
       children: [
-        if (widget.searchText != null)
+        if (widget.searchText != null || !widget.showIndex)
           _scrollable(list)
         else
           AlphabetScroller(
@@ -381,6 +395,18 @@ class _TrackRow extends ConsumerWidget {
         ),
         CustomSemanticsAction(label: l10n.menuAddToQueue): () => unawaited(
           applyTrackAction(context, ref, entry.track, MenuAction.last),
+        ),
+        CustomSemanticsAction(
+          label:
+              ref.watch(
+                favoriteTracksProvider.select(
+                  (marked) => marked.contains(entry.track.track),
+                ),
+              )
+              ? l10n.favoriteRemove
+              : l10n.favoriteAdd,
+        ): () => unawaited(
+          applyTrackAction(context, ref, entry.track, MenuAction.favorite),
         ),
       },
       child: tile,

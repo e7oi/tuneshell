@@ -42,6 +42,16 @@ final class TracksByTitle extends QueueOrigin {
   const new();
 }
 
+/// The Favorites pastille of the Tracks view (FR-031.2).
+final class FavoritesOrigin extends QueueOrigin {
+  const new();
+}
+
+/// The Recent pastille of the Tracks view (FR-031.2).
+final class RecentOrigin extends QueueOrigin {
+  const new();
+}
+
 /// An album; [title] is empty for the unknown album.
 final class AlbumOrigin extends QueueOrigin {
   const new(this.title);

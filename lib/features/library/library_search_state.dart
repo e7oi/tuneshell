@@ -36,7 +36,7 @@ NotifierProvider<SearchText, String?> searchTextProvider(SearchView view) =>
 /// The search index of the tracks, rebuilt when the listed tracks change and
 /// not at each keystroke.
 final trackSearchIndexProvider = Provider<SearchIndex<LibraryTrack>?>((ref) {
-  final tracks = ref.watch(sortedTracksProvider);
+  final tracks = ref.watch(filteredTracksProvider);
   return tracks == null ? null : SearchIndex(tracks, trackTexts);
 });
 

@@ -818,12 +818,6 @@ abstract class AppLocalizations {
   /// **'Playing from'**
   String get playerPlayingFrom;
 
-  /// Tooltip of the disabled heart (FR-017.5).
-  ///
-  /// In en, this message translates to:
-  /// **'Favorites (coming soon)'**
-  String get playerFavoriteSoon;
-
   /// Label of the shuffle button (FR-017.7).
   ///
   /// In en, this message translates to:
@@ -1274,6 +1268,54 @@ abstract class AppLocalizations {
   /// **'Restores the queue at start'**
   String get settingsResumeSub;
 
+  /// Switch of the playback settings (FR-031.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Record listening history'**
+  String get settingsRecordHistory;
+
+  /// Explanation of the history switch (FR-031.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps the tracks you listened to, for the Recent filter'**
+  String get settingsRecordHistorySub;
+
+  /// Row of the playback settings (FR-031.6).
+  ///
+  /// In en, this message translates to:
+  /// **'Clear listening history'**
+  String get settingsClearHistory;
+
+  /// Explanation of the clear history row (FR-031.6).
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites are kept'**
+  String get settingsClearHistorySub;
+
+  /// Confirmation dialog title (FR-031.6).
+  ///
+  /// In en, this message translates to:
+  /// **'Clear the listening history?'**
+  String get settingsClearHistoryConfirmTitle;
+
+  /// Confirmation dialog body (FR-031.6).
+  ///
+  /// In en, this message translates to:
+  /// **'The Recent list will be emptied. Your favorites are not affected.'**
+  String get settingsClearHistoryConfirmBody;
+
+  /// Confirm button of the clear history dialog (FR-031.6).
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get settingsClearHistoryConfirm;
+
+  /// Cancel button of the clear history dialog (FR-031.6).
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get settingsClearHistoryCancel;
+
   /// About line: name and version (FR-026.1).
   ///
   /// In en, this message translates to:
@@ -1393,6 +1435,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open TuneShell on your phone to choose your music'**
   String get carEmptyLibrary;
+
+  /// Pastille showing the whole track list (FR-031.1).
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// Pastille showing the favorite tracks (FR-031.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get filterFavorites;
+
+  /// Pastille showing the tracks listened to recently (FR-031.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get filterRecent;
+
+  /// Accessibility label of the group of pastilles (FR-031.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Filter the track list'**
+  String get filterGroupLabel;
+
+  /// Title shown by the Favorites pastille without a favorite (FR-031.5).
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet'**
+  String get emptyFavoritesTitle;
+
+  /// Body of the empty Favorites message (FR-031.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the heart in the player, or long-press a track, to add it here.'**
+  String get emptyFavoritesBody;
+
+  /// Title shown by the Recent pastille without a listen (FR-031.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing listened to yet'**
+  String get emptyRecentTitle;
+
+  /// Body of the empty Recent message (FR-031.5).
+  ///
+  /// In en, this message translates to:
+  /// **'The tracks you listen to will appear here, the latest first.'**
+  String get emptyRecentBody;
+
+  /// Body of the empty Recent message when the history is off (FR-031.5).
+  ///
+  /// In en, this message translates to:
+  /// **'The listening history is turned off in the settings.'**
+  String get emptyRecentOffBody;
+
+  /// Label of the heart of the player and of the menu entry (FR-031.3, FR-031.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get favoriteAdd;
+
+  /// Label of the heart of the player and of the menu entry (FR-031.3, FR-031.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get favoriteRemove;
+
+  /// Confirmation after marking a favorite (FR-031.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Added to favorites: {name}'**
+  String favoriteAdded(String name);
+
+  /// Confirmation after unmarking a favorite (FR-031.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from favorites: {name}'**
+  String favoriteRemoved(String name);
 }
 
 class _AppLocalizationsDelegate
