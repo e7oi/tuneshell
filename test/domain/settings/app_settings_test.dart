@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuneshell/domain/settings/app_settings.dart';
 
+/// @verifies FR-031.6
 void main() {
   /// @verifies FR-023.4
   group('defaults', () {
@@ -14,6 +15,7 @@ void main() {
       expect(settings.pauseOnUnplug, isTrue);
       expect(settings.refreshOnStart, isTrue);
       expect(settings.resumePlayback, isTrue);
+      expect(settings.recordHistory, isTrue);
     });
 
     test('an empty store gives the defaults', () {
@@ -31,6 +33,7 @@ void main() {
         pauseOnUnplug: false,
         refreshOnStart: false,
         resumePlayback: false,
+        recordHistory: false,
       );
 
       final read = AppSettings.fromEntries(settings.toEntries());
@@ -60,6 +63,7 @@ void main() {
         SettingKey.pauseOnUnplug: '1',
         SettingKey.refreshOnStart: 'null',
         SettingKey.resumePlayback: 'yes',
+        SettingKey.recordHistory: 'yes',
       });
 
       expect(read, const AppSettings());
@@ -101,6 +105,7 @@ void main() {
         SettingKey.pauseOnUnplug: 'true',
         SettingKey.refreshOnStart: 'true',
         SettingKey.resumePlayback: 'true',
+        SettingKey.recordHistory: 'true',
       });
     });
 

@@ -637,10 +637,6 @@
   "@playerPlayingFrom": {
     "description": "Caption above the origin of the queue (FR-017.2)."
   },
-  "playerFavoriteSoon": "Favorites (coming soon)",
-  "@playerFavoriteSoon": {
-    "description": "Tooltip of the disabled heart (FR-017.5)."
-  },
   "playerShuffle": "Shuffle",
   "@playerShuffle": {
     "description": "Label of the shuffle button (FR-017.7)."
@@ -1125,6 +1121,38 @@
   "@settingsResumeSub": {
     "description": "Explanation of the resume playback switch (FR-028.1)."
   },
+  "settingsRecordHistory": "Record listening history",
+  "@settingsRecordHistory": {
+    "description": "Switch of the playback settings (FR-031.5)."
+  },
+  "settingsRecordHistorySub": "Keeps the tracks you listened to, for the Recent filter",
+  "@settingsRecordHistorySub": {
+    "description": "Explanation of the history switch (FR-031.5)."
+  },
+  "settingsClearHistory": "Clear listening history",
+  "@settingsClearHistory": {
+    "description": "Row of the playback settings (FR-031.6)."
+  },
+  "settingsClearHistorySub": "Favorites are kept",
+  "@settingsClearHistorySub": {
+    "description": "Explanation of the clear history row (FR-031.6)."
+  },
+  "settingsClearHistoryConfirmTitle": "Clear the listening history?",
+  "@settingsClearHistoryConfirmTitle": {
+    "description": "Confirmation dialog title (FR-031.6)."
+  },
+  "settingsClearHistoryConfirmBody": "The Recent list will be emptied. Your favorites are not affected.",
+  "@settingsClearHistoryConfirmBody": {
+    "description": "Confirmation dialog body (FR-031.6)."
+  },
+  "settingsClearHistoryConfirm": "Clear",
+  "@settingsClearHistoryConfirm": {
+    "description": "Confirm button of the clear history dialog (FR-031.6)."
+  },
+  "settingsClearHistoryCancel": "Cancel",
+  "@settingsClearHistoryCancel": {
+    "description": "Cancel button of the clear history dialog (FR-031.6)."
+  },
   "settingsAbout": "TuneShell {version}",
   "@settingsAbout": {
     "description": "About line: name and version (FR-026.1).",
@@ -1205,5 +1233,67 @@
   "carEmptyLibrary": "Open TuneShell on your phone to choose your music",
   "@carEmptyLibrary": {
     "description": "The only entry of the car screen while the library is empty (BR-013, rule 8)."
+  },
+  "filterAll": "All",
+  "@filterAll": {
+    "description": "Pastille showing the whole track list (FR-031.1)."
+  },
+  "filterFavorites": "Favorites",
+  "@filterFavorites": {
+    "description": "Pastille showing the favorite tracks (FR-031.1)."
+  },
+  "filterRecent": "Recent",
+  "@filterRecent": {
+    "description": "Pastille showing the tracks listened to recently (FR-031.1)."
+  },
+  "filterGroupLabel": "Filter the track list",
+  "@filterGroupLabel": {
+    "description": "Accessibility label of the group of pastilles (FR-031.1)."
+  },
+  "emptyFavoritesTitle": "No favorites yet",
+  "@emptyFavoritesTitle": {
+    "description": "Title shown by the Favorites pastille without a favorite (FR-031.5)."
+  },
+  "emptyFavoritesBody": "Tap the heart in the player, or long-press a track, to add it here.",
+  "@emptyFavoritesBody": {
+    "description": "Body of the empty Favorites message (FR-031.5)."
+  },
+  "emptyRecentTitle": "Nothing listened to yet",
+  "@emptyRecentTitle": {
+    "description": "Title shown by the Recent pastille without a listen (FR-031.5)."
+  },
+  "emptyRecentBody": "The tracks you listen to will appear here, the latest first.",
+  "@emptyRecentBody": {
+    "description": "Body of the empty Recent message (FR-031.5)."
+  },
+  "emptyRecentOffBody": "The listening history is turned off in the settings.",
+  "@emptyRecentOffBody": {
+    "description": "Body of the empty Recent message when the history is off (FR-031.5)."
+  },
+  "favoriteAdd": "Add to favorites",
+  "@favoriteAdd": {
+    "description": "Label of the heart of the player and of the menu entry (FR-031.3, FR-031.4)."
+  },
+  "favoriteRemove": "Remove from favorites",
+  "@favoriteRemove": {
+    "description": "Label of the heart of the player and of the menu entry (FR-031.3, FR-031.4)."
+  },
+  "favoriteAdded": "Added to favorites: {name}",
+  "@favoriteAdded": {
+    "description": "Confirmation after marking a favorite (FR-031.4).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "favoriteRemoved": "Removed from favorites: {name}",
+  "@favoriteRemoved": {
+    "description": "Confirmation after unmarking a favorite (FR-031.4).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

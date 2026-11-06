@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-074 · Dernière MAJ : 2026-11-01
+Préfixe : MPL · Prochaine clé : MPL-076 · Dernière MAJ : 2026-11-05
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -12,6 +12,7 @@ Ordre de travail proposé (réorganisation du 2026-11-01) : épiques, puis les t
 | MPL-001 | Épique | P0 | Épique « Lecture locale » | En cours | — | — |
 | MPL-072 | Épique | P1 | Épique « Disques amovibles » : éjection native (MPL-035), réassociation et retrait (MPL-038), design lot 3 (MPL-046), désactivation d'un disque (MPL-056) ; regroupement du 2026-11-01 | À faire | — | — |
 | MPL-064 | Bug | P1 | Android Auto : avec l'aléatoire, la liste de la file commence par la piste en cours ; listes (Albums, Artistes, Pistes) affichées entières, sans dossiers par lettres (demandes du propriétaire après usage en voiture, 2026-11-01) | À tester | — | — |
+| MPL-075 | Récit | P1 | Android Auto : revoir les listes de pistes de la voiture (demande du propriétaire, 2026-11-05) : la page de départ des listes avec « Suite… » est trop longue à faire défiler, et « A–Z » ne donne accès qu'aux lettres de la tranche affichée ; à cadrer (taille de page, accès direct à toute lettre de la liste entière) | À faire | MPL-001 | MPL-074 |
 | MPL-035 | Tâche technique | P1 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-072 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-072 | — |
@@ -42,7 +43,7 @@ Idées sans fiche ni `/cadrer` : à cadrer le moment venu, sans ordre.
 |---|---|---|---|---|---|---|
 | MPL-040 | Récit | P2 | Doublons de la bibliothèque : repérer les pistes présentes plusieurs fois (même morceau sur le téléphone et sur le SSD, copies d'un même fichier) pour les filtrer ou les nettoyer ; à cadrer (critère de doublon, effet sur playlists et statistiques). Demandé par le propriétaire le 2026-10-23 après le test de MPL-037 (7 562 pistes, nombreux doublons) | À faire | MPL-001 | MPL-037 |
 | MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | — |
-| MPL-065 | Récit | P2 | Historique d'écoute et favoris ; à cadrer | À faire | MPL-001 | — |
+| MPL-065 | Récit | P2 | Favoris et historique d'écoute : cœur du lecteur et appui long pour marquer, pastilles « Toutes / Favoris / Récentes » sous la recherche de Pistes, historique réglable et effaçable, tout sur l'appareil. Cadré le 2026-11-03 et validé le 2026-11-05 (UC-013, BR-014, FR-031, ADR-021 `Active`) ; réalisé sans maquette de Claude Design, à la demande du propriétaire | À tester | MPL-001 | — |
 | MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », « Redécouvrir », à partir de l'historique, sans réseau ; à cadrer | À faire | MPL-001 | MPL-065 |
 | MPL-067 | Récit | P2 | Éditeur de tags : modifier titre, artiste, album des fichiers ; à cadrer (écriture SAF sur le SSD, aucune perte de données) | À faire | MPL-001 | — |
 | MPL-068 | Récit | P2 | Liste noire : exclure des morceaux de la bibliothèque et de la lecture ; à cadrer | À faire | MPL-001 | — |
@@ -164,6 +165,73 @@ Revue QA : ✅ après un tour de corrections (clés de tri cohérentes avec `tri
 Description de PR : `feat(android): browse and play from Android Auto (MPL-060)` ; voir le résumé ci-dessus ; limites : voiture non testée.
 Décisions prises en route : le titre d'un dossier de lettres est le préfixe commun en majuscules ; l'arbre est mémoïsé jusqu'à un changement de bibliothèque, de disques, de piste courante ou de langue.
 À valider (PO) : BR-013 règle 4 reformulée (dossiers par préfixe commun plutôt que A à Z et « # ») ; règle 2 (« Reprendre » en premier) et règle 6 (disque absent masqué) : « Reprendre » disparaît aussi si la piste courante est sur un disque absent.
+
+### MPL-065
+**Description.** Marquer des pistes en favoris et retrouver ce qu'on a écouté récemment, dans l'onglet Pistes, sans nouvel onglet. Cadrage du 2026-11-03 : placement choisi par le propriétaire (pastilles sous le champ de recherche). Prépare MPL-066 (suggestions), qui lit l'historique.
+
+**Inclus.**
+- Favoris : cœur du lecteur plein écran (aujourd'hui inactif, FR-017) et appui long d'une ligne ; identité (disque, chemin) (BR-014).
+- Pastilles « Toutes », « Favoris », « Récentes » sous la recherche de Pistes, combinées avec la recherche.
+- Historique : écoute comptée après 30 s, avec l'heure ; réglage « Enregistrer l'historique », « Effacer l'historique » ; 20 000 écoutes au plus.
+- Schéma Drift v6 (`favorites`, `play_events`), `PlayCounter` testé d'abord (ADR-021).
+
+**Exclusions.** Playlists, favoris d'albums ou d'artistes, statistiques affichées, suggestions (MPL-066), Android Auto, export, synchronisation.
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Favoris et historique d'écoute
+
+  Scénario: Marquer un favori depuis le lecteur
+    Soit une piste en cours dans le lecteur plein écran
+    Quand je touche le cœur
+    Alors la piste est favorite et le cœur est plein
+
+  Scénario: Retrouver mes favoris
+    Soit trois pistes favorites
+    Quand je touche « Favoris » sous la recherche de Pistes
+    Alors seules ces pistes sont listées, triées par titre
+
+  Scénario: Une écoute est comptée après 30 secondes
+    Soit une piste jouée 31 secondes
+    Quand j'ouvre « Récentes »
+    Alors la piste est en tête de la liste
+
+  Scénario: Un saut rapide ne compte pas
+    Soit une piste sautée après 5 secondes
+    Quand j'ouvre « Récentes »
+    Alors la piste n'y figure pas
+
+  Scénario: Favori sur un disque absent
+    Soit un favori sur un disque débranché
+    Quand j'ouvre « Favoris »
+    Alors la piste est listée, grisée
+
+  Scénario: Effacer l'historique
+    Soit un historique non vide et deux favoris
+    Quand j'efface l'historique après confirmation
+    Alors « Récentes » est vide et les deux favoris restent
+
+  Scénario: Historique désactivé
+    Soit « Enregistrer l'historique d'écoute » désactivé
+    Quand j'écoute une piste jusqu'au bout
+    Alors « Récentes » ne change pas
+```
+
+**Fiches liées.** UC-013, BR-014, FR-031, ADR-021 (toutes `Active` depuis le 2026-11-05) ; lisent BR-004, BR-001, BR-008, BR-011, BR-012, FR-009, FR-011, FR-017, FR-019, FR-023, FR-027. **Écarts aux fiches `Active`** (FR-017 exigence 5, FR-009, FR-011, FR-023) : lignes « À valider » dans BR-014.
+
+**Risques.** Placement et textes sans maquette (lot de design court à prévoir avant le code) ; coût du filtre « Récentes » sur 7 500 pistes ; migration v5 vers v6 sur la base réelle (ADR-021).
+
+#### Livraison — 2026-11-05
+Statut : ⚠️ partiel (code complet et vert ; test appareil partiel, voir ci-dessous)
+Résumé : cœur du lecteur, appui long, pastilles Toutes/Favoris/Récentes sous la recherche de Pistes, historique (écoute comptée après 30 s) réglable et effaçable, schéma Drift v6.
+Fiches touchées : UC-013, BR-014, ADR-021 inchangées ; FR-031 as-built ajouté ; HOWTO §24.
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → tout vert (1024 tests) ; `.github/scripts/check-repo.sh` → OK.
+Test appareil (Pixel, release) : fait par Claude le 2026-11-05 en `adb` + captures (HOWTO §24 étapes 1, 2, 3, 4, 5 en partie, 9, 10) : migration v5→v6 sans perte (1 621 pistes), pastilles (défaut corrigé : elles étaient empilées, mises sur une ligne), menu d'appui long, favori ajouté, cœur plein/vide, origine « Pistes · Favoris », écoute comptée à 38 s, Récentes sans index, effacement avec confirmation (favoris conservés), persistance après arrêt forcé. **Non testé** : saut à 5 s, historique désactivé, disque absent, recherche avec pastille, retour haptique, TalkBack, 200 % et paysage. Confirmation du propriétaire (D14) toujours attendue.
+Revue QA : ⚠️ (sous-agent, aucun bloquant) — dette : pas de test de données v5→v6 (seul le test de schéma générique), pas de test favori sur disque absent ni de double marquage, courses d'écriture étroites sur le cœur (deux bascules rapides), `recent()` relit tout l'historique à chaque écoute (non mesuré), heure stockée en millisecondes epoch sans fuseau (BR-014 règle 5 à préciser pour MPL-066). Non vérifié : cadence réelle des états du moteur (le temps écouté est plafonné à 5 s entre deux états), annonce TalkBack du cœur, taille tactile des pastilles.
+Description de PR : feat(library): add favorites and listening history (MPL-065) — voir la PR.
+Décisions prises en route : origines de file `FavoritesOrigin` et `RecentOrigin` ; message « Récentes » vide qui dit que l'historique est désactivé.
+À valider (PO) : placement et textes sans maquette (FR-031) ; choix de la pastille non retenu d'un lancement à l'autre.
 
 ### MPL-064
 **Description.** Deux demandes du propriétaire après usage d'Android Auto (2026-11-01) : avec l'aléatoire actif, la liste de la file commence par la piste en cours (aujourd'hui elle montre 20 pistes avant, dans l'ordre d'origine) ; les listes Albums, Artistes et Pistes sont affichées entières, sans sous-dossiers par lettres.

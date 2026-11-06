@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/app.dart';
 import 'package:tuneshell/app/licenses.dart';
+import 'package:tuneshell/app/listen_counting.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/app/session_keeping.dart';
 import 'package:tuneshell/app/system_playback.dart';
@@ -20,6 +21,7 @@ Future<void> main() async {
   await container.read(systemSchemesProvider.future);
   await startSystemPlayback(container);
   startSessionKeeping(container);
+  startListenCounting(container);
   runApp(
     UncontrolledProviderScope(
       container: container,
