@@ -36,6 +36,8 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     this._artworkOf = _noArtwork,
     this._browseFallbackArt,
     this._tabIcon,
+    this._moreLabel = 'More',
+    this._chunk = 400,
     this._mediaTree,
     this._onQueueChosen,
     this._clock = DateTime.now,
@@ -64,6 +66,12 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   /// draws a tab from its icon alone, and reads it from a resource of the
   /// application rather than from a provider.
   final Uri? Function(BrowseKind kind)? _tabIcon;
+
+  /// The text of the row that opens the rest of a long list.
+  final String _moreLabel;
+
+  /// How many rows a list gives at once when the car does not ask for pages.
+  final int _chunk;
 
   /// Null: the session cannot be browsed (no car, in the tests).
   final MediaTreeLocator? _mediaTree;
@@ -161,11 +169,59 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   ]) async {
     final tree = await _mediaTree?.call();
     if (tree == null) return const [];
-    return [for (final node in tree.children(parentMediaId)) _browseItem(node)];
+    final more = _moreOf(parentMediaId);
+    final nodes = tree.children(more?.parent ?? parentMediaId);
+    // A car that pages asks for a page at a time, and asks again at the
+    // bottom of the list (FR-029).
+    final page = options?[_pageKey];
+    final size = options?[_pageSizeKey];
+    if (page is int && size is int && page >= 0 && size > 0) {
+      final start = page * size;
+      if (start >= nodes.length) return const [];
+      final end = start + size < nodes.length ? start + size : nodes.length;
+      return [for (final n in nodes.sublist(start, end)) _browseItem(n)];
+    }
+    // One that does not gets a first part and a last row for the rest.
+    final start = more?.offset ?? 0;
+    if (nodes.length - start <= _chunk) {
+      return [for (final n in nodes.skip(start)) _browseItem(n)];
+    }
+    final end = start + _chunk;
+    return [
+      for (final n in nodes.sublist(start, end)) _browseItem(n),
+      MediaItem(
+        id: _moreId(more?.parent ?? parentMediaId, end),
+        title: _moreLabel,
+        playable: false,
+      ),
+    ];
+  }
+
+  static const _pageKey = 'android.media.browse.extra.PAGE';
+  static const _pageSizeKey = 'android.media.browse.extra.PAGE_SIZE';
+  static const _morePrefix = 'more|';
+
+  static String _moreId(String parent, int offset) =>
+      '$_morePrefix$offset|${Uri.encodeComponent(parent)}';
+
+  static ({String parent, int offset})? _moreOf(String id) {
+    if (!id.startsWith(_morePrefix)) return null;
+    final parts = id.substring(_morePrefix.length).split('|');
+    final offset = parts.length == 2 ? int.tryParse(parts[0]) : null;
+    if (offset == null) return null;
+    try {
+      return (parent: Uri.decodeComponent(parts[1]), offset: offset);
+      // ignore: avoid_catching_errors, decodeComponent offers no non-throwing form.
+    } on ArgumentError {
+      return null;
+    }
   }
 
   @override
   Future<MediaItem?> getMediaItem(String mediaId) async {
+    if (_moreOf(mediaId) != null) {
+      return MediaItem(id: mediaId, title: _moreLabel, playable: false);
+    }
     final node = (await _mediaTree?.call())?.node(mediaId);
     return node == null ? null : _browseItem(node);
   }

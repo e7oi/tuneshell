@@ -506,6 +506,109 @@ void main() {
     });
   });
 
+  group('FR-029 long lists in a car', () {
+    late List<LibraryTrack> many;
+
+    Future<void> longList({int chunk = 10}) async {
+      await handler.dispose();
+      many = [
+        for (var i = 0; i < 25; i++)
+          LibraryTrack(
+            id: 100 + i,
+            disk: internalDisk,
+            info: info('Music/m${i.toString().padLeft(2, '0')}.mp3'),
+          ),
+      ];
+      final tree = LibraryMediaTree(
+        albums: const [],
+        artists: const [],
+        tracks: many,
+        labels: const MediaTreeLabels(
+          albums: 'Albums',
+          artists: 'Artists',
+          tracks: 'Tracks',
+          unknownAlbum: '?',
+          unknownArtist: '?',
+          empty: 'Empty',
+        ),
+        fold: (text) => text.toLowerCase(),
+        maxChildren: 1000,
+      );
+      handler = PlayerAudioHandler(
+        controller,
+        describe: (_) => null,
+        mediaTree: () async => tree,
+        chunk: chunk,
+        clock: () => now,
+        stopGrace: const Duration(milliseconds: 20),
+      );
+    }
+
+    /// @verifies BR-013
+    test('a car that pages gets the page it asks for', () async {
+      await longList();
+
+      final second = await handler.getChildren('tracks', {
+        'android.media.browse.extra.PAGE': 1,
+        'android.media.browse.extra.PAGE_SIZE': 10,
+      });
+      final past = await handler.getChildren('tracks', {
+        'android.media.browse.extra.PAGE': 9,
+        'android.media.browse.extra.PAGE_SIZE': 10,
+      });
+
+      expect(second.length, 10);
+      expect(second.first.title, 'm10.mp3');
+      expect(past, isEmpty);
+    });
+
+    /// @verifies BR-013
+    test(
+      'one that does not gets a first part and a row for the rest',
+      () async {
+        await longList();
+
+        final first = await handler.getChildren('tracks');
+
+        expect(first.length, 11);
+        expect(first.last.title, 'More');
+        expect(first.last.playable, isFalse);
+        final rest = await handler.getChildren(first.last.id);
+        expect(rest.length, 11);
+        expect(rest.first.title, 'm10.mp3');
+        final last = await handler.getChildren(rest.last.id);
+        expect(last.length, 5);
+        expect(last.last.title, 'm24.mp3');
+        expect((await handler.getMediaItem(first.last.id))!.title, 'More');
+      },
+    );
+
+    /// @verifies BR-013
+    test('a track found in the rest is played from its whole list', () async {
+      await longList();
+      final first = await handler.getChildren('tracks');
+      final rest = await handler.getChildren(first.last.id);
+
+      await handler.playFromMediaId(rest[1].id);
+      await settle();
+
+      expect(controller.state.queue.length, 25);
+      expect(controller.state.currentIndex, 11);
+    });
+
+    /// @verifies BR-013
+    test(
+      'a list that fits is given whole, and a bad row id gives nothing',
+      () async {
+        await longList(chunk: 100);
+
+        expect((await handler.getChildren('tracks')).length, 25);
+        expect(await handler.getChildren('more|x|y'), isEmpty);
+        expect(await handler.getChildren('more|3|%E0%A4%A'), isEmpty);
+      },
+    );
+  });
+
   group('FR-029 browsing from a car', () {
     late LibraryMediaTree tree;
     var chosen = 0;

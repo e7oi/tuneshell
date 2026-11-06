@@ -478,7 +478,7 @@ Build release (D14) installée, bibliothèque réelle, Android Auto installé su
 
 1. **Présence :** ouvrir les applications multimédia de la voiture. Attendu : TuneShell, avec son icône.
 2. **Racine :** ouvrir TuneShell. Attendu : « Albums », « Artistes », « Pistes », et en premier la piste courante si une lecture a eu lieu.
-3. **Vitesse :** noter le délai d'affichage de la racine, puis de « Pistes » (plusieurs milliers de pistes), affichée en une seule liste sans dossiers par lettres (MPL-064). Attendu : liste complète, défilement fluide, aucune coupure ni erreur ; sinon noter la taille à partir de laquelle cela casse (rétablir le découpage de BR-013, règle 4).
+3. **Vitesse :** noter le délai d'affichage de la racine, puis de « Pistes » (plusieurs milliers de pistes), servie par pages (MPL-074). Attendu : la liste s'affiche vite ; en arrivant en bas, soit la suite se charge toute seule, soit une dernière ligne « Suite… » apparaît et ouvre les pistes suivantes. Noter lequel des deux se produit, car cela dit si la voiture pagine. Faire de même pour Albums et Artistes.
 4. **Album :** Albums, un album, la troisième piste. Attendu : elle joue, la file est l'album à partir de cette piste ; le lecteur du téléphone n'affiche plus de provenance.
 5. **Artiste :** Artistes, un artiste, un album, une piste. Attendu : lecture de l'album.
 6. **Pochettes :** noter si elles s'affichent dans les listes et sur l'écran de lecture. Sinon : ADR-020, risque 2.

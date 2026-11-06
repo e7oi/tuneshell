@@ -1043,6 +1043,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Maintenir la musique quand l\'écran est éteint.';
 
   @override
+  String get carMore => 'Suite…';
+
+  @override
   String get carEmptyLibrary =>
       'Ouvre TuneShell sur le téléphone pour choisir ta musique';
 
