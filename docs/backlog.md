@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-076 · Dernière MAJ : 2026-11-06
+Préfixe : MPL · Prochaine clé : MPL-078 · Dernière MAJ : 2026-11-10
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -44,6 +44,8 @@ Idées sans fiche ni `/cadrer` : à cadrer le moment venu, sans ordre.
 |---|---|---|---|---|---|---|
 | MPL-040 | Récit | P2 | Doublons de la bibliothèque : repérer les pistes présentes plusieurs fois (même morceau sur le téléphone et sur le SSD, copies d'un même fichier) pour les filtrer ou les nettoyer ; à cadrer (critère de doublon, effet sur playlists et statistiques). Demandé par le propriétaire le 2026-10-23 après le test de MPL-037 (7 562 pistes, nombreux doublons) | À faire | MPL-001 | MPL-037 |
 | MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | — |
+| MPL-076 | Récit | P2 | Lecteur plein écran : rendre le nom de l'album et celui de l'artiste cliquables pour ouvrir leur détail et naviguer entre les titres (demande du propriétaire, 2026-11-10) ; à cadrer | À faire | MPL-001 | — |
+| MPL-077 | Bogue | P2 | « Précédent » suit la file affichée (voisin dans la file, aléatoire compris) au lieu de rejouer le titre réellement écouté avant (retour du propriétaire, 2026-11-10) ; à cadrer : touche FR-001, lien possible avec l'historique de MPL-065 | À faire | MPL-001 | — |
 | MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », « Redécouvrir », à partir de l'historique, sans réseau ; à cadrer | À faire | MPL-001 | MPL-065 |
 | MPL-067 | Récit | P2 | Éditeur de tags : modifier titre, artiste, album des fichiers ; à cadrer (écriture SAF sur le SSD, aucune perte de données) | À faire | MPL-001 | — |
 | MPL-068 | Récit | P2 | Liste noire : exclure des morceaux de la bibliothèque et de la lecture ; à cadrer | À faire | MPL-001 | — |
