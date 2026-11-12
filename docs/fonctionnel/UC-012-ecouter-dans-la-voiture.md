@@ -20,6 +20,7 @@ L'utilisateur branche son Pixel à la voiture. Il veut choisir et lancer sa musi
 
 ## Variantes et erreurs
 
+- **Autres titres de la même œuvre** : « Album en cours » et « Artiste en cours », à la racine, ouvrent le détail de la piste en cours (FR-032.7).
 - **Application jamais ouverte depuis le démarrage du téléphone** : la navigation fonctionne quand même (ADR-020).
 - **Bibliothèque vide** : un élément explique d'ouvrir TuneShell sur le téléphone (BR-013).
 - **Disque amovible absent ou éjecté** : ses pistes n'apparaissent pas ; l'éjection pendant la lecture suit BR-002.

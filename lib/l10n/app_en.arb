@@ -633,6 +633,24 @@
   "@playerCollapse": {
     "description": "Button that closes the full-screen player (FR-017.1)."
   },
+  "playerOpenAlbum": "Open the album {title}",
+  "@playerOpenAlbum": {
+    "description": "Screen-reader label of the album name in the full-screen player, a link to the album (FR-032.5).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "playerOpenArtist": "Open the artist {name}",
+  "@playerOpenArtist": {
+    "description": "Screen-reader label of the artist name in the full-screen player, a link to the artist (FR-032.5).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "playerPlayingFrom": "Playing from",
   "@playerPlayingFrom": {
     "description": "Caption above the origin of the queue (FR-017.2)."
@@ -1233,6 +1251,14 @@
   "carMore": "More…",
   "@carMore": {
     "description": "Last row of a long list in the car browser: opens the rest of the list."
+  },
+  "carCurrentAlbum": "Current album",
+  "@carCurrentAlbum": {
+    "description": "Folder at the root of the car browser that opens the album of the current track (FR-032.7)."
+  },
+  "carCurrentArtist": "Current artist",
+  "@carCurrentArtist": {
+    "description": "Folder at the root of the car browser that opens the artist of the current track (FR-032.7)."
   },
   "carEmptyLibrary": "Open TuneShell on your phone to choose your music",
   "@carEmptyLibrary": {

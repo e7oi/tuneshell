@@ -100,7 +100,7 @@ final class ArtistGroup {
 /// @implements BR-010
 @immutable
 final class LibraryGroups {
-  const new _({
+  new _({
     required this.albums,
     required this.artists,
     required this.albumLetters,
@@ -169,6 +169,35 @@ final class LibraryGroups {
   final Map<String, int> albumFirstIndex;
   final List<AlphabetLetter> artistLetters;
   final Map<String, int> artistFirstIndex;
+
+  /// The album of each track, by the track's internal identity; made on the
+  /// first question, a library has thousands of tracks.
+  late final Map<int, AlbumGroup> _albumOfTrack = {
+    for (final album in albums)
+      for (final track in album.tracks) track.id: album,
+  };
+  late final Map<String, ArtistGroup> _artistByKey = {
+    for (final artist in artists) artist.key: artist,
+  };
+
+  /// The album [track] belongs to, or null when its album is unknown or it is
+  /// not in the library (FR-032.1).
+  ///
+  /// @implements FR-032
+  AlbumGroup? albumOf(LibraryTrack track) {
+    final album = _albumOfTrack[track.id];
+    return album == null || album.unknownAlbum ? null : album;
+  }
+
+  /// The artist group [track] belongs to, that of its album artist (BR-010,
+  /// rule 1), or null when it is unknown (FR-032.1).
+  ///
+  /// @implements FR-032
+  ArtistGroup? artistOf(LibraryTrack track) {
+    final album = _albumOfTrack[track.id];
+    final artist = album == null ? null : _artistByKey[album.artistKey];
+    return artist == null || artist.unknown ? null : artist;
+  }
 }
 
 String? _text(String? value) {

@@ -530,6 +530,8 @@ void main() {
           unknownAlbum: '?',
           unknownArtist: '?',
           empty: 'Empty',
+          currentAlbum: 'Album',
+          currentArtist: 'Artist',
         ),
         fold: (text) => text.toLowerCase(),
         maxChildren: 1000,
@@ -633,6 +635,8 @@ void main() {
           unknownAlbum: '?',
           unknownArtist: '?',
           empty: 'Empty',
+          currentAlbum: 'Album',
+          currentArtist: 'Artist',
         ),
         fold: (text) => text.toLowerCase(),
         current: a,
@@ -676,6 +680,7 @@ void main() {
         expect(root.map((item) => item.artUri.toString()), [
           'content://art/track.png',
           'android.resource://x/tab_album',
+          'android.resource://x/tab_album',
           'android.resource://x/tab_artist',
           'android.resource://x/tab_track',
         ]);
@@ -687,12 +692,34 @@ void main() {
 
       final root = await handler.getChildren(AudioService.browsableRootId);
 
-      expect(root.map((i) => i.title), ['A', 'Albums', 'Artists', 'Tracks']);
-      expect(root.map((i) => i.playable), [true, false, false, false]);
+      expect(root.map((i) => i.title), [
+        'A',
+        'Album',
+        'Albums',
+        'Artists',
+        'Tracks',
+      ]);
+      expect(root.map((i) => i.playable), [true, false, false, false, false]);
       final tracks = await handler.getChildren('tracks');
       expect(tracks.map((i) => i.title), ['A', 'b.mp3']);
       expect(tracks.first.artist, 'Artist');
     });
+
+    /// @verifies FR-032.7
+    test(
+      'the current album folder lists its tracks and keeps the art',
+      () async {
+        await browsable();
+        final root = await handler.getChildren(AudioService.browsableRootId);
+        final folder = root.firstWhere((i) => i.title == 'Album');
+
+        final tracks = await handler.getChildren(folder.id);
+        await handler.playFromMediaId(tracks.last.id);
+
+        expect(tracks.map((i) => i.title), ['A', 'b.mp3']);
+        expect(controller.state.queue, hasLength(2));
+      },
+    );
 
     test('gives one item back by identifier', () async {
       await browsable();

@@ -55,6 +55,8 @@ final class MediaTreeLabels {
     required this.unknownAlbum,
     required this.unknownArtist,
     required this.empty,
+    required this.currentAlbum,
+    required this.currentArtist,
   });
 
   final String albums;
@@ -65,6 +67,11 @@ final class MediaTreeLabels {
 
   /// The only entry of an empty library.
   final String empty;
+
+  /// The folders of the album and of the artist of the current track
+  /// (FR-032.7).
+  final String currentAlbum;
+  final String currentArtist;
 }
 
 /// The media tree of the library (BR-013): Albums, Artists and Tracks, long
@@ -143,6 +150,9 @@ class LibraryMediaTree implements MediaTree {
   static const _albumsId = 'albums';
   static const _artistsId = 'artists';
   static const _tracksId = 'tracks';
+  static const _currentId = 'current';
+  static const _albumKind = 'album';
+  static const _artistKind = 'artist';
 
   List<LibraryTrack> _playable(List<LibraryTrack> all) => [
     for (final track in all)
@@ -159,12 +169,17 @@ class LibraryMediaTree implements MediaTree {
         }
         return [
           ?_resumeNode(),
+          ?_currentNode(_albumKind),
+          ?_currentNode(_artistKind),
           _folder(_albumsId, labels.albums),
           _folder(_artistsId, labels.artists),
           _folder(_tracksId, labels.tracks),
         ];
       case MediaTree.recentId:
         return [?_resumeNode()];
+      case _currentId:
+        final target = _currentTarget(_prefixOf(parts));
+        return target == null ? const [] : children(target.id);
       case _albumsId:
         return _cut(
           parentId,
@@ -214,6 +229,8 @@ class LibraryMediaTree implements MediaTree {
         return null;
       case _resumeId:
         return _resumeNode();
+      case _currentId:
+        return _currentNode(_prefixOf(parts));
       case _albumsId:
         return _folder(id, labels.albums, _prefixOf(parts));
       case _artistsId:
@@ -329,6 +346,46 @@ class LibraryMediaTree implements MediaTree {
       subtitle: track.info.artist,
       artwork: track.artwork,
       playable: true,
+    );
+  }
+
+  /// The album or the artist of the current track, the same group the list
+  /// shows (BR-013, rule 3), or null: no current track, a track of an absent
+  /// disk, an unknown album or an unknown artist (FR-032.7).
+  ///
+  /// @implements FR-032
+  MediaNode? _currentTarget(String kind) {
+    final track = _resume;
+    if (track == null || (kind != _albumKind && kind != _artistKind)) {
+      return null;
+    }
+    MediaAlbum? album;
+    for (final candidate in _albums) {
+      if (candidate.tracks.any((t) => t.id == track.id)) {
+        album = candidate;
+        break;
+      }
+    }
+    if (album == null || album.unknownAlbum) return null;
+    if (kind == _albumKind) return _albumNode(album);
+    for (final artist in _artists) {
+      if (artist.unknown) continue;
+      if (artist.albums.any((a) => a.key == album!.key)) {
+        return _artistNode(artist);
+      }
+    }
+    return null;
+  }
+
+  MediaNode? _currentNode(String kind) {
+    final target = _currentTarget(kind);
+    if (target == null) return null;
+    final album = kind == _albumKind;
+    return MediaNode(
+      id: [_currentId, kind].map(Uri.encodeComponent).join('|'),
+      title: album ? labels.currentAlbum : labels.currentArtist,
+      subtitle: target.title,
+      browsable: true,
     );
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:tuneshell/app/providers/browse_request_providers.dart';
 import 'package:tuneshell/features/shell/coming_soon_page.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
@@ -18,6 +19,9 @@ class HomeShell extends StatefulWidget {
     this.artists,
     this.settings,
     this.immersive = false,
+    this.request,
+    this.onRequestHandled,
+    this.detailBuilder,
     super.key,
   });
 
@@ -39,6 +43,13 @@ class HomeShell extends StatefulWidget {
   /// The first-launch screens fill the window: no navigation and no player
   /// bar (FR-014.7). The views keep their state.
   final bool immersive;
+
+  /// A request to open an album or an artist in its tab: the shell goes to
+  /// the tab, empties its navigator down to the grid and pushes the detail
+  /// [detailBuilder] makes, then calls [onRequestHandled] (FR-032.2, ADR-022).
+  final BrowseRequest? request;
+  final VoidCallback? onRequestHandled;
+  final Widget Function(BrowseRequest request)? detailBuilder;
 
   /// The background of the navigation rail (tests).
   static const railBackgroundKey = Key('rail-background');
@@ -87,6 +98,27 @@ class _HomeShellState extends State<HomeShell> {
     // Tracks view: from another tab (the settings lead there without access)
     // the window would otherwise stay on a tab that has lost its navigation.
     if (widget.immersive && !oldWidget.immersive) _index = 0;
+    final request = widget.request;
+    if (request != null && request != oldWidget.request) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _open(request));
+    }
+  }
+
+  /// @implements FR-032
+  void _open(BrowseRequest request) {
+    if (!mounted) return;
+    final builder = widget.detailBuilder;
+    final navigator = switch (request.tab) {
+      BrowseTab.albums => _albumsNavigator.currentState,
+      BrowseTab.artists => _artistsNavigator.currentState,
+    };
+    if (builder != null && navigator != null) {
+      navigator
+        ..popUntil((route) => route.isFirst)
+        ..push<void>(MaterialPageRoute(builder: (_) => builder(request)));
+      _select(request.tab == BrowseTab.albums ? 1 : 2);
+    }
+    widget.onRequestHandled?.call();
   }
 
   @override

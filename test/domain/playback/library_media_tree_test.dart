@@ -16,6 +16,8 @@ const _labels = MediaTreeLabels(
   unknownAlbum: 'Unknown album',
   unknownArtist: 'Unknown artist',
   empty: 'Open TuneShell on the phone',
+  currentAlbum: 'Current album',
+  currentArtist: 'Current artist',
 );
 
 var _nextId = 1;
@@ -120,6 +122,100 @@ void main() {
         isA<MediaNode>().having((n) => n.title, 'title', 'Two'),
       ]);
       expect(tree.action(root.first.id), isA<ResumeAction>());
+    });
+
+    /// @verifies FR-032.7
+    test('the album and the artist of the current track follow Reprendre', () {
+      final root = library(current: a2).children(MediaTree.rootId);
+
+      expect(titles(root), [
+        'Two',
+        'Current album',
+        'Current artist',
+        'Albums',
+        'Artists',
+        'Tracks',
+      ]);
+      expect(root[1].subtitle, 'First');
+      expect(root[2].subtitle, 'Ann');
+      expect(root[1].browsable && !root[1].playable, isTrue);
+    });
+
+    /// @verifies FR-032.7
+    test(
+      'opening the current album lists its tracks, playable as an album',
+      () {
+        final tree = library(current: a2);
+        final id = tree.children(MediaTree.rootId)[1].id;
+
+        final tracks = tree.children(id);
+
+        expect(titles(tracks), ['One', 'Two']);
+        final action = tree.action(tracks.last.id);
+        expect(action, isA<PlayTracks>());
+        expect((action! as PlayTracks).queue, [a1.track, a2.track]);
+        expect((action as PlayTracks).startIndex, 1);
+      },
+    );
+
+    /// @verifies FR-032.7
+    test('opening the current artist lists its albums', () {
+      final tree = library(current: b1);
+      final id = tree.children(MediaTree.rootId)[2].id;
+
+      expect(titles(tree.children(id)), ['Second']);
+    });
+
+    /// @verifies FR-032.7
+    test('there is no such folder without a current track or a group', () {
+      expect(titles(library().children(MediaTree.rootId)), [
+        'Albums',
+        'Artists',
+        'Tracks',
+      ]);
+      final loose = track('z/1.flac', title: 'Loose');
+      final tree = treeOf(
+        albums: [
+          album('', '', '', [loose], unknownAlbum: true, unknownArtist: true),
+        ],
+        artists: [
+          MediaArtist(
+            key: '',
+            name: '',
+            unknown: true,
+            albums: [
+              album('', '', '', [loose], unknownAlbum: true),
+            ],
+          ),
+        ],
+        tracks: [loose],
+        current: loose,
+      );
+
+      expect(titles(tree.children(MediaTree.rootId)), [
+        'Loose',
+        'Albums',
+        'Artists',
+        'Tracks',
+      ]);
+    });
+
+    /// @verifies FR-032.7
+    test('a current folder of no known kind is empty', () {
+      final tree = library(current: a1);
+
+      expect(tree.children('current'), isEmpty);
+      expect(tree.children('current|other'), isEmpty);
+      expect(tree.node('current|other'), isNull);
+    });
+
+    /// @verifies FR-032.7
+    test('the folders are found again by their identifier', () {
+      final tree = library(current: a1);
+      final nodes = tree.children(MediaTree.rootId);
+
+      expect(tree.node(nodes[1].id)?.title, 'Current album');
+      expect(tree.node(nodes[2].id)?.title, 'Current artist');
     });
 
     test('rule 6: a current track on an absent disk is not offered', () {

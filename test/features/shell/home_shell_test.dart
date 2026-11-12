@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tuneshell/app/providers/browse_request_providers.dart';
 import 'package:tuneshell/features/shell/home_shell.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
@@ -378,5 +379,81 @@ void main() {
     await tester.tap(find.text('Tracks'));
     await tester.pumpAndSettle();
     expect(seen.last, isTrue);
+  });
+
+  /// @verifies FR-032.2
+  group('a request to open a group', () {
+    Future<void> pumpWith(
+      WidgetTester tester, {
+      required BrowseRequest? request,
+      required List<String> handled,
+    }) => tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: TsTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: HomeShell(
+            tracks: const Text('tracks'),
+            albums: const Text('albums grid'),
+            artists: const Text('artists list'),
+            playerBar: const SizedBox(height: 10),
+            request: request,
+            onRequestHandled: () => handled.add('done'),
+            detailBuilder: (r) => Text('detail ${r.tab.name} ${r.key}'),
+          ),
+        ),
+      ),
+    );
+
+    testWidgets('opens the detail in the tab of the group', (tester) async {
+      tester.view
+        ..physicalSize = const Size(412, 915)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final handled = <String>[];
+      await pumpWith(tester, request: null, handled: handled);
+      expect(find.text('tracks'), findsOneWidget);
+
+      await pumpWith(
+        tester,
+        request: const BrowseRequest(tab: BrowseTab.albums, key: 'k1'),
+        handled: handled,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('detail albums k1'), findsOneWidget);
+      expect(handled, ['done']);
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        1,
+      );
+    });
+
+    testWidgets('replaces a detail already open in the tab', (tester) async {
+      final handled = <String>[];
+      await pumpWith(tester, request: null, handled: handled);
+      await pumpWith(
+        tester,
+        request: const BrowseRequest(tab: BrowseTab.artists, key: 'a'),
+        handled: handled,
+      );
+      await tester.pumpAndSettle();
+      await pumpWith(
+        tester,
+        request: const BrowseRequest(tab: BrowseTab.artists, key: 'b'),
+        handled: handled,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('detail artists b'), findsOneWidget);
+      final navigator = tester.state<NavigatorState>(
+        find.byType(Navigator).last,
+      );
+      expect(navigator.canPop(), isTrue);
+      navigator.pop();
+      await tester.pumpAndSettle();
+      expect(find.text('artists list'), findsOneWidget);
+    });
   });
 }

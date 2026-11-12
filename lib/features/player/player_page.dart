@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuneshell/app/providers/browse_request_providers.dart';
 import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
@@ -10,6 +11,7 @@ import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/playback/model/playback_notice.dart';
 import 'package:tuneshell/domain/playback/model/player_state.dart';
 import 'package:tuneshell/domain/playback/model/repeat_mode.dart';
+import 'package:tuneshell/features/browse/browse_providers.dart';
 import 'package:tuneshell/features/player/clock.dart';
 import 'package:tuneshell/features/player/now_playing.dart';
 import 'package:tuneshell/features/player/player_session.dart';
@@ -21,6 +23,7 @@ import 'package:tuneshell/ui/widgets/artwork_tile.dart';
 import 'package:tuneshell/ui/widgets/favorite_button.dart';
 import 'package:tuneshell/ui/widgets/mini_player.dart';
 import 'package:tuneshell/ui/widgets/status_banner.dart';
+import 'package:tuneshell/ui/widgets/text_link.dart';
 import 'package:tuneshell/ui/widgets/toggle_icon_button.dart';
 
 /// Step of the position slider for the keyboard and TalkBack (FR-017.6).
@@ -319,10 +322,25 @@ class _Info extends ConsumerWidget {
       ?details.format,
       ?details.folder,
     ].join(' · ');
-    final artistAlbum = [
-      now.artist ?? l10n.trackUnknownArtist,
-      ?now.album,
-    ].join(' · ');
+    final libraryTrack = ref.watch(trackIndexProvider)[track];
+    final groups = ref.watch(libraryGroupsProvider);
+    // "Unknown artist" is never a link, whatever the album artist (FR-032.1).
+    final artistGroup = libraryTrack == null || now.artist == null
+        ? null
+        : groups?.artistOf(libraryTrack);
+    final albumGroup = libraryTrack == null
+        ? null
+        : groups?.albumOf(libraryTrack);
+    final subtitleStyle = text.bodyLarge?.copyWith(
+      color: scheme.onSurfaceVariant,
+    );
+    void open(BrowseTab tab, String key) {
+      ref.read(browseRequestProvider.notifier).open(tab, key);
+      Navigator.of(context).maybePop();
+    }
+
+    final artistName = now.artist ?? l10n.trackUnknownArtist;
+    final album = now.album;
     return Padding(
       padding: const EdgeInsets.only(
         left: TsSpace.screenMargin,
@@ -341,13 +359,42 @@ class _Info extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TsText.playerTitle.copyWith(color: scheme.onSurface),
                 ),
-                Text(
-                  artistAlbum,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: text.bodyLarge?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
+                // FR-032.1: a name is a link only when its group exists.
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    if (artistGroup == null)
+                      Text(
+                        artistName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: subtitleStyle,
+                      )
+                    else
+                      TextLink(
+                        text: artistName,
+                        semanticsLabel: l10n.playerOpenArtist(artistName),
+                        style: subtitleStyle,
+                        onTap: () => open(BrowseTab.artists, artistGroup.key),
+                      ),
+                    if (album != null) ...[
+                      Text(' · ', style: subtitleStyle),
+                      if (albumGroup == null)
+                        Text(
+                          album,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: subtitleStyle,
+                        )
+                      else
+                        TextLink(
+                          text: album,
+                          semanticsLabel: l10n.playerOpenAlbum(album),
+                          style: subtitleStyle,
+                          onTap: () => open(BrowseTab.albums, albumGroup.key),
+                        ),
+                    ],
+                  ],
                 ),
                 if (line.isNotEmpty)
                   Padding(
