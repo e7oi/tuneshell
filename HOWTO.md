@@ -508,7 +508,7 @@ Build release (D14) installée par-dessus la précédente : la base passe de la 
 10. **Redémarrage :** forcer l'arrêt et rouvrir. Attendu : favoris et historique conservés.
 11. **Texte à 200 % et paysage :** les pastilles restent lisibles et à 48 dp. **Non testé** tant que cela n'a pas été vu sur le Pixel.
 
-## 25. Tester les liens du lecteur et la voiture (MPL-076)
+## 25. Tester les liens du lecteur (MPL-076) et la voiture (MPL-078)
 
 Build release (D14). Consigner le résultat de chaque étape (testé / non testé).
 
@@ -519,5 +519,5 @@ Build release (D14). Consigner le résultat de chaque étape (testé / non test�
 5. **Invité :** piste dont l'artiste est « A feat. B » avec l'artiste d'album « A ». Attendu : le lien ouvre « A ».
 6. **TalkBack :** les liens sont annoncés « Ouvrir l'artiste … » et « Ouvrir l'album … ». **Non testé** tant que cela n'a pas été vu sur le Pixel.
 7. **200 % et paysage :** le texte passe à la ligne sans couper les zones tactiles. **Non testé** tant que cela n'a pas été vu sur le Pixel.
-8. **Voiture :** piste en cours, ouvrir la racine. Attendu : « Reprendre », « Album en cours », « Artiste en cours », puis Albums, Artistes, Pistes. « Album en cours » liste les pistes de l'album ; en choisir une met l'album en file. Sans piste en cours ou avec un album inconnu : les deux dossiers sont absents.
+8. **Voiture (MPL-078) :** piste en cours, ouvrir la racine. Attendu : « Reprendre », « Album en cours », « Artiste en cours », puis Albums, Artistes, Pistes. « Album en cours » liste les pistes de l'album ; en choisir une met l'album en file. Sans piste en cours ou avec un album inconnu : les deux dossiers sont absents.
 
