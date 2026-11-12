@@ -249,16 +249,23 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   /// The kind of a row, from the first part of its identifier (BR-013).
-  static BrowseKind _kindOf(String id) =>
-      switch (Uri.decodeComponent(id.split('|').first)) {
-        'albums' || 'album' => BrowseKind.album,
-        'artists' || 'artist' => BrowseKind.artist,
-        _ => BrowseKind.track,
-      };
+  static BrowseKind _kindOf(String id) {
+    final parts = id.split('|');
+    final first = Uri.decodeComponent(parts.first);
+    // The folders of the current album and artist (FR-032.7).
+    final kind = first == 'current' && parts.length > 1
+        ? Uri.decodeComponent(parts[1])
+        : first;
+    return switch (kind) {
+      'albums' || 'album' => BrowseKind.album,
+      'artists' || 'artist' => BrowseKind.artist,
+      _ => BrowseKind.track,
+    };
+  }
 
   Uri? _tabIconOf(String id) => switch (id) {
-    'albums' => _tabIcon?.call(BrowseKind.album),
-    'artists' => _tabIcon?.call(BrowseKind.artist),
+    'albums' || 'current|album' => _tabIcon?.call(BrowseKind.album),
+    'artists' || 'current|artist' => _tabIcon?.call(BrowseKind.artist),
     'tracks' => _tabIcon?.call(BrowseKind.track),
     _ => null,
   };

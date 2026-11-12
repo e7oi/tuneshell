@@ -22,8 +22,19 @@ Liens depuis le mini-lecteur, la file d'attente ou les lignes de piste ; lien su
 
 ## À valider (PO)
 
-- **Artiste cliqué.** Les groupes d'artistes suivent l'artiste de l'album (BR-010), alors que la ligne du lecteur affiche l'artiste de la piste. Les deux diffèrent pour un invité (« Artiste A feat. B »). Proposition : le lien ouvre le groupe de l'artiste de l'album de la piste ; si le texte affiché diffère, il n'y a quand même qu'un lien (pas de découpage des invités). Autre choix : pas de lien quand les deux diffèrent.
+- **Artiste cliqué (décidé : artiste de l’album ; aucun lien si l’artiste de la piste est inconnu).** Les groupes d'artistes suivent l'artiste de l'album (BR-010), alors que la ligne du lecteur affiche l'artiste de la piste. Les deux diffèrent pour un invité (« Artiste A feat. B »). Proposition : le lien ouvre le groupe de l'artiste de l'album de la piste ; si le texte affiché diffère, il n'y a quand même qu'un lien (pas de découpage des invités). Autre choix : pas de lien quand les deux diffèrent.
 - **Retour.** Après le lien, Retour mène à la grille de l'onglet, pas au lecteur. Autre choix : rouvrir le lecteur au Retour (plus lourd, un état à garder).
 - **Partie B (voiture).** Elle modifie BR-013 règle 1 et FR-029 (`Active`) : racine à cinq entrées au lieu de trois ou quatre. Peut devenir un ticket à part ou être abandonnée.
-- **Fiches `Active` touchées.** FR-017.4 (ligne « artiste · album » devenue cliquable) et UC-007 : à compléter après validation de cette fiche, pas avant.
+- **Fiches `Active` touchées.** FR-017.4, UC-007, UC-012, BR-013 règle 1 et FR-029 complétées le 2026-11-12 après la validation de cette fiche.
 - **Signe visuel.** Le soulignement comme seul signe visuel est mon choix, sans maquette.
+
+## As-built
+
+MPL-076, 2026-11-12, test appareil en attente (D14). Réalisé comme décidé (ADR-022), avec ces précisions :
+
+- `LibraryGroups.albumOf` et `artistOf` (`library_groups.dart`) retrouvent le groupe d'une piste par son identité interne, par une table faite à la première question ; pas de lien pour un album ou un artiste inconnu, ni pour une piste hors bibliothèque. L'artiste est celui de l'album (BR-010, règle 1).
+- `TextLink` (`lib/ui/widgets/text_link.dart`) : texte souligné, zone tactile de 48 dp, libellé TalkBack, sémantique de lien. La ligne du lecteur est un `Wrap` : artiste, « · », album.
+- `browseRequestProvider` (`app/providers/browse_request_providers.dart`) ; le lecteur écrit la demande puis se réduit (`maybePop`). `HomeShell` reçoit `request`, `onRequestHandled` et `detailBuilder` (câblés dans `app/app.dart`), change d'onglet, vide le navigateur de l'onglet jusqu'à sa grille et pousse le détail.
+- Voiture : `LibraryMediaTree` ajoute `current|album` et `current|artist` après « Reprendre » (libellés `carCurrentAlbum` et `carCurrentArtist`, sous-titre = titre ou nom du groupe). Leurs enfants sont ceux du groupe réel : les pistes gardent l'identifiant du groupe et se jouent en file d'album (BR-013, règle 5). Même icône d'onglet et même image de repli que Albums et Artistes dans `PlayerAudioHandler`.
+- Écart : la ligne « artiste · album » n'est plus un seul texte pour les tests (`find.text('Mists')` et `find.text('Shore')`).
+- Tests : `library_groups_test.dart` (groupes d'une piste), `home_shell_test.dart` (demande), `player_flow_test.dart` (liens), `library_media_tree_test.dart` et `player_audio_handler_test.dart` (voiture).

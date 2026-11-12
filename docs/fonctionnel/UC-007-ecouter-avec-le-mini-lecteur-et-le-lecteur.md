@@ -21,6 +21,7 @@ L'utilisateur écoute sa musique dans l'application. Il veut voir et commander c
 
 ## Variantes
 
+- 1b. Depuis le lecteur plein écran, toucher le nom de l'artiste ou de l'album réduit le lecteur et ouvre son détail dans l'onglet (FR-032).
 - 1a. Le fichier n'a ni titre ni pochette : le nom du fichier tient lieu de titre, une tuile neutre tient lieu de pochette (FR-016, FR-017).
 - 4a. Le fichier ne se lit pas : la lecture passe à la suivante (BR-003) et le lecteur le dit dans un bandeau (FR-017).
 - 5a. Une piste de la file est sur un disque absent : elle est grisée, « sera ignorée », et la lecture la saute (BR-001, FR-018).

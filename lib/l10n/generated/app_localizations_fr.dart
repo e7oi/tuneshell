@@ -554,6 +554,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playerCollapse => 'Réduire';
 
   @override
+  String playerOpenAlbum(String title) {
+    return 'Ouvrir l\'album $title';
+  }
+
+  @override
+  String playerOpenArtist(String name) {
+    return 'Ouvrir l\'artiste $name';
+  }
+
+  @override
   String get playerPlayingFrom => 'Lecture depuis';
 
   @override
@@ -1044,6 +1054,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get carMore => 'Suite…';
+
+  @override
+  String get carCurrentAlbum => 'Album en cours';
+
+  @override
+  String get carCurrentArtist => 'Artiste en cours';
 
   @override
   String get carEmptyLibrary =>

@@ -90,6 +90,8 @@ Future<MediaTree> currentMediaTree(ProviderContainer container) async {
       unknownAlbum: l10n.albumUnknown,
       unknownArtist: l10n.trackUnknownArtist,
       empty: l10n.carEmptyLibrary,
+      currentAlbum: l10n.carCurrentAlbum,
+      currentArtist: l10n.carCurrentArtist,
     ),
     fold: foldText,
     // BR-013, rule 4: the lists are shown whole, with no folders by letter;

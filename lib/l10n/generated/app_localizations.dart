@@ -812,6 +812,18 @@ abstract class AppLocalizations {
   /// **'Collapse'**
   String get playerCollapse;
 
+  /// Screen-reader label of the album name in the full-screen player, a link to the album (FR-032.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Open the album {title}'**
+  String playerOpenAlbum(String title);
+
+  /// Screen-reader label of the artist name in the full-screen player, a link to the artist (FR-032.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Open the artist {name}'**
+  String playerOpenArtist(String name);
+
   /// Caption above the origin of the queue (FR-017.2).
   ///
   /// In en, this message translates to:
@@ -1429,6 +1441,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More…'**
   String get carMore;
+
+  /// Folder at the root of the car browser that opens the album of the current track (FR-032.7).
+  ///
+  /// In en, this message translates to:
+  /// **'Current album'**
+  String get carCurrentAlbum;
+
+  /// Folder at the root of the car browser that opens the artist of the current track (FR-032.7).
+  ///
+  /// In en, this message translates to:
+  /// **'Current artist'**
+  String get carCurrentArtist;
 
   /// The only entry of the car screen while the library is empty (BR-013, rule 8).
   ///

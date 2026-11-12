@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tuneshell/app/providers/browse_request_providers.dart';
 import 'package:tuneshell/app/providers/listening_providers.dart';
 import 'package:tuneshell/app/providers/player_providers.dart';
 import 'package:tuneshell/app/providers/tag_providers.dart';
@@ -12,6 +13,8 @@ import 'package:tuneshell/domain/playback/model/player_state.dart';
 import 'package:tuneshell/domain/playback/model/repeat_mode.dart';
 import 'package:tuneshell/domain/playback/services/player_controller.dart';
 import 'package:tuneshell/domain/storage/model/volume_event.dart';
+import 'package:tuneshell/features/browse/browse_providers.dart';
+import 'package:tuneshell/features/browse/library_groups.dart';
 import 'package:tuneshell/features/player/mini_player_bar.dart';
 import 'package:tuneshell/features/player/player_session.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
@@ -108,6 +111,9 @@ void main() {
         playerControllerProvider.overrideWithValue(player),
         listeningStoreProvider.overrideWithValue(listening),
         trackIndexProvider.overrideWithValue({for (final t in all) t.track: t}),
+        libraryGroupsProvider.overrideWithValue(
+          LibraryGroups.build(tracks: all, unavailableDisks: const {}),
+        ),
         playerDisksProvider.overrideWithValue(disks),
         artworkDirectoryProvider.overrideWith((ref) => '/artwork'),
       ],
@@ -283,7 +289,8 @@ void main() {
       await openPlayerPage(tester);
 
       expect(find.text('Alpha'), findsWidgets);
-      expect(find.text('Mists · Shore'), findsOneWidget);
+      expect(find.text('Mists'), findsOneWidget);
+      expect(find.text('Shore'), findsOneWidget);
       expect(find.text('Local · Track 3'), findsOneWidget);
       expect(find.byTooltip('Add to favorites'), findsOneWidget);
     });
@@ -305,6 +312,93 @@ void main() {
 
       expect(find.byTooltip('Add to favorites'), findsOneWidget);
       expect(listening.marked, isEmpty);
+    });
+
+    /// @verifies FR-032.1
+    /// @verifies FR-032.2
+    flow('the artist and the album are links that close the player', (
+      tester,
+    ) async {
+      final container = await pump(tester);
+      await start(tester);
+      await openPlayerPage(tester);
+
+      expect(find.bySemanticsLabel('Open the album Shore'), findsOneWidget);
+      await tester.tap(find.bySemanticsLabel('Open the artist Mists'));
+      await tester.pumpAndSettle();
+
+      expect(
+        container.read(browseRequestProvider),
+        isA<BrowseRequest>()
+            .having((r) => r.tab, 'tab', BrowseTab.artists)
+            .having(
+              (r) => r.key,
+              'key',
+              LibraryGroups.build(
+                tracks: all,
+                unavailableDisks: const {},
+              ).artistOf(alpha)?.key,
+            ),
+      );
+      expect(find.byTooltip('Add to favorites'), findsNothing);
+    });
+
+    /// @verifies FR-032.2
+    flow('the album link asks for the album of the track', (tester) async {
+      final container = await pump(tester);
+      await start(tester);
+      await openPlayerPage(tester);
+
+      await tester.tap(find.bySemanticsLabel('Open the album Shore'));
+      await tester.pumpAndSettle();
+
+      expect(container.read(browseRequestProvider)?.tab, BrowseTab.albums);
+    });
+
+    /// @verifies FR-032.1
+    flow('an unknown artist is no link even with an album artist', (
+      tester,
+    ) async {
+      final tagged = LibraryTrack(
+        id: 4242,
+        disk: internalDisk,
+        info: TrackInfo(
+          relativePath: 'Music/Echo.flac',
+          size: 1,
+          modifiedAt: DateTime.fromMillisecondsSinceEpoch(0),
+          title: 'Echo',
+          albumArtist: 'Ann',
+          album: 'Lake',
+          duration: const Duration(seconds: 60),
+        ),
+      );
+      all.add(tagged);
+      addTearDown(() => all.remove(tagged));
+      await pump(tester);
+      await start(tester, index: all.length - 1);
+      await openPlayerPage(tester);
+
+      expect(find.text('Unknown artist'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Open the artist')), findsNothing);
+      expect(find.bySemanticsLabel('Open the album Lake'), findsOneWidget);
+    });
+
+    /// @verifies FR-032.1
+    flow('a missing album or an unknown artist is no link', (tester) async {
+      await pump(tester);
+      await start(tester, index: 1);
+      await openPlayerPage(tester);
+
+      expect(find.bySemanticsLabel('Open the artist Clara'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Open the album')), findsNothing);
+
+      await tester.tap(find.bySemanticsLabel('Open the artist Clara'));
+      await tester.pumpAndSettle();
+      await openPlayerPage(tester);
+      await start(tester, index: 2);
+      await tester.pumpAndSettle();
+      expect(find.text('Unknown artist'), findsWidgets);
+      expect(find.bySemanticsLabel(RegExp('Open the')), findsNothing);
     });
 
     flow('a disk track names its disk', (tester) async {

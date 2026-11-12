@@ -507,3 +507,17 @@ Build release (D14) installée par-dessus la précédente : la base passe de la 
 9. **Effacer l'historique :** toucher la ligne, annuler, puis recommencer et confirmer. Attendu : « Récentes » vide, favoris intacts.
 10. **Redémarrage :** forcer l'arrêt et rouvrir. Attendu : favoris et historique conservés.
 11. **Texte à 200 % et paysage :** les pastilles restent lisibles et à 48 dp. **Non testé** tant que cela n'a pas été vu sur le Pixel.
+
+## 25. Tester les liens du lecteur et la voiture (MPL-076)
+
+Build release (D14). Consigner le résultat de chaque étape (testé / non testé).
+
+1. **Lien d'artiste :** lancer une piste dont l'artiste est connu, ouvrir le lecteur plein écran, toucher le nom de l'artiste. Attendu : le lecteur se réduit, l'onglet Artistes s'ouvre sur le détail de cet artiste, la lecture continue.
+2. **Lien d'album :** même chose avec le nom de l'album. Attendu : l'onglet Albums ouvre le détail, la piste en cours est surlignée. Retour ramène à la grille.
+3. **Sans lien :** piste sans album, ou « Artiste inconnu ». Attendu : texte simple, sans soulignement.
+4. **Détail déjà ouvert :** ouvrir un autre album dans l'onglet, puis passer par le lien du lecteur. Attendu : le détail demandé remplace l'ancien ; Retour mène à la grille.
+5. **Invité :** piste dont l'artiste est « A feat. B » avec l'artiste d'album « A ». Attendu : le lien ouvre « A ».
+6. **TalkBack :** les liens sont annoncés « Ouvrir l'artiste … » et « Ouvrir l'album … ». **Non testé** tant que cela n'a pas été vu sur le Pixel.
+7. **200 % et paysage :** le texte passe à la ligne sans couper les zones tactiles. **Non testé** tant que cela n'a pas été vu sur le Pixel.
+8. **Voiture :** piste en cours, ouvrir la racine. Attendu : « Reprendre », « Album en cours », « Artiste en cours », puis Albums, Artistes, Pistes. « Album en cours » liste les pistes de l'album ; en choisir une met l'album en file. Sans piste en cours ou avec un album inconnu : les deux dossiers sont absents.
+

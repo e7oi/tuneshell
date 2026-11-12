@@ -50,6 +50,8 @@ List<String> titles(AlbumGroup album) => [
 ];
 
 void main() {
+  groupOfTrackTests();
+
   /// @verifies BR-010
   group('BR-010 rule 1: artist of the album', () {
     test('the album artist wins, then the track artist, then unknown', () {
@@ -437,5 +439,50 @@ void main() {
 
     expect(groups.artists, hasLength(300));
     expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
+  });
+}
+
+void groupOfTrackTests() {
+  group('the groups of a track', () {
+    /// @verifies FR-032
+    test('finds the album and the album artist of a track', () {
+      final a = t('One', artist: 'Ann', album: 'Alpha', number: 1);
+      final b = t('Two', artist: 'Ann', album: 'Alpha', number: 2);
+      final c = t('Three', artist: 'Bob', album: 'Beta');
+      final groups = build([a, b, c]);
+
+      expect(groups.albumOf(b)?.title, 'Alpha');
+      expect(groups.artistOf(b)?.name, 'Ann');
+      expect(groups.albumOf(c)?.title, 'Beta');
+    });
+
+    /// @verifies FR-032
+    test('follows the album artist, not the artist of the track', () {
+      final a = t(
+        'One',
+        artist: 'Ann feat. Cy',
+        albumArtist: 'Ann',
+        album: 'A',
+      );
+      final groups = build([a]);
+
+      expect(groups.artistOf(a)?.name, 'Ann');
+    });
+
+    /// @verifies FR-032
+    test('has no link for an unknown album or artist', () {
+      final a = t('One');
+      final groups = build([a]);
+
+      expect(groups.albumOf(a), isNull);
+      expect(groups.artistOf(a), isNull);
+    });
+
+    /// @verifies FR-032
+    test('knows nothing of a track outside the library', () {
+      final groups = build([t('One', artist: 'Ann', album: 'A')]);
+
+      expect(groups.albumOf(t('Other', artist: 'Ann', album: 'A')), isNull);
+    });
   });
 }

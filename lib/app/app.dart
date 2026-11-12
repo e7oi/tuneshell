@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuneshell/app/providers/browse_request_providers.dart';
 import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/settings/app_settings.dart';
+import 'package:tuneshell/features/browse/album_detail_page.dart';
 import 'package:tuneshell/features/browse/albums_view.dart';
+import 'package:tuneshell/features/browse/artist_detail_page.dart';
 import 'package:tuneshell/features/browse/artists_view.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_page.dart';
@@ -51,6 +54,12 @@ class TuneShellApp extends ConsumerWidget {
         immersive: ref.watch(
           libraryControllerProvider.select(isFirstLaunchScreen),
         ),
+        request: ref.watch(browseRequestProvider),
+        onRequestHandled: ref.read(browseRequestProvider.notifier).clear,
+        detailBuilder: (request) => switch (request.tab) {
+          BrowseTab.albums => AlbumDetailPage(albumKey: request.key),
+          BrowseTab.artists => ArtistDetailPage(artistKey: request.key),
+        },
         tracks: const LibraryPage(),
         albums: const AlbumsView(),
         artists: const ArtistsView(),
