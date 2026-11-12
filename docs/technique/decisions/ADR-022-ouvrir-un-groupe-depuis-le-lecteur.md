@@ -1,6 +1,6 @@
 # ADR-022 — Ouvrir un album ou un artiste depuis le lecteur plein écran
 
-**Statut :** Brouillon · **Date :** 2026-11-12 · **Ticket :** MPL-076 · **Fiches :** FR-032, FR-017, FR-020, FR-021, BR-010 · **Complète :** ADR-016
+**Statut :** Active (validée le 2026-11-12) · **Date :** 2026-11-12 · **Ticket :** MPL-076 · **Fiches :** FR-032, FR-017, FR-020, FR-021, BR-010 · **Complète :** ADR-016
 
 ## Contexte
 
