@@ -88,7 +88,8 @@ class LibraryMediaTree implements MediaTree {
     this.unavailable = const {},
     this.current,
     this.maxChildren = 100,
-  }) {
+    int? maxTracks,
+  }) : maxTracks = maxTracks ?? maxChildren {
     _albums = [
       for (final album in albums)
         if (_playable(album.tracks).isNotEmpty) album,
@@ -123,6 +124,12 @@ class LibraryMediaTree implements MediaTree {
   /// rule 4).
   final int maxChildren;
 
+  /// The same cut for the Tracks list alone: the other lists may stay whole
+  /// while this one is cut by letters (BR-015, rule 1).
+  ///
+  /// @implements BR-015
+  final int maxTracks;
+
   final String Function(String text) _fold;
   late final List<MediaAlbum> _albums;
   late final List<MediaArtist> _artists;
@@ -151,6 +158,13 @@ class LibraryMediaTree implements MediaTree {
   static const _artistsId = 'artists';
   static const _tracksId = 'tracks';
   static const _currentId = 'current';
+  static const _searchId = 'search';
+  static const _searchLimit = 100;
+
+  /// A longer query is cut: it is repeated in the identifier of every track
+  /// found (BR-015, rule 5).
+  static const _queryLimit = 100;
+  static final _blanks = RegExp(r'\s+');
   static const _albumKind = 'album';
   static const _artistKind = 'artist';
 
@@ -203,6 +217,7 @@ class LibraryMediaTree implements MediaTree {
           _trackKeys,
           (t) => _trackNode(t, parentId),
           _prefixOf(parts),
+          maxTracks,
         );
       case 'album':
         final album = _albumOf(parts.length > 1 ? parts[1] : '');
@@ -219,6 +234,77 @@ class LibraryMediaTree implements MediaTree {
         ];
     }
     return const [];
+  }
+
+  // The text each track is searched in (BR-011, rule 1): its title as shown,
+  // its artist, its album artist and its album, made once.
+  late final List<String> _trackTexts = [
+    for (final t in _tracks)
+      _key(
+        [
+          t.displayTitle,
+          ?t.info.artist,
+          ?t.info.albumArtist,
+          ?t.info.album,
+        ].join(' '),
+      ),
+  ];
+
+  /// What [query] finds: albums, artists and tracks (BR-015, rule 4).
+  ///
+  /// @implements BR-015
+  ({
+    List<MediaAlbum> albums,
+    List<MediaArtist> artists,
+    List<LibraryTrack> tracks,
+  })
+  _found(String query) {
+    // Cut like the phone's search (BR-011, rule 4): on any run of blanks.
+    final words = [
+      for (final w in _key(
+        query.length > _queryLimit ? query.substring(0, _queryLimit) : query,
+      ).split(_blanks))
+        if (w.isNotEmpty) w,
+    ];
+    if (words.isEmpty) {
+      return (albums: const [], artists: const [], tracks: const []);
+    }
+    bool matches(String text) => words.every(text.contains);
+    final albums = [
+      for (var i = 0; i < _albums.length; i++)
+        if (matches(_albumTexts[i])) _albums[i],
+    ];
+    final artists = [
+      for (var i = 0; i < _artists.length; i++)
+        if (matches(_artistKeys[i])) _artists[i],
+    ];
+    final tracks = [
+      for (var i = 0; i < _tracks.length; i++)
+        if (matches(_trackTexts[i])) _tracks[i],
+    ];
+    return (
+      albums: albums.take(_searchLimit).toList(),
+      artists: artists.take(_searchLimit).toList(),
+      tracks: tracks.take(_searchLimit).toList(),
+    );
+  }
+
+  late final List<String> _albumTexts = [
+    for (final a in _albums)
+      _key(
+        '${a.unknownAlbum ? '' : a.title} ${a.unknownArtist ? '' : a.artist}',
+      ),
+  ];
+
+  @override
+  List<MediaNode> search(String query) {
+    final found = _found(query);
+    final parent = [_searchId, Uri.encodeComponent(query)].join('|');
+    return [
+      for (final a in found.albums) _albumNode(a),
+      for (final a in found.artists) _artistNode(a),
+      for (final t in found.tracks) _trackNode(t, parent),
+    ];
   }
 
   @override
@@ -299,6 +385,9 @@ class LibraryMediaTree implements MediaTree {
       case 'album':
         final album = _albumOf(parts.length > 1 ? parts[1] : '');
         return album == null ? const [] : _playable(album.tracks);
+      // BR-015, rule 6: a found track queues the tracks found.
+      case _searchId:
+        return _found(parts.length > 1 ? parts[1] : '').tracks;
     }
     return const [];
   }
@@ -421,14 +510,16 @@ class LibraryMediaTree implements MediaTree {
     List<T> items,
     List<String> keys,
     MediaNode Function(T item) toNode,
-    String prefix,
-  ) {
+    String prefix, [
+    int? limit,
+  ]) {
+    final most = limit ?? maxChildren;
     final kind = _split(listId).first;
     final inside = [
       for (var i = 0; i < items.length; i++)
         if (keys[i].startsWith(prefix)) i,
     ];
-    if (inside.length <= maxChildren) {
+    if (inside.length <= most) {
       return [for (final i in inside) toNode(items[i])];
     }
     // The entries that end at the prefix, and for each next letter, where

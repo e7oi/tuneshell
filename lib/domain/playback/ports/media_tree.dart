@@ -20,6 +20,10 @@ abstract interface class MediaTree {
   /// The entry [id], or null when it is not in the tree.
   MediaNode? node(String id);
 
+  /// What a car's search finds in the whole library: albums, artists, then
+  /// tracks, each section cut at a hundred (BR-015, rules 4 and 5).
+  List<MediaNode> search(String query);
+
   /// What playing [id] does, or null when it cannot be played.
   BrowseAction? action(String id);
 }

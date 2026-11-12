@@ -217,6 +217,20 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
+  /// What a car's search finds in the whole library (BR-015, rule 4). The car
+  /// does not say which folder is open: the search is always global.
+  ///
+  /// @implements BR-015
+  @override
+  Future<List<MediaItem>> search(
+    String query, [
+    Map<String, dynamic>? extras,
+  ]) async {
+    final tree = await _mediaTree?.call();
+    if (tree == null) return const [];
+    return [for (final n in tree.search(query)) _browseItem(n)];
+  }
+
   @override
   Future<MediaItem?> getMediaItem(String mediaId) async {
     if (_moreOf(mediaId) != null) {

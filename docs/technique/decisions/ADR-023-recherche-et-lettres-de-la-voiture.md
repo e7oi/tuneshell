@@ -1,6 +1,6 @@
 # ADR-023 — Recherche et dossiers par lettre dans l'arbre média de la voiture
 
-**Statut :** Brouillon · **Date :** 2026-11-12 · **Ticket :** MPL-075 · **Fiches :** BR-015, BR-013, BR-011, FR-029 · **Complète :** ADR-020
+**Statut :** Active (validée le 2026-11-12) · **Date :** 2026-11-12 · **Ticket :** MPL-075 · **Fiches :** BR-015, BR-013, BR-011, FR-029 · **Complète :** ADR-020
 
 ## Contexte
 
@@ -8,16 +8,16 @@ Le découpage par lettres existe encore dans `LibraryMediaTree` (`maxChildren`, 
 
 ## Décision
 
-- **Lettres** : rendre à `maxChildren` sa valeur de seuil (100) pour les trois listes, sans toucher à `_cut` ; la pagination du gestionnaire reste le filet pour un niveau de plus de 400 lignes.
-- **Recherche** : le port `MediaTree` reçoit `search(String query)` qui rend des `MediaNode` jouables. `LibraryMediaTree` la fait en mémoire avec le même `fold` que ses clés de tri : un texte de recherche par piste (titre affiché, artiste, artiste de l'album, album) fait une fois à la première requête, puis tous les mots de la requête doivent s'y trouver (BR-011, règles 3 et 4). Le texte de BR-011 reste la référence ; un test commun vérifie que l'interface et l'arbre rendent les mêmes pistes pour les mêmes requêtes sur un jeu de pistes fictives.
-- **Déclaration** : `androidBrowsableRootExtras` de la configuration de `audio_service` reçoit `android.media.browse.SEARCH_SUPPORTED: true` ; `PlayerAudioHandler.search` appelle l'arbre. Les résultats portent l'identifiant `t|search|…` : l'action de lecture met en file la liste des résultats (BR-015, règle 6).
+- **Lettres** : un seuil propre à la liste Pistes (`maxTracks`, 100) ; Albums et Artistes gardent `maxChildren` (listes entières, pochettes visibles). `_cut` ne change pas ; la pagination du gestionnaire reste le filet pour un niveau de plus de 400 lignes.
+- **Recherche** : le port `MediaTree` reçoit `search(String query)` qui rend des `MediaNode` : albums et artistes (dossiers), pistes (jouables), au plus 100 par section. `LibraryMediaTree` la fait en mémoire avec le même `fold` que ses clés de tri : un texte de recherche par piste (titre affiché, artiste, artiste de l'album, album) fait une fois à la première requête, puis tous les mots de la requête doivent s'y trouver (BR-011, règles 3 et 4). Le texte de BR-011 reste la référence ; la requête est coupée aux blancs comme sur le téléphone. Un test commun qui vérifie que l'interface et l'arbre rendent les mêmes pistes pour les mêmes requêtes reste à écrire (dette).
+- **Déclaration** : `androidBrowsableRootExtras` de la configuration de `audio_service` reçoit `android.media.browse.SEARCH_SUPPORTED: true` ; `PlayerAudioHandler.search` appelle l'arbre. Les pistes trouvées portent un parent `search|<requête>` : l'action de lecture met en file la liste des pistes trouvées (BR-015, règle 6). La requête arrive sans le dossier ouvert (limite d'Android Auto) : la recherche est globale.
 - Aucune dépendance nouvelle, aucun réseau.
 
 ## Conséquences
 
-- Une requête relit la bibliothèque jouable en mémoire : O(pistes) mesuré à 10 000 pistes sous 100 ms ; au-delà de 50 000, revoir (comme ADR-018).
+- Une requête relit la bibliothèque jouable en mémoire : O(pistes), à mesurer sur le Pixel (HOWTO §26) ; au-delà de 50 000 pistes, revoir (comme ADR-018). Un cache de la dernière requête est prévu si la mesure l'exige.
 - Deux implémentations de la correspondance (interface et arbre) à garder alignées, d'où le test commun.
-- Le gestionnaire doit tolérer une requête vide (liste vide) et une requête très longue (coupée).
+- Une requête vide donne une liste vide ; une requête de plus de 100 caractères est coupée à 100.
 
 ## Alternatives examinées
 
@@ -28,4 +28,3 @@ Le découpage par lettres existe encore dans `LibraryMediaTree` (`maxChildren`, 
 ## À valider (PO)
 
 - Le seuil de 100 entrées et la pagination à 400 comme filet.
-- Une seule recherche pour la voiture, rendant des pistes seulement.

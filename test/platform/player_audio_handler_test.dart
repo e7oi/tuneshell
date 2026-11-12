@@ -721,6 +721,31 @@ void main() {
       },
     );
 
+    /// @verifies BR-015
+    test(
+      'a search finds the tracks of the whole library and plays one',
+      () async {
+        await browsable();
+
+        final found = await handler.search('b.mp3');
+
+        expect(found.map((i) => i.title), ['b.mp3']);
+        expect(found.single.playable, isTrue);
+        await handler.playFromMediaId(found.single.id);
+        expect(controller.state.queue, hasLength(1));
+      },
+    );
+
+    /// @verifies BR-015
+    test('a search with nothing to find, or no tree, gives nothing', () async {
+      await browsable();
+
+      expect(await handler.search('zzz'), isEmpty);
+      await handler.dispose();
+      handler = PlayerAudioHandler(controller, describe: (track) => null);
+      expect(await handler.search('b'), isEmpty);
+    });
+
     test('gives one item back by identifier', () async {
       await browsable();
       final id = (await handler.getChildren('tracks')).first.id;

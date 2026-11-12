@@ -20,6 +20,7 @@ L'utilisateur branche son Pixel à la voiture. Il veut choisir et lancer sa musi
 
 ## Variantes et erreurs
 
+- **Retrouver un titre dans une longue bibliothèque** : la liste Pistes s'ouvre par lettres ; la recherche d'Android Auto trouve albums, artistes et pistes de toute la bibliothèque (BR-015).
 - **Autres titres de la même œuvre** : « Album en cours » et « Artiste en cours », à la racine, ouvrent le détail de la piste en cours (FR-032.7).
 - **Application jamais ouverte depuis le démarrage du téléphone** : la navigation fonctionne quand même (ADR-020).
 - **Bibliothèque vide** : un élément explique d'ouvrir TuneShell sur le téléphone (BR-013).
