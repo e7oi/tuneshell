@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-076 · Dernière MAJ : 2026-11-05
+Préfixe : MPL · Prochaine clé : MPL-078 · Dernière MAJ : 2026-11-12
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -12,7 +12,9 @@ Ordre de travail proposé (réorganisation du 2026-11-01) : épiques, puis les t
 | MPL-001 | Épique | P0 | Épique « Lecture locale » | En cours | — | — |
 | MPL-072 | Épique | P1 | Épique « Disques amovibles » : éjection native (MPL-035), réassociation et retrait (MPL-038), design lot 3 (MPL-046), désactivation d'un disque (MPL-056) ; regroupement du 2026-11-01 | À faire | — | — |
 | MPL-064 | Bug | P1 | Android Auto : avec l'aléatoire, la liste de la file commence par la piste en cours ; listes (Albums, Artistes, Pistes) affichées entières, sans dossiers par lettres (demandes du propriétaire après usage en voiture, 2026-11-01) | À tester | — | — |
+| MPL-074 | Bug | P1 | Android Auto : la liste Pistes (plusieurs milliers de lignes) ne s'affiche pas ou trop lentement ; listes servies par pages, sans dossiers par lettres (demande du propriétaire, 2026-11-02) | À tester | — | — |
 | MPL-075 | Récit | P1 | Android Auto : revoir les listes de pistes de la voiture (demande du propriétaire, 2026-11-05) : la page de départ des listes avec « Suite… » est trop longue à faire défiler, et « A–Z » ne donne accès qu'aux lettres de la tranche affichée ; à cadrer (taille de page, accès direct à toute lettre de la liste entière) | À faire | MPL-001 | MPL-074 |
+| MPL-076 | Récit | P2 | Lecteur plein écran : nom de l'album et de l'artiste cliquables pour ouvrir leur détail (demande du propriétaire, 2026-11-10) ; cadré le 2026-11-12, fiches FR-032 et ADR-022 Active (validées le 2026-11-12) ; partie B optionnelle : « Album en cours » et « Artiste en cours » dans la voiture | À faire | MPL-001 | — |
 | MPL-035 | Tâche technique | P1 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-072 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-072 | — |
@@ -43,7 +45,7 @@ Idées sans fiche ni `/cadrer` : à cadrer le moment venu, sans ordre.
 |---|---|---|---|---|---|---|
 | MPL-040 | Récit | P2 | Doublons de la bibliothèque : repérer les pistes présentes plusieurs fois (même morceau sur le téléphone et sur le SSD, copies d'un même fichier) pour les filtrer ou les nettoyer ; à cadrer (critère de doublon, effet sur playlists et statistiques). Demandé par le propriétaire le 2026-10-23 après le test de MPL-037 (7 562 pistes, nombreux doublons) | À faire | MPL-001 | MPL-037 |
 | MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | — |
-| MPL-065 | Récit | P2 | Favoris et historique d'écoute : cœur du lecteur et appui long pour marquer, pastilles « Toutes / Favoris / Récentes » sous la recherche de Pistes, historique réglable et effaçable, tout sur l'appareil. Cadré le 2026-11-03 et validé le 2026-11-05 (UC-013, BR-014, FR-031, ADR-021 `Active`) ; réalisé sans maquette de Claude Design, à la demande du propriétaire | À tester | MPL-001 | — |
+| MPL-077 | Bogue | P2 | « Précédent » suit la file affichée (voisin dans la file, aléatoire compris) au lieu de rejouer le titre réellement écouté avant (retour du propriétaire, 2026-11-10) ; à cadrer : touche FR-001, lien possible avec l'historique de MPL-065 | À faire | MPL-001 | — |
 | MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », « Redécouvrir », à partir de l'historique, sans réseau ; à cadrer | À faire | MPL-001 | MPL-065 |
 | MPL-067 | Récit | P2 | Éditeur de tags : modifier titre, artiste, album des fichiers ; à cadrer (écriture SAF sur le SSD, aucune perte de données) | À faire | MPL-001 | — |
 | MPL-068 | Récit | P2 | Liste noire : exclure des morceaux de la bibliothèque et de la lecture ; à cadrer | À faire | MPL-001 | — |
@@ -165,6 +167,89 @@ Revue QA : ✅ après un tour de corrections (clés de tri cohérentes avec `tri
 Description de PR : `feat(android): browse and play from Android Auto (MPL-060)` ; voir le résumé ci-dessus ; limites : voiture non testée.
 Décisions prises en route : le titre d'un dossier de lettres est le préfixe commun en majuscules ; l'arbre est mémoïsé jusqu'à un changement de bibliothèque, de disques, de piste courante ou de langue.
 À valider (PO) : BR-013 règle 4 reformulée (dossiers par préfixe commun plutôt que A à Z et « # ») ; règle 2 (« Reprendre » en premier) et règle 6 (disque absent masqué) : « Reprendre » disparaît aussi si la piste courante est sur un disque absent.
+
+### MPL-074
+**Description.** Le test en voiture du 2026-11-02 montre que la liste Pistes entière (plusieurs milliers de lignes) ne s'affiche pas ou beaucoup trop lentement. Les listes (Pistes, Albums, Artistes) sont servies par pages : la voiture en demande une de plus en bas de liste si elle sait paginer ; sinon les 400 premières lignes puis une ligne « Suite… ». Pas de dossiers par lettres.
+
+**Exclusions.** Recherche dans la voiture ; changement de la file mise en place par un choix de piste (BR-013, règle 5).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Longues listes dans la voiture
+
+  Scénario: La liste Pistes s'affiche vite
+    Soit une bibliothèque de plusieurs milliers de pistes
+    Quand j'ouvre Pistes dans la voiture
+    Alors la liste s'affiche sans attente notable
+
+  Scénario: Charger la suite
+    Soit la liste Pistes ouverte
+    Quand j'arrive en bas de la liste
+    Alors la suite se charge, ou une ligne « Suite… » ouvre les pistes suivantes
+
+  Scénario: Lire une piste de la suite
+    Soit une piste affichée dans la suite
+    Quand je la choisis
+    Alors elle joue, avec toute la bibliothèque en file
+```
+
+**Fiches liées.** BR-013 (règle 4 remplacée, À valider), FR-029, ADR-020 (risque 3).
+
+#### Livraison — 2026-11-02
+Statut : ⚠️ partiel (voiture non testée)
+Résumé : `getChildren` du gestionnaire honore `EXTRA_PAGE` et `EXTRA_PAGE_SIZE` ; sans ces extras, 400 lignes au plus par réponse et une ligne « Suite… » (`more|<décalage>|<liste>`). Les listes courtes restent entières. Texte `carMore` en français et en anglais.
+Fiches touchées : BR-013 (règle 4 réécrite), HOWTO §23 (étape 3).
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → 995 tests verts ; `.github/scripts/check-repo.sh` → vert.
+Test appareil (Pixel, release) : non testé en voiture. On ignore si Android Auto envoie les extras de pagination ; l'étape 3 du HOWTO §23 le dit.
+Revue QA : non requise (réponse de navigation, sans lecture, stockage ni permission) — Non vérifié : comportement d'Android Auto.
+Description de PR : `fix(android): page the long lists of the car browser (MPL-074)`.
+Décisions prises en route : seuil de 400 lignes sans pagination ; la lecture d'une piste de la suite met toujours en file toute la bibliothèque.
+À valider (PO) : BR-013 règle 4 remplacée (pages au lieu de listes entières) ; la ligne « Suite… » est le repli si la voiture ne pagine pas.
+
+### MPL-076
+**Description.** Depuis le lecteur plein écran, toucher le nom de l'artiste ou de l'album ouvre son détail dans l'onglet correspondant, pour enchaîner les titres. En voiture, Android Auto dessine son lecteur : l'équivalent est une entrée « Album en cours » et « Artiste en cours » à la racine de l'arbre média (partie B, à valider).
+
+**Inclus.**
+- Partie A : deux liens dans la ligne « artiste · album » du lecteur ; navigation par une demande lue par la coquille (ADR-022) ; libellés TalkBack ; ARB fr/en.
+- Partie B (optionnelle) : deux dossiers de la racine de la voiture, après « Reprendre ».
+
+**Exclusions.** Liens depuis le mini-lecteur, la file ou les lignes de piste ; invités d'un morceau ; retour vers le lecteur.
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Liens du lecteur vers l'album et l'artiste
+
+  Scénario: Ouvrir l'album de la piste en cours
+    Soit une piste dont l'album existe dans la bibliothèque, en cours dans le lecteur plein écran
+    Quand je touche le nom de l'album
+    Alors le lecteur se réduit
+    Et l'onglet Albums ouvre le détail de cet album
+    Et la piste en cours est en surbrillance et la lecture continue
+
+  Scénario: Ouvrir l'artiste de la piste en cours
+    Soit une piste en cours dans le lecteur plein écran
+    Quand je touche le nom de l'artiste
+    Alors l'onglet Artistes ouvre le détail de cet artiste
+
+  Scénario: Pas de lien sans groupe
+    Soit une piste sans album ni artiste connus
+    Quand j'ouvre le lecteur plein écran
+    Alors « Artiste inconnu » n'est pas un lien
+
+  Scénario: Retour après un lien
+    Soit le détail d'un album ouvert depuis le lecteur
+    Quand je fais Retour
+    Alors la grille des albums s'affiche
+
+  Scénario: Album en cours en voiture (partie B)
+    Soit une piste en cours et la racine de la voiture affichée
+    Quand j'ouvre « Album en cours »
+    Alors les pistes de son album s'affichent dans l'ordre disque puis numéro
+```
+
+**Fiches liées.** FR-032 (Active), ADR-022 (Active) ; à compléter après validation : FR-017.4, UC-007, et BR-013 règle 1 / FR-029 pour la partie B.
 
 ### MPL-065
 **Description.** Marquer des pistes en favoris et retrouver ce qu'on a écouté récemment, dans l'onglet Pistes, sans nouvel onglet. Cadrage du 2026-11-03 : placement choisi par le propriétaire (pastilles sous le champ de recherche). Prépare MPL-066 (suggestions), qui lit l'historique.
@@ -2026,6 +2111,7 @@ Décisions prises en route : Flutter mis à jour de 3.47.6 à 3.47.7 sur le Mac 
 | MPL-041 | Pastille de source sur chaque ligne de piste | 01/11/2026 | Couvert par le lot 2 du design (MPL-045, repère de source par disque) ; validé par le propriétaire |
 | MPL-042 | Bouton « aller à la piste en cours » dans la liste | 01/11/2026 | Livré par MPL-045 ; validé par le propriétaire |
 | MPL-043 | Accès rapide aux longues listes (index alphabétique) | 01/11/2026 | Livré par MPL-045 (Pistes) et MPL-048 (Albums et Artistes) ; validé par le propriétaire |
+| MPL-065 | Favoris et historique d'écoute : cœur du lecteur, appui long, pastilles Toutes/Favoris/Récentes, historique réglable et effaçable, schéma Drift v6 | 06/11/2026 | Validé par le propriétaire, PR #33 fusionnée (06/11/2026). Test Pixel (release) partiel : saut à 5 s, historique désactivé, disque absent, TalkBack, 200 %/paysage non testés |
 
 ## Décisions
 | Code | Titre | Statut | Justification · items liés |

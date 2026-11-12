@@ -1424,6 +1424,12 @@ abstract class AppLocalizations {
   /// **'Keeping the music going when the screen is off.'**
   String get privacyAskBackground;
 
+  /// Last row of a long list in the car browser: opens the rest of the list.
+  ///
+  /// In en, this message translates to:
+  /// **'More…'**
+  String get carMore;
+
   /// The only entry of the car screen while the library is empty (BR-013, rule 8).
   ///
   /// In en, this message translates to:
