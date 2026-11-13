@@ -301,9 +301,9 @@ class LibraryMediaTree implements MediaTree {
     final found = _found(query);
     final parent = [_searchId, Uri.encodeComponent(query)].join('|');
     return [
-      for (final a in found.albums) _albumNode(a),
-      for (final a in found.artists) _artistNode(a),
-      for (final t in found.tracks) _trackNode(t, parent),
+      for (final a in found.albums) _albumNode(a, group: labels.albums),
+      for (final a in found.artists) _artistNode(a, group: labels.artists),
+      for (final t in found.tracks) _trackNode(t, parent, group: labels.tracks),
     ];
   }
 
@@ -478,7 +478,8 @@ class LibraryMediaTree implements MediaTree {
     );
   }
 
-  MediaNode _albumNode(MediaAlbum album) => MediaNode(
+  MediaNode _albumNode(MediaAlbum album, {String? group}) => MediaNode(
+    group: group,
     id: ['album', album.key].map(Uri.encodeComponent).join('|'),
     title: album.unknownAlbum ? labels.unknownAlbum : album.title,
     subtitle: album.unknownArtist ? labels.unknownArtist : album.artist,
@@ -486,19 +487,22 @@ class LibraryMediaTree implements MediaTree {
     browsable: true,
   );
 
-  MediaNode _artistNode(MediaArtist artist) => MediaNode(
+  MediaNode _artistNode(MediaArtist artist, {String? group}) => MediaNode(
+    group: group,
     id: ['artist', artist.key].map(Uri.encodeComponent).join('|'),
     title: artist.unknown ? labels.unknownArtist : artist.name,
     browsable: true,
   );
 
-  MediaNode _trackNode(LibraryTrack track, String parentId) => MediaNode(
-    id: _trackId(track, parentId),
-    title: track.displayTitle,
-    subtitle: track.info.artist,
-    artwork: track.artwork,
-    playable: true,
-  );
+  MediaNode _trackNode(LibraryTrack track, String parentId, {String? group}) =>
+      MediaNode(
+        group: group,
+        id: _trackId(track, parentId),
+        title: track.displayTitle,
+        subtitle: track.info.artist,
+        artwork: track.artwork,
+        playable: true,
+      );
 
   /// The entries of a list under [prefix]: the entries themselves when they
   /// fit, otherwise one folder per next letter (BR-013, rule 4). A folder

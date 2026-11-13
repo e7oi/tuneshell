@@ -200,6 +200,8 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   static const _pageKey = 'android.media.browse.extra.PAGE';
   static const _pageSizeKey = 'android.media.browse.extra.PAGE_SIZE';
   static const _morePrefix = 'more|';
+  static const _groupTitleKey =
+      'android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT';
 
   static String _moreId(String parent, int offset) =>
       '$_morePrefix$offset|${Uri.encodeComponent(parent)}';
@@ -295,6 +297,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
           (artwork == null ? null : _artworkOf(artwork)) ??
           _browseFallbackArt?.call(_kindOf(node.id)),
       playable: node.playable,
+      extras: node.group == null ? null : {_groupTitleKey: node.group},
     );
   }
 

@@ -235,7 +235,7 @@ Fonctionnalité: Listes par lettre et recherche dans la voiture
   Scénario: Chercher dans toute la bibliothèque
     Soit un dossier de lettre ouvert dans la voiture
     Quand je cherche « ecris moi » dans la recherche d'Android Auto
-    Alors les albums, artistes et pistes de toute la bibliothèque qui contiennent ces mots s'affichent, en trois sections
+    Alors les albums, artistes et pistes de toute la bibliothèque qui contiennent ces mots s'affichent, groupés par type (Albums, Artistes, Pistes)
 
   Scénario: Jouer un résultat
     Soit des résultats de recherche affichés
@@ -251,13 +251,13 @@ Fonctionnalité: Listes par lettre et recherche dans la voiture
 
 #### Livraison — 2026-11-12
 Statut : ✅ fait
-Résumé : la liste Pistes de la voiture est de nouveau découpée par lettres (au-delà de 100 entrées par niveau) ; Albums et Artistes restent entiers avec leurs pochettes. La racine déclare la recherche à Android Auto : toujours globale, albums puis artistes puis pistes, 100 au plus par groupe, correspondance de BR-011 ; une piste trouvée met en file les pistes trouvées (provisoire).
+Résumé : la liste Pistes de la voiture est de nouveau découpée par lettres (au-delà de 100 entrées par niveau) ; Albums et Artistes restent entiers avec leurs pochettes. La racine déclare la recherche à Android Auto : toujours globale, résultats groupés par type (titres « Albums », « Artistes », « Pistes »), 100 au plus par groupe, correspondance de BR-011 ; une piste trouvée met en file les pistes trouvées (provisoire).
 Fiches touchées : BR-015 et ADR-023 (as-built), BR-013 règle 4, FR-029, UC-012 complétées.
 Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → tout vert, 1067 tests (lettres de Pistes seulement, recherche : mots, accents, blancs, requête longue, `|` et `%`, disque absent, limite de 100, lecture d'un résultat ; gestionnaire ; Albums et Artistes entiers au-delà de 100) ; `.github/scripts/check-repo.sh` vert.
 Test appareil (Pixel, release) : non testé en voiture (HOWTO §26) : affichage du bouton de recherche, délai de Pistes et d'une recherche à 7 500 pistes, seuil de 100.
 Revue QA : ⚠️ → corrigée (sous-agent, aucun bloquant). Corrigé : requête coupée à 100 caractères et aux blancs comme le téléphone, tests d'identifiants avec `|` et `%`, test des listes entières, ADR-023 alignée sur le code, BR-013 règle 4 sans contradiction. Dette : pas de test commun entre la correspondance de l'interface et celle de l'arbre ; recherche recalculée à chaque `node`/`action` d'une piste trouvée (cache de la dernière requête si la mesure l'exige) ; pas de test du dossier de lettre paginé au-delà de 400. Non vérifié : Android Auto réel (bouton, `onSearch`).
 Description de PR : `feat(android): browse tracks by letter and search from the car (MPL-075)`.
-Décisions prises en route : la recherche est toujours globale, car Android Auto ne dit pas le dossier ouvert (écart à la demande « section active », consigné dans BR-015) ; résultats sans titre de section.
+Décisions prises en route : la recherche est toujours globale, car Android Auto ne dit pas le dossier ouvert (écart à la demande « section active », consigné dans BR-015) ; résultats groupés par titre de groupe à la demande du propriétaire (2026-11-13) : si Android Auto ignore les titres dans la recherche, seul l'ordre reste.
 À valider (PO) : file d'une piste trouvée (provisoire, à redéfinir) ; seuil de 100 entrées à mesurer en voiture.
 
 ### MPL-076

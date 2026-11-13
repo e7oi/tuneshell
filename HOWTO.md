@@ -528,7 +528,7 @@ Build release (D14), téléphone branché à Android Auto (ou émulateur). Consi
 1. **Pistes par lettre :** ouvrir « Pistes ». Attendu : une ligne par lettre (« A », « B »…), pas une liste de plusieurs milliers ; ouvrir une lettre donne ses pistes, ou des lettres plus fines (« BE ») si elle est grosse.
 2. **Albums et Artistes :** attendu : toujours des listes entières avec leurs pochettes, défilables, sans dossiers de lettres.
 3. **Lire sous une lettre :** choisir une piste. Attendu : elle joue, la file est toute la bibliothèque (BR-013, règle 5).
-4. **Recherche :** toucher le bouton de recherche d'Android Auto, taper ou dire un mot (sans accent, casse libre). Attendu : sections albums, artistes, pistes de toute la bibliothèque, quel que soit le dossier ouvert avant.
+4. **Recherche :** toucher le bouton de recherche d'Android Auto, taper ou dire un mot (sans accent, casse libre). Attendu : albums, artistes et pistes de toute la bibliothèque, quel que soit le dossier ouvert avant, groupés sous les titres « Albums », « Artistes », « Pistes ». Noter si Android Auto affiche les titres de groupe dans la recherche (sinon l'ordre seul).
 5. **Jouer un résultat :** choisir une piste trouvée. Attendu : elle joue ; suivant passe à la piste trouvée suivante. Un album ou artiste trouvé s'ouvre comme dans les listes.
 6. **Aucun résultat :** attendu : une liste vide.
 7. **Délai :** noter le temps d'affichage de « Pistes » et d'une recherche à 7 500 pistes.

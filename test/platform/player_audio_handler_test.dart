@@ -737,6 +737,27 @@ void main() {
     );
 
     /// @verifies BR-015
+    test(
+      'a search groups its results under a title for Android Auto',
+      () async {
+        await browsable();
+
+        final found = await handler.search('a');
+
+        expect(found, isNotEmpty);
+        expect(
+          found.map(
+            (i) => i
+                .extras?['android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT'],
+          ),
+          everyElement(isNotNull),
+        );
+        final root = await handler.getChildren(AudioService.browsableRootId);
+        expect(root.every((i) => i.extras == null), isTrue);
+      },
+    );
+
+    /// @verifies BR-015
     test('a search with nothing to find, or no tree, gives nothing', () async {
       await browsable();
 

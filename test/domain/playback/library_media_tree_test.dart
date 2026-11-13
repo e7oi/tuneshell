@@ -609,6 +609,22 @@ void main() {
       expect(found.last.playable, isTrue);
     });
 
+    test(
+      'rule 4: each group carries its title, albums then artists then tracks',
+      () {
+        final found = searchable().search('hahn');
+
+        expect(found.map((n) => n.group), ['Albums', 'Artists', 'Tracks']);
+      },
+    );
+
+    test('rule 4: the lists of the tree carry no group', () {
+      final tree = searchable();
+
+      expect(tree.children('albums').every((n) => n.group == null), isTrue);
+      expect(tree.children('tracks').every((n) => n.group == null), isTrue);
+    });
+
     test('rule 4: case, accents and word order do not count', () {
       expect(titles(searchable().search('MOI ecris')), ['Écris-moi']);
       expect(titles(searchable().search('hahn ECRIS')), ['Écris-moi']);
