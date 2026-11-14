@@ -521,3 +521,15 @@ Build release (D14). Consigner le résultat de chaque étape (testé / non test�
 7. **200 % et paysage :** le texte passe à la ligne sans couper les zones tactiles. **Non testé** tant que cela n'a pas été vu sur le Pixel.
 8. **Voiture (MPL-078) :** piste en cours, ouvrir la racine. Attendu : « Reprendre », « Album en cours », « Artiste en cours », puis Albums, Artistes, Pistes. « Album en cours » liste les pistes de l'album ; en choisir une met l'album en file. Sans piste en cours ou avec un album inconnu : les deux dossiers sont absents.
 
+## 26. Tester les lettres et la recherche de la voiture (MPL-075)
+
+Build release (D14), téléphone branché à Android Auto (ou émulateur). Consigner le résultat de chaque étape (testé / non testé).
+
+1. **Pistes par lettre :** ouvrir « Pistes ». Attendu : une ligne par lettre (« A », « B »…), pas une liste de plusieurs milliers ; ouvrir une lettre donne ses pistes, ou des lettres plus fines (« BE ») si elle est grosse.
+2. **Albums et Artistes :** attendu : toujours des listes entières avec leurs pochettes, défilables, sans dossiers de lettres.
+3. **Lire sous une lettre :** choisir une piste. Attendu : elle joue, la file est toute la bibliothèque (BR-013, règle 5).
+4. **Recherche :** toucher le bouton de recherche d'Android Auto, taper ou dire un mot (sans accent, casse libre). Attendu : albums, artistes et pistes de toute la bibliothèque, quel que soit le dossier ouvert avant, groupés sous les titres « Albums », « Artistes », « Pistes ». Noter si Android Auto affiche les titres de groupe dans la recherche (sinon l'ordre seul).
+5. **Jouer un résultat :** choisir une piste trouvée. Attendu : elle joue ; suivant passe à la piste trouvée suivante. Un album ou artiste trouvé s'ouvre comme dans les listes.
+6. **Aucun résultat :** attendu : une liste vide.
+7. **Délai :** noter le temps d'affichage de « Pistes » et d'une recherche à 7 500 pistes.
+

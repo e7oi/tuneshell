@@ -13,8 +13,7 @@ Ordre de travail proposé (réorganisation du 2026-11-01) : épiques, puis les t
 | MPL-072 | Épique | P1 | Épique « Disques amovibles » : éjection native (MPL-035), réassociation et retrait (MPL-038), design lot 3 (MPL-046), désactivation d'un disque (MPL-056) ; regroupement du 2026-11-01 | À faire | — | — |
 | MPL-064 | Bug | P1 | Android Auto : avec l'aléatoire, la liste de la file commence par la piste en cours ; listes (Albums, Artistes, Pistes) affichées entières, sans dossiers par lettres (demandes du propriétaire après usage en voiture, 2026-11-01) | À tester | — | — |
 | MPL-074 | Bug | P1 | Android Auto : la liste Pistes (plusieurs milliers de lignes) ne s'affiche pas ou trop lentement ; listes servies par pages, sans dossiers par lettres (demande du propriétaire, 2026-11-02) | À tester | — | — |
-| MPL-075 | Récit | P1 | Android Auto : revoir les listes de pistes de la voiture (demande du propriétaire, 2026-11-05) : la page de départ des listes avec « Suite… » est trop longue à faire défiler, et « A–Z » ne donne accès qu'aux lettres de la tranche affichée ; à cadrer (taille de page, accès direct à toute lettre de la liste entière) | À faire | MPL-001 | MPL-074 |
-| MPL-076 | Récit | P2 | Lecteur plein écran : nom de l'album et de l'artiste cliquables pour ouvrir leur détail (demande du propriétaire, 2026-11-10) ; cadré le 2026-11-12, fiches FR-032 et ADR-022 Active (validées le 2026-11-12) ; la partie voiture est devenue MPL-078 | À tester | MPL-001 | — |
+| MPL-075 | Récit | P1 | Android Auto : liste Pistes de nouveau en dossiers par lettre (Albums et Artistes restent entiers, pochettes visibles), avec une recherche globale dans toute la bibliothèque (demande du propriétaire, 2026-11-12, après l'essai de MPL-074) ; fiches BR-015 et ADR-023 Active (validées le 2026-11-12) | À tester | MPL-001 | MPL-074 |
 | MPL-078 | Récit | P2 | Android Auto : dossiers « Album en cours » et « Artiste en cours » à la racine de l'arbre média, après « Reprendre » (ex-partie B de MPL-076, sortie à la demande du propriétaire le 2026-11-12) ; code livré avec la PR de MPL-076, à tester en voiture | À tester | MPL-001 | — |
 | MPL-035 | Tâche technique | P1 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-072 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
@@ -207,6 +206,59 @@ Revue QA : non requise (réponse de navigation, sans lecture, stockage ni permis
 Description de PR : `fix(android): page the long lists of the car browser (MPL-074)`.
 Décisions prises en route : seuil de 400 lignes sans pagination ; la lecture d'une piste de la suite met toujours en file toute la bibliothèque.
 À valider (PO) : BR-013 règle 4 remplacée (pages au lieu de listes entières) ; la ligne « Suite… » est le repli si la voiture ne pagine pas.
+
+### MPL-075
+**Description.** Après l'essai en voiture de MPL-074, la liste des titres reste trop longue à faire défiler, sans accès rapide, et « A–Z » ne couvre que la page chargée. Le propriétaire demande de rendre le regroupement par lettre et d'ajouter une recherche globale. Cadrage du 2026-11-12.
+
+**Inclus.**
+- Dossiers par lettre pour la liste Pistes seulement, au-delà de 100 entrées par niveau ; Albums et Artistes restent des listes entières paginées (choix du propriétaire) ; la pagination de MPL-074 reste le filet (BR-015, règles 1 à 3).
+- Recherche déclarée à Android Auto, toujours globale (Android Auto ne donne pas le dossier ouvert), résultats en sections albums, artistes, pistes, règles de BR-011, file des pistes trouvées provisoire (BR-015, règles 4 à 6 ; ADR-023).
+
+**Exclusions.** Commande vocale « joue X » (`playFromSearch`, gardée pour plus tard), classement par pertinence, changement de la file mise en place sous une lettre (BR-013, règle 5).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Listes par lettre et recherche dans la voiture
+
+  Scénario: Une longue liste s'ouvre par lettres
+    Soit une bibliothèque de plusieurs milliers de pistes
+    Quand j'ouvre « Pistes » dans la voiture
+    Alors je vois un dossier par lettre existante, du premier niveau
+    Et chaque dossier s'ouvre sur ses pistes ou sur des lettres plus fines
+
+  Scénario: Une courte liste reste à plat
+    Soit une bibliothèque de plusieurs centaines d'albums
+    Quand j'ouvre « Albums » dans la voiture
+    Alors les albums sont listés sans dossier de lettres, avec leurs pochettes
+
+  Scénario: Chercher dans toute la bibliothèque
+    Soit un dossier de lettre ouvert dans la voiture
+    Quand je cherche « ecris moi » dans la recherche d'Android Auto
+    Alors les albums, artistes et pistes de toute la bibliothèque qui contiennent ces mots s'affichent, groupés par type (Albums, Artistes, Pistes)
+
+  Scénario: Jouer un résultat
+    Soit des résultats de recherche affichés
+    Quand je choisis la deuxième piste trouvée
+    Alors la lecture démarre sur elle et la file est la liste des pistes trouvées
+
+  Scénario: Aucun résultat
+    Quand je cherche un texte qu'aucune piste ne contient
+    Alors la liste est vide
+```
+
+**Fiches liées.** BR-015 (Active), ADR-023 (Active) ; remplacent BR-013 règle 4 pour la liste Pistes, touchent FR-029 exigence 6 et UC-012 ; lisent BR-010, BR-011, BR-013, ADR-020.
+
+#### Livraison — 2026-11-12
+Statut : ✅ fait
+Résumé : la liste Pistes de la voiture est de nouveau découpée par lettres (au-delà de 100 entrées par niveau) ; Albums et Artistes restent entiers avec leurs pochettes. La racine déclare la recherche à Android Auto : toujours globale, résultats groupés par type (titres « Albums », « Artistes », « Pistes »), 100 au plus par groupe, correspondance de BR-011 ; une piste trouvée met en file les pistes trouvées (provisoire).
+Fiches touchées : BR-015 et ADR-023 (as-built), BR-013 règle 4, FR-029, UC-012 complétées.
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → tout vert, 1067 tests (lettres de Pistes seulement, recherche : mots, accents, blancs, requête longue, `|` et `%`, disque absent, limite de 100, lecture d'un résultat ; gestionnaire ; Albums et Artistes entiers au-delà de 100) ; `.github/scripts/check-repo.sh` vert.
+Test appareil (Pixel, release) : non testé en voiture (HOWTO §26) : affichage du bouton de recherche, délai de Pistes et d'une recherche à 7 500 pistes, seuil de 100.
+Revue QA : ⚠️ → corrigée (sous-agent, aucun bloquant). Corrigé : requête coupée à 100 caractères et aux blancs comme le téléphone, tests d'identifiants avec `|` et `%`, test des listes entières, ADR-023 alignée sur le code, BR-013 règle 4 sans contradiction. Dette : pas de test commun entre la correspondance de l'interface et celle de l'arbre ; recherche recalculée à chaque `node`/`action` d'une piste trouvée (cache de la dernière requête si la mesure l'exige) ; pas de test du dossier de lettre paginé au-delà de 400. Non vérifié : Android Auto réel (bouton, `onSearch`).
+Description de PR : `feat(android): browse tracks by letter and search from the car (MPL-075)`.
+Décisions prises en route : la recherche est toujours globale, car Android Auto ne dit pas le dossier ouvert (écart à la demande « section active », consigné dans BR-015) ; résultats groupés par titre de groupe à la demande du propriétaire (2026-11-13) : si Android Auto ignore les titres dans la recherche, seul l'ordre reste.
+À valider (PO) : file d'une piste trouvée (provisoire, à redéfinir) ; seuil de 100 entrées à mesurer en voiture.
 
 ### MPL-076
 **Description.** Depuis le lecteur plein écran, toucher le nom de l'artiste ou de l'album ouvre son détail dans l'onglet correspondant, pour enchaîner les titres. La partie voiture, d'abord prévue ici, est le ticket MPL-078.
@@ -2158,6 +2210,7 @@ Décisions prises en route : Flutter mis à jour de 3.47.6 à 3.47.7 sur le Mac 
 | MPL-042 | Bouton « aller à la piste en cours » dans la liste | 01/11/2026 | Livré par MPL-045 ; validé par le propriétaire |
 | MPL-043 | Accès rapide aux longues listes (index alphabétique) | 01/11/2026 | Livré par MPL-045 (Pistes) et MPL-048 (Albums et Artistes) ; validé par le propriétaire |
 | MPL-065 | Favoris et historique d'écoute : cœur du lecteur, appui long, pastilles Toutes/Favoris/Récentes, historique réglable et effaçable, schéma Drift v6 | 06/11/2026 | Validé par le propriétaire, PR #33 fusionnée (06/11/2026). Test Pixel (release) partiel : saut à 5 s, historique désactivé, disque absent, TalkBack, 200 %/paysage non testés |
+| MPL-076 | Liens du lecteur plein écran vers l'album et l'artiste de la piste en cours | 12/11/2026 | Validé par le propriétaire, PR #35 fusionnée (12/11/2026). Pixel (release) : liens d'artiste et d'album et texte sans lien confirmés ; détail déjà ouvert, invité, TalkBack, 200 %/paysage non vus. La partie voiture est MPL-078 |
 
 ## Décisions
 | Code | Titre | Statut | Justification · items liés |

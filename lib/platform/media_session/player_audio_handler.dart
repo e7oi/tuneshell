@@ -200,6 +200,8 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
   static const _pageKey = 'android.media.browse.extra.PAGE';
   static const _pageSizeKey = 'android.media.browse.extra.PAGE_SIZE';
   static const _morePrefix = 'more|';
+  static const _groupTitleKey =
+      'android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT';
 
   static String _moreId(String parent, int offset) =>
       '$_morePrefix$offset|${Uri.encodeComponent(parent)}';
@@ -215,6 +217,20 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
     } on ArgumentError {
       return null;
     }
+  }
+
+  /// What a car's search finds in the whole library (BR-015, rule 4). The car
+  /// does not say which folder is open: the search is always global.
+  ///
+  /// @implements BR-015
+  @override
+  Future<List<MediaItem>> search(
+    String query, [
+    Map<String, dynamic>? extras,
+  ]) async {
+    final tree = await _mediaTree?.call();
+    if (tree == null) return const [];
+    return [for (final n in tree.search(query)) _browseItem(n)];
   }
 
   @override
@@ -281,6 +297,7 @@ class PlayerAudioHandler extends BaseAudioHandler with SeekHandler {
           (artwork == null ? null : _artworkOf(artwork)) ??
           _browseFallbackArt?.call(_kindOf(node.id)),
       playable: node.playable,
+      extras: node.group == null ? null : {_groupTitleKey: node.group},
     );
   }
 

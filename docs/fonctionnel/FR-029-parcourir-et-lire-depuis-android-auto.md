@@ -29,6 +29,8 @@ Recherche vocale, commandes vocales, Android Automotive OS, CarPlay, publication
 
 ## As-built
 
+MPL-075, 2026-11-12 : la liste Pistes est découpée par lettres (au-delà de 100 entrées par niveau) et la racine déclare la recherche à Android Auto, globale, en sections albums, artistes, pistes (BR-015) ; voir BR-015.
+
 MPL-076, 2026-11-12 : la racine ajoute « Album en cours » et « Artiste en cours » après « Reprendre » (FR-032.7, BR-013 règle 1) ; voir FR-032 pour le détail.
 
 MPL-060, 2026-10-28, test appareil non fait (D14 : il exige la voiture). Arbre : `LibraryMediaTree` (`lib/domain/playback/services/library_media_tree.dart`, Dart pur, port `MediaTree`, modèle `MediaNode` et actions `ResumeAction` et `PlayTracks`), construit à la demande par `currentMediaTree` (`lib/app/media_browsing.dart`) à partir des vues Albums, Artistes et Pistes. `PlayerAudioHandler` répond à `getChildren`, `getMediaItem` et `playFromMediaId` ; choisir une piste efface la provenance de la file du lecteur (`onQueueChosen`). Déclaration : métadonnée `com.google.android.gms.car.application` et `res/xml/automotive_app_desc.xml`, aucune permission ajoutée. Texte de la bibliothèque vide : clé ARB `carEmptyLibrary`. Tests : `library_media_tree_test`, `player_audio_handler_test` (groupe FR-029), `media_browsing_test`. Protocole : `HOWTO.md` §23.

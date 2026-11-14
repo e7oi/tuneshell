@@ -14,6 +14,7 @@ final class MediaNode {
     this.artwork,
     this.playable = false,
     this.browsable = false,
+    this.group,
   });
 
   /// Stable from one launch to the next (BR-013, rule 7); never shown.
@@ -25,6 +26,11 @@ final class MediaNode {
   final String? artwork;
   final bool playable;
   final bool browsable;
+
+  /// The title of the group this entry belongs to in a list of results:
+  /// entries of one group follow each other and a car shows the title above
+  /// them (BR-015, rule 4). Null in the lists of the tree.
+  final String? group;
 }
 
 /// What choosing a playable [MediaNode] does.

@@ -72,6 +72,12 @@ Future<void> startSystemPlayback(ProviderContainer container) async {
       // The stored images can be large: the system shows a small one.
       artDownscaleWidth: 512,
       artDownscaleHeight: 512,
+      // Android Auto shows its search button and the titles of the groups of
+      // results (BR-015, rule 4).
+      androidBrowsableRootExtras: const {
+        'android.media.browse.SEARCH_SUPPORTED': true,
+        AndroidContentStyle.supportedKey: true,
+      },
     ),
   );
 

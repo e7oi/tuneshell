@@ -64,15 +64,17 @@ LibraryMediaTree treeOf({
   Set<DiskId> unavailable = const {},
   LibraryTrack? current,
   int maxChildren = 100,
+  int? maxTracks,
 }) => LibraryMediaTree(
   albums: albums,
   artists: artists,
   tracks: tracks,
   labels: _labels,
-  fold: (text) => text.toLowerCase(),
+  fold: (text) => text.toLowerCase().replaceAll('é', 'e'),
   unavailable: unavailable,
   current: current,
   maxChildren: maxChildren,
+  maxTracks: maxTracks,
 );
 
 List<String> titles(List<MediaNode> nodes) => [for (final n in nodes) n.title];
@@ -531,6 +533,177 @@ void main() {
 
       expect(tree.children('tracks'), hasLength(10));
       expect(tree.children('tracks').every((n) => n.playable), isTrue);
+    });
+  });
+
+  /// @verifies BR-015
+  group('BR-015 the tracks by letter, the other lists whole', () {
+    final many = [
+      for (final name in ['alpha', 'apple', 'bravo', 'banana', 'cherry'])
+        track('m/$name.flac', title: name),
+    ];
+    final groups = [
+      for (final t in many)
+        album('k-${t.displayTitle}', t.displayTitle, 'X', [t]),
+    ];
+
+    test('rule 1: only Tracks is cut, Albums stays whole', () {
+      final tree = treeOf(
+        albums: groups,
+        tracks: many,
+        maxChildren: 1000,
+        maxTracks: 2,
+      );
+
+      expect(titles(tree.children('albums')), hasLength(5));
+      expect(titles(tree.children('tracks')), ['A', 'B', 'CHERRY']);
+      expect(titles(tree.children('tracks|a')), ['alpha', 'apple']);
+    });
+
+    test('rule 2: every existing letter is a folder of the first level', () {
+      final tree = treeOf(tracks: many, maxChildren: 1000, maxTracks: 2);
+
+      final first = tree.children('tracks');
+
+      expect(first.every((n) => n.browsable && !n.playable), isTrue);
+      expect(titles(first), ['A', 'B', 'CHERRY']);
+    });
+
+    test('rule 1: a short Tracks list stays flat', () {
+      final tree = treeOf(tracks: many);
+
+      expect(titles(tree.children('tracks')), hasLength(5));
+    });
+  });
+
+  /// @verifies BR-015
+  group('BR-015 the search', () {
+    final song = track('s/1.flac', title: 'Écris-moi', artist: 'Hahn');
+    final other = track('s/2.flac', title: 'Another', artist: 'Bach');
+    final far = track('s/3.flac', title: 'Écris loin', disk: _ssd);
+    final albumHahn = album('hahn\u0000lettres', 'Lettres', 'Hahn', [song]);
+    final albumBach = album('bach\u0000suites', 'Suites', 'Bach', [other]);
+    final artistHahn = MediaArtist(
+      key: 'hahn',
+      name: 'Hahn',
+      albums: [albumHahn],
+    );
+    final artistBach = MediaArtist(
+      key: 'bach',
+      name: 'Bach',
+      albums: [albumBach],
+    );
+
+    LibraryMediaTree searchable({Set<DiskId> unavailable = const {}}) => treeOf(
+      albums: [albumHahn, albumBach],
+      artists: [artistHahn, artistBach],
+      tracks: [other, song, far],
+      unavailable: unavailable,
+    );
+
+    test('rule 4: albums, artists and tracks, in sections', () {
+      final found = searchable().search('hahn');
+
+      expect(titles(found), ['Lettres', 'Hahn', 'Écris-moi']);
+      expect(found.map((n) => n.browsable), [true, true, false]);
+      expect(found.last.playable, isTrue);
+    });
+
+    test(
+      'rule 4: each group carries its title, albums then artists then tracks',
+      () {
+        final found = searchable().search('hahn');
+
+        expect(found.map((n) => n.group), ['Albums', 'Artists', 'Tracks']);
+      },
+    );
+
+    test('rule 4: the lists of the tree carry no group', () {
+      final tree = searchable();
+
+      expect(tree.children('albums').every((n) => n.group == null), isTrue);
+      expect(tree.children('tracks').every((n) => n.group == null), isTrue);
+    });
+
+    test('rule 4: case, accents and word order do not count', () {
+      expect(titles(searchable().search('MOI ecris')), ['Écris-moi']);
+      expect(titles(searchable().search('hahn ECRIS')), ['Écris-moi']);
+    });
+
+    test('rule 4: a letter is enough, an empty query finds nothing', () {
+      expect(searchable().search('z'), isEmpty);
+      expect(searchable().search('  '), isEmpty);
+      expect(titles(searchable().search('h')), contains('Hahn'));
+    });
+
+    test('rule 4: the unknown texts are not searched', () {
+      final loose = track('s/9.flac', title: 'Loose');
+      final tree = treeOf(
+        albums: [
+          album('', '', '', [loose], unknownAlbum: true),
+        ],
+        tracks: [loose],
+      );
+
+      expect(tree.search('unknown'), isEmpty);
+    });
+
+    test('rule 5: nothing of an absent disk', () {
+      final found = searchable(unavailable: {_ssd}).search('loin');
+
+      expect(found, isEmpty);
+    });
+
+    test('rule 5: at most 100 per section', () {
+      final tracks = [
+        for (var i = 0; i < 150; i++) track('b/t$i.flac', title: 'song $i'),
+      ];
+      final found = treeOf(tracks: tracks).search('song');
+
+      expect(found, hasLength(100));
+    });
+
+    test('rule 6: a found track queues the found tracks', () {
+      final tree = searchable();
+      final id = tree.search('moi').last.id;
+
+      final action = tree.action(id);
+
+      expect(action, isA<PlayTracks>());
+      expect((action! as PlayTracks).queue, [song.track]);
+      expect(tree.node(id)?.title, 'Écris-moi');
+    });
+
+    test('rule 4: blanks of any kind cut the words like on the phone', () {
+      expect(titles(searchable().search('moi\tecris')), ['Écris-moi']);
+      expect(titles(searchable().search('  hahn   ecris ')), ['Écris-moi']);
+    });
+
+    test('rule 5: a very long query is cut, not refused', () {
+      final long = 'ecris ${'x' * 5000}';
+
+      expect(searchable().search(long), isEmpty);
+      expect(searchable().search('ecris ${' ' * 5000}'), isNotEmpty);
+    });
+
+    /// @verifies BR-015
+    test('rule 7: a track found by a query with |, % and spaces plays', () {
+      final odd = track('o/a|b%.flac', title: 'a|b% 100');
+      final tree = treeOf(tracks: [odd]);
+
+      final found = tree.search('a|b% 1');
+
+      expect(titles(found), ['a|b% 100']);
+      expect(tree.node(found.single.id)?.title, 'a|b% 100');
+      final action = tree.action(found.single.id);
+      expect((action! as PlayTracks).queue, [odd.track]);
+    });
+
+    test('rule 4: a found album opens like in the list', () {
+      final tree = searchable();
+      final id = tree.search('lettres').first.id;
+
+      expect(titles(tree.children(id)), ['Écris-moi']);
     });
   });
 }

@@ -98,7 +98,8 @@ void main() {
       expect(titles(tree.children('tracks')), ['One', 'Solo', 'Two']);
     });
 
-    test('rule 4: a long list is shown whole, with no folders', () async {
+    /// @verifies BR-015
+    test('BR-015 rule 1: a long Tracks list is cut by letters', () async {
       await library.applyIndex(internalDisk, [
         for (var i = 0; i < 130; i++)
           tagged('M/t$i.flac', title: 'Track $i', artist: 'Ann', album: 'A'),
@@ -107,9 +108,42 @@ void main() {
 
       final tree = await currentMediaTree(container);
 
-      final tracks = tree.children('tracks');
-      expect(tracks.length, 130);
-      expect(tracks.every((n) => n.playable), isTrue);
+      final top = tree.children('tracks');
+      expect(top.every((n) => n.browsable && !n.playable), isTrue);
+      int leavesUnder(String id, int depth) {
+        final nodes = tree.children(id);
+        expect(nodes.length, lessThanOrEqualTo(100), reason: id);
+        return depth > 6
+            ? 0
+            : nodes.fold(
+                0,
+                (sum, n) =>
+                    sum + (n.playable ? 1 : leavesUnder(n.id, depth + 1)),
+              );
+      }
+
+      expect(leavesUnder('tracks', 0), 130);
+      expect(tree.children('albums'), hasLength(1));
+    });
+
+    /// @verifies BR-015
+    test('BR-015 rule 1: Albums and Artists stay whole past 100', () async {
+      await library.applyIndex(internalDisk, [
+        for (var i = 0; i < 130; i++)
+          tagged(
+            'M/t$i.flac',
+            title: 'Song $i',
+            artist: 'Artist $i',
+            album: 'Album $i',
+          ),
+      ]);
+      final container = await start();
+
+      final tree = await currentMediaTree(container);
+
+      expect(tree.children('albums'), hasLength(130));
+      expect(tree.children('artists'), hasLength(130));
+      expect(tree.children('albums').every((n) => n.browsable), isTrue);
     });
 
     test('an unchanged library gives the same tree again', () async {
