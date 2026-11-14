@@ -1,5 +1,7 @@
 # Brief Claude Design — Onglet Accueil (MPL-079)
 
+> **Première version, dépassée le 2026-11-14 :** la carte « Reprendre » est retirée (doublon du mini-lecteur), remplacée par trois pistes à redécouvrir ; deux albums au lieu de six ; aucun élément indisponible n'est affiché (donc plus d'état « disque absent »). La référence est FR-033 et la maquette du canevas Claude Design (états 9a à 9h).
+
 > À coller dans Claude Design avec le dossier de conception v0.4 (`HANDOFF.md`, `screens/source/*.dc.html`, jetons). Rédigé le 2026-11-13 ; fiches : `UC-014`, `BR-016`, `FR-033`. Les exigences de comportement font foi dans `FR-033` et `BR-016` ; ce brief dit seulement ce que la maquette doit montrer.
 
 ## Demande
