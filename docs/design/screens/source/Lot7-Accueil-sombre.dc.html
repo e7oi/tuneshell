@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Accueil — états, sombre</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1396px; height: 3541px; box-sizing: border-box; padding: 40px; background: #0A0F19; color: #DEE3EA; font-family: Inter, system-ui, sans-serif; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 40px; align-content: start">
+
+  <div style="display: flex; flex-direction: column; gap: 12px"><span style="font-size: 15px; font-weight: 600">9a · Trois pistes et deux albums à redécouvrir ; mini-lecteur en pause (session restaurée)</span><dc-import name="Accueil" theme="dark" state="normal" hint-size="412px,915px"></dc-import></div>
+  <div style="display: flex; flex-direction: column; gap: 12px"><span style="font-size: 15px; font-weight: 600">9b · Piste en lecture : le mini-lecteur porte la lecture</span><dc-import name="Accueil" theme="dark" state="lecture" hint-size="412px,915px"></dc-import></div>
+  <div style="display: flex; flex-direction: column; gap: 12px"><span style="font-size: 15px; font-weight: 600">9c · Piste sans pochette ni artiste connu</span><dc-import name="Accueil" theme="dark" state="sanspochette" hint-size="412px,915px"></dc-import></div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px"><span style="font-size: 15px; font-weight: 600">9d · Petite bibliothèque : deux pistes, un album</span><dc-import name="Accueil" theme="dark" state="petite" hint-size="412px,915px"></dc-import></div>
+  <div style="display: flex; flex-direction: column; gap: 12px"><span style="font-size: 15px; font-weight: 600">9e · Rien joué encore : pas de mini-lecteur</span><dc-import name="Accueil" theme="dark" state="sanscarte" hint-size="412px,915px"></dc-import></div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px"><span style="font-size: 15px; font-weight: 600">9f · État vide complet</span><dc-import name="Accueil" theme="dark" state="vide" hint-size="412px,915px"></dc-import></div>
+  <div style="display: flex; flex-direction: column; gap: 12px"><span style="font-size: 15px; font-weight: 600">9g · Chargement de la bibliothèque</span><dc-import name="Accueil" theme="dark" state="chargement" hint-size="412px,915px"></dc-import></div>
+  <div></div>
+
+  <div style="grid-column: 1 / span 3; display: flex; flex-direction: column; gap: 12px"><span style="font-size: 15px; font-weight: 600">9h · Paysage (rail à gauche, pistes à gauche, albums à droite)</span><dc-import name="Accueil" theme="dark" state="paysage" hint-size="915px,412px"></dc-import></div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1396,"height":3541}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

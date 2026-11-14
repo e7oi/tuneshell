@@ -15,8 +15,8 @@ L'utilisateur ouvre l'application et veut, sans chercher, tomber sur de la musiq
 ## Scénario nominal
 
 1. L'application s'ouvre sur l'onglet **Accueil** (premier onglet, onglet de départ). S'il y a une piste courante (restaurée, UC-011), le mini-lecteur est déjà là, en pause : c'est le « dernier joué » ; l'accueil ne le répète pas.
-2. « Pistes à redécouvrir » : trois pistes que l'utilisateur n'a pas écoutées depuis longtemps, avec pochette, titre, « artiste · album » et durée. Il en touche une : elle est lue.
-3. « Albums à redécouvrir » : deux cartes d'album. Il touche un album : le détail s'ouvre dans l'onglet Albums (UC-008).
+2. « Pistes oubliées » : trois pistes que l'utilisateur n'a pas écoutées depuis longtemps, avec pochette, titre, « artiste · album » et durée. Il en touche une : elle est lue, et la file est toute la bibliothèque, par artiste, album et numéro de piste, à partir d'elle.
+3. « Albums oubliés » : deux cartes d'album. Il touche un album : le détail s'ouvre dans l'onglet Albums (UC-008).
 4. Il passe sur Pistes, puis revient sur Accueil : la sélection est la même. Il touche « Autres suggestions » en haut de l'écran : de nouvelles pistes et de nouveaux albums s'affichent.
 5. Au démarrage suivant, un nouveau tirage est fait.
 

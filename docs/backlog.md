@@ -15,7 +15,7 @@ Ordre de travail proposé (réorganisation du 2026-11-01) : épiques, puis les t
 | MPL-074 | Bug | P1 | Android Auto : la liste Pistes (plusieurs milliers de lignes) ne s'affiche pas ou trop lentement ; listes servies par pages, sans dossiers par lettres (demande du propriétaire, 2026-11-02) | À tester | — | — |
 | MPL-075 | Récit | P1 | Android Auto : liste Pistes de nouveau en dossiers par lettre (Albums et Artistes restent entiers, pochettes visibles), avec une recherche globale dans toute la bibliothèque (demande du propriétaire, 2026-11-12, après l'essai de MPL-074) ; fiches BR-015 et ADR-023 Active (validées le 2026-11-12) | À tester | MPL-001 | MPL-074 |
 | MPL-078 | Récit | P2 | Android Auto : dossiers « Album en cours » et « Artiste en cours » à la racine de l'arbre média, après « Reprendre » (ex-partie B de MPL-076, sortie à la demande du propriétaire le 2026-11-12) ; code livré avec la PR de MPL-076, à tester en voiture | À tester | MPL-001 | — |
-| MPL-079 | Récit | P2 | Onglet Accueil, premier onglet : trois pistes et deux albums à redécouvrir (aucun indisponible), tirés à chaque démarrage et sur « Autres suggestions » ; le dernier joué reste le mini-lecteur ; demande du propriétaire du 2026-11-13 ; UC-014, BR-016, ADR-024 Active (révisées le 2026-11-14) ; FR-033 attend la validation de la maquette Claude Design | À faire | MPL-001 | — |
+| MPL-079 | Récit | P2 | Onglet Accueil, premier onglet : trois pistes et deux albums à redécouvrir (aucun indisponible), tirés à chaque démarrage et sur « Autres suggestions » ; le dernier joué reste le mini-lecteur ; demande du propriétaire du 2026-11-13 ; UC-014, BR-016, ADR-024 Active (révisées le 2026-11-14) ; FR-033 Active (maquette validée le 2026-11-14) | À faire | MPL-001 | — |
 | MPL-035 | Tâche technique | P1 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-072 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-072 | — |
@@ -358,7 +358,8 @@ Décisions prises en route : validé par le propriétaire le 2026-11-12 sans tes
 - L'accueil est un nouvel onglet en première place et onglet de départ.
 - Pas de carte « dernier joué » : elle faisait doublon avec le mini-lecteur, qui porte déjà la piste courante restaurée (BR-012). Sa place est donnée à trois pistes à redécouvrir.
 - Deux albums seulement (quatre serraient la page).
-- Une piste ou un album indisponible (disque absent) n'est jamais tiré et n'apparaît pas sur l'accueil.
+- Une piste ou un album indisponible (disque absent) n'est jamais tiré et n'apparaît pas sur l'accueil ; un album est disponible dès qu'une de ses pistes l'est.
+- Toucher une piste lit la file complète de la bibliothèque, par artiste, album et numéro de piste, à partir d'elle.
 - Tirage au démarrage et sur « Autres suggestions » (bouton dans l'en-tête), pas à chaque affichage de l'onglet.
 - Pas de lien avec MPL-077 : le bogue du « Précédent » demande une trace de lecture en ordre, distincte de `play_events`.
 
@@ -370,7 +371,7 @@ Décisions prises en route : validé par le propriétaire le 2026-11-12 sans tes
 
 **Exclusions.** Playlists (MPL-080), suggestions par moment (MPL-066), carte « dernier joué », voiture, statistiques, « Récemment écoutés », tirer-pour-actualiser sur l'accueil, tirage enregistré.
 
-**Maquette.** Claude Design, canevas « TuneShell — Onglet Accueil » (états 9a à 9h) ; brief dans `docs/design/BRIEF-MPL-079-accueil.md` (première version, avant les décisions ci-dessus). Pas de code avant la validation de la maquette et le passage de FR-033 à `Active`.
+**Maquette.** Validée le 2026-11-14 (Claude Design, canevas « TuneShell — Onglet Accueil », états 9a à 9h) ; sources dans `docs/design/screens/source/` (`Accueil`, `Lot7-Accueil-clair`, `Lot7-Accueil-sombre`) ; brief initial dans `docs/design/BRIEF-MPL-079-accueil.md` (dépassé). Sections « Pistes oubliées » et « Albums oubliés ».
 
 **Critères d'acceptation.**
 ```gherkin
@@ -409,10 +410,11 @@ Fonctionnalité: Accueil
     Alors la carte disparaît, sans remplaçant
     Et elle revient si le disque revient et que le tirage n'a pas été refait
 
-  Scénario: Un album n'est pas disponible si une de ses pistes ne l'est pas
-    Soit un album dont une piste est sur un disque absent
+  Scénario: Un album est disponible dès qu'une piste l'est
+    Soit un album dont une piste est sur un disque absent et une autre disponible
     Quand le tirage est fait
-    Alors cet album n'est pas tiré
+    Alors cet album peut être tiré
+    Et son détail grise la piste absente
 
   Scénario: Priorité aux éléments déjà aimés
     Soit assez d'éléments éligibles écoutés il y a plus de 30 jours ou en favori
@@ -432,7 +434,8 @@ Fonctionnalité: Accueil
   Scénario: Lire une piste
     Soit les trois pistes affichées
     Quand je touche la deuxième
-    Alors la file est les trois pistes, à partir de la deuxième, et elle est lue
+    Alors la file est la bibliothèque entière par artiste, album puis numéro de piste
+    Et la lecture démarre sur la deuxième piste
 
   Scénario: Ouvrir un album
     Soit un album affiché sur l'accueil
@@ -465,9 +468,9 @@ Fonctionnalité: Accueil
     Alors l'onglet Accueil s'affiche
 ```
 
-**Fiches liées.** UC-014, BR-016, ADR-024 (Active, révisées le 2026-11-14) ; FR-033 (Brouillon, maquette en revue) ; écarts à FR-009 et UC-004 (`Active`, voir leurs « À valider »). Voir aussi UC-013, BR-014, BR-012, FR-016, FR-032, ADR-021, ADR-022, MPL-066, MPL-077, MPL-080.
+**Fiches liées.** UC-014, BR-016, ADR-024, FR-033 (Active) ; FR-009 (exigences 1 et 7) et UC-004 révisées le 2026-11-14 ; écarts à FR-009.10 inchangé. Voir aussi UC-013, BR-014, BR-012, FR-016, FR-032, ADR-021, ADR-022, MPL-066, MPL-077, MPL-080.
 
-**À valider (PO).** Voir « À valider » de BR-016 et FR-033 : album disponible seulement si toutes ses pistes le sont, niveau 2 = jamais écoutés, file des trois pistes au toucher, Retour d'un détail vers la grille d'Albums, Accueil comme onglet de départ, titres de section.
+**À valider (PO).** Voir « À valider » de BR-016 et FR-033 : niveau 2 = jamais écoutés, détail du tri de la file, Retour d'un détail vers la grille d'Albums, Accueil comme onglet de départ, titres de section.
 
 ### MPL-065
 **Description.** Marquer des pistes en favoris et retrouver ce qu'on a écouté récemment, dans l'onglet Pistes, sans nouvel onglet. Cadrage du 2026-11-03 : placement choisi par le propriétaire (pastilles sous le champ de recherche). Prépare MPL-066 (suggestions), qui lit l'historique.

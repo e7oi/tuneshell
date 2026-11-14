@@ -7,7 +7,7 @@
 L'accueil propose **trois pistes** et **deux albums à redécouvrir**. Tout se calcule sur l'appareil, à partir de la bibliothèque et de l'historique existants (BR-014) ; rien n'est envoyé (D15, D26) et rien de nouveau n'est enregistré, hors le tirage gardé en mémoire (règle 6).
 
 1. **Pas de carte « dernier joué ».** La dernière piste jouée est celle du mini-lecteur (FR-016), restaurée au lancement (BR-012) ; l'accueil ne la répète pas. Sans piste courante, pas de mini-lecteur et l'accueil ne montre que les redécouvertes.
-2. **Disponible.** Une piste est disponible quand son disque l'est (BR-001, BR-008). Un album est disponible quand **toutes** ses pistes le sont. Un élément indisponible n'est **jamais tiré** et n'apparaît pas sur l'accueil : pas de ligne ni de carte grisée.
+2. **Disponible.** Une piste est disponible quand son disque l'est (BR-001, BR-008). Un album est disponible quand **au moins une** de ses pistes l'est (décision du 2026-11-14) ; son détail grise les autres (FR-020 exigence 5). Un élément indisponible n'est **jamais tiré** et n'apparaît pas sur l'accueil : pas de ligne ni de carte grisée.
 3. **Éligible.** Disponible, aucune écoute depuis 30 jours (« jamais écouté » compte ; pour un album, aucune de ses pistes), et ni la piste courante ni son album. Une piste sans album peut être tirée ; une piste n'est pas tirée si son album est l'un des deux albums tirés.
 4. **Priorité.** Niveau 1 : les éligibles qui ont une écoute plus ancienne que 30 jours ou un favori (pour un album : l'une de ses pistes). Niveau 2 : les autres. Tirage au hasard (loi uniforme) dans le niveau 1, complété dans le niveau 2 s'il en manque. Aucun doublon. Le niveau 2 évite des sections vides : l'historique n'existe que depuis MPL-065 et beaucoup de musique n'a jamais été écoutée.
 5. **Moins d'éléments que prévu.** Autant que d'éligibles, de zéro à trois pistes et de zéro à deux albums ; une section vide est absente. Aucun des deux, et l'accueil n'a pas non plus de piste courante : état vide (FR-033).
@@ -30,7 +30,6 @@ Décisions du propriétaire après la maquette : la carte « Reprendre » est re
 
 ## À valider (PO)
 
-- Album « disponible » = toutes ses pistes disponibles (règle 2). Autre choix : au moins une piste, avec les autres grisées dans son détail.
 - Niveau 2 = jamais écoutés (règle 4) : c'est une découverte plus qu'une redécouverte. Autre choix : sections vides tant qu'aucune écoute n'a 30 jours.
 - Seuil de 30 jours, trois pistes et deux albums (décidés pour 3 et 2), favoris comme signal de niveau 1.
 - Tirage au démarrage et sur « Autres suggestions » plutôt qu'« à chaque affichage » (règle 6) : un tirage à chaque retour sur l'onglet changerait l'écran sous les doigts de l'utilisateur.

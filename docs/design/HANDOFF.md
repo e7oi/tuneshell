@@ -96,7 +96,7 @@ Marge écran 16 · ligne de piste 64 · pochette liste 48 (rayon 8) · mini-lect
 
 ### 3.1 Onglets principaux (barre basse)
 
-`Pistes` · `Albums` · `Artistes` · `Réglages`. Le mini-lecteur est posé au-dessus de la barre dès qu'une piste est chargée.
+`Accueil` · `Pistes` · `Albums` · `Artistes` · `Réglages` (Accueil ajouté par MPL-079, écran 9). Le mini-lecteur est posé au-dessus de la barre dès qu'une piste est chargée.
 
 Recherche, playlists et favoris **n'existent pas encore** : seuls des emplacements discrets sont prévus (icône Rechercher dans l'en-tête, cœur « bientôt » dans le lecteur). Ne pas créer d'onglet vide.
 
@@ -278,6 +278,10 @@ CA :
 - Rendus **par Android** via la `MediaSession` : l'app fournit pochette, titre, artiste, album, durée, position, actions (précédent, lecture-pause, suivant, + aléatoire et répéter en actions personnalisées). Couleurs et mise en page imposées par le système.
 - Petite icône de notification : silhouette blanche `assets/brand/ic_notification.svg` (à convertir en vecteur Android).
 - **Notification de parcours** (7a/7b) : « Parcours du SSD · 1 240 / 3 100 fichiers », barre, action « Arrêter ». Obligatoire pour un travail long en arrière-plan (service au premier plan ; type à choisir selon les règles Android en vigueur, ex. `dataSync` ; *à vérifier pour Android 14/15*).
+
+### Écran 9 — Accueil (`Accueil.dc.html`, ajouté le 2026-11-14, MPL-079)
+
+Premier onglet. En-tête « Accueil » avec « Autres suggestions » à droite ; « Pistes oubliées » (trois lignes de 64) et « Albums oubliés » (deux cartes, deux colonnes) ; pas de carte « dernier joué » (le mini-lecteur la porte) ; aucun élément indisponible. États : 9a normal, 9b en lecture, 9c sans pochette, 9d petite bibliothèque, 9e rien joué, 9f vide, 9g chargement, 9h paysage. Comportement : FR-033, BR-016.
 
 ### Écran 8 — Albums, artistes, réglages (`Albums.dc.html`, `Artistes.dc.html`, `Reglages.dc.html`)
 

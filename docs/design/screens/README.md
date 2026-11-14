@@ -30,6 +30,7 @@ Fichiers `.dc.html` produits par l'outil de conception. Ils ne sont **pas exécu
 | `Albums.dc.html` | 8a, 8b | `theme`, `view` = grille · detail |
 | `Artistes.dc.html` | 8c, 8d | `theme`, `view` = liste · detail |
 | `Reglages.dc.html` | 8e | `theme` |
+| `Accueil.dc.html` | 9a–9h Accueil (onglet) | `theme`, `state` = normal · lecture · sanspochette · petite · sanscarte · vide · chargement · paysage |
 | `Composants.dc.html` | Composants réutilisables et leurs états | `theme` |
 | `Jetons.dc.html` | Tableau des jetons → Flutter | — |
 | `Lot*.dc.html`, `*-clair.dc.html`, `*-sombre.dc.html` | Planches qui assemblent les écrans ci-dessus (aucune information supplémentaire) | — |
