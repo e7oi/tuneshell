@@ -1192,6 +1192,14 @@
   "@settingsPrivacySub": {
     "description": "Subtitle of the privacy line (FR-026.3)."
   },
+  "buildLocal": "local build",
+  "@buildLocal": {
+    "description": "Build identity of a build made without the build script (FR-034.2)."
+  },
+  "buildModified": "modified",
+  "@buildModified": {
+    "description": "Build identity: the working tree had uncommitted changes (FR-034.1)."
+  },
   "aboutTitle": "About",
   "@aboutTitle": {
     "description": "Title of the about page (FR-026.2)."

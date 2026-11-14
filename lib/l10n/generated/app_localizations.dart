@@ -1352,6 +1352,18 @@ abstract class AppLocalizations {
   /// **'No data collected, no account, no network'**
   String get settingsPrivacySub;
 
+  /// Build identity of a build made without the build script (FR-034.2).
+  ///
+  /// In en, this message translates to:
+  /// **'local build'**
+  String get buildLocal;
+
+  /// Build identity: the working tree had uncommitted changes (FR-034.1).
+  ///
+  /// In en, this message translates to:
+  /// **'modified'**
+  String get buildModified;
+
   /// Title of the about page (FR-026.2).
   ///
   /// In en, this message translates to:

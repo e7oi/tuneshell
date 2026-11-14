@@ -209,6 +209,14 @@
   "settingsAboutSub": "Libre · GPL-3.0-or-later · code source",
   "settingsPrivacy": "Confidentialité",
   "settingsPrivacySub": "Aucune donnée collectée, aucun compte, aucun réseau",
+  "buildLocal": "build locale",
+  "@buildLocal": {
+    "description": "Build identity of a build made without the build script (FR-034.2)."
+  },
+  "buildModified": "modifié",
+  "@buildModified": {
+    "description": "Build identity: the working tree had uncommitted changes (FR-034.1)."
+  },
   "aboutTitle": "À propos",
   "aboutCopyright": "© 2026 Eloi BERTIN",
   "aboutLicense": "Logiciel libre sous licence GNU GPL, version 3 ou ultérieure. Il est fourni sans aucune garantie.",
