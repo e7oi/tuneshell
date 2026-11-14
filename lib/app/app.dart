@@ -7,6 +7,7 @@ import 'package:tuneshell/features/browse/album_detail_page.dart';
 import 'package:tuneshell/features/browse/albums_view.dart';
 import 'package:tuneshell/features/browse/artist_detail_page.dart';
 import 'package:tuneshell/features/browse/artists_view.dart';
+import 'package:tuneshell/features/home/home_page.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/library_page.dart';
 import 'package:tuneshell/features/player/mini_player_bar.dart';
@@ -60,6 +61,7 @@ class TuneShellApp extends ConsumerWidget {
           BrowseTab.albums => AlbumDetailPage(albumKey: request.key),
           BrowseTab.artists => ArtistDetailPage(artistKey: request.key),
         },
+        home: const HomePage(),
         tracks: const LibraryPage(),
         albums: const AlbumsView(),
         artists: const ArtistsView(),

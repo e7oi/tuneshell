@@ -170,6 +170,14 @@ final class LibraryGroups {
   final List<AlphabetLetter> artistLetters;
   final Map<String, int> artistFirstIndex;
 
+  /// Every track by artist, then album title, then disc and track number: the
+  /// queue of a track chosen on the home tab (FR-033, rule 4). The unknown
+  /// artist comes last, the tracks without an album after the albums of their
+  /// artist.
+  ///
+  /// @implements FR-033
+  late final List<LibraryTrack> tracksByArtist = _tracksByArtist(artists);
+
   /// The album of each track, by the track's internal identity; made on the
   /// first question, a library has thousands of tracks.
   late final Map<int, AlbumGroup> _albumOfTrack = {
@@ -198,6 +206,29 @@ final class LibraryGroups {
     final artist = album == null ? null : _artistByKey[album.artistKey];
     return artist == null || artist.unknown ? null : artist;
   }
+}
+
+List<LibraryTrack> _tracksByArtist(List<ArtistGroup> artists) {
+  final known = [
+    for (final artist in artists)
+      if (!artist.unknown) artist,
+  ];
+  final unknown = [
+    for (final artist in artists)
+      if (artist.unknown) artist,
+  ];
+  return [
+    for (final artist in [...known, ...unknown])
+      for (final album in [...artist.albums]..sort(_compareByTitle))
+        ...album.tracks,
+  ];
+}
+
+/// The albums of one artist by title, the unknown album last.
+int _compareByTitle(AlbumGroup a, AlbumGroup b) {
+  if (a.unknownAlbum != b.unknownAlbum) return a.unknownAlbum ? 1 : -1;
+  final byTitle = a.titleKey.compareTo(b.titleKey);
+  return byTitle != 0 ? byTitle : a.key.compareTo(b.key);
 }
 
 String? _text(String? value) {

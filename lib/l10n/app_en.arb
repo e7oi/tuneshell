@@ -1325,5 +1325,41 @@
         "type": "String"
       }
     }
+  },
+  "navHome": "Home",
+  "@navHome": {
+    "description": "Label of the Home tab (FR-033.1)."
+  },
+  "homeTitle": "Home",
+  "@homeTitle": {
+    "description": "Title of the Home view (FR-033.3)."
+  },
+  "homeShuffle": "More suggestions",
+  "@homeShuffle": {
+    "description": "Button that draws other tracks and albums to rediscover (FR-033.3)."
+  },
+  "homeTracksTitle": "Forgotten tracks",
+  "@homeTracksTitle": {
+    "description": "Title of the section of three tracks not played for a while (FR-033.4)."
+  },
+  "homeAlbumsTitle": "Forgotten albums",
+  "@homeAlbumsTitle": {
+    "description": "Title of the section of two albums not played for a while (FR-033.5)."
+  },
+  "homeEmptyTitle": "Nothing to show yet",
+  "@homeEmptyTitle": {
+    "description": "Title of the Home view when there is nothing to propose (FR-033.8)."
+  },
+  "homeEmptyBody": "Play a track, it will come back here.",
+  "@homeEmptyBody": {
+    "description": "Hint of the empty Home view (FR-033.8)."
+  },
+  "homeLoading": "Reading the library…",
+  "@homeLoading": {
+    "description": "Label of the progress shown while the library is read (FR-033.2)."
+  },
+  "queueOriginHome": "Home",
+  "@queueOriginHome": {
+    "description": "Origin of a queue started from the Home tab (FR-033.4)."
   }
 }

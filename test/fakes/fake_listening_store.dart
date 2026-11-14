@@ -51,6 +51,17 @@ class FakeListeningStore implements ListeningStore {
   }
 
   @override
+  Future<Map<Track, DateTime>> lastPlayedAt() async {
+    _check();
+    final last = <Track, DateTime>{};
+    for (final play in plays) {
+      final known = last[play.track];
+      if (known == null || play.at.isAfter(known)) last[play.track] = play.at;
+    }
+    return last;
+  }
+
+  @override
   Future<void> clearHistory() async {
     _check();
     plays.clear();

@@ -4,7 +4,7 @@
 
 ## Besoin
 
-L'utilisateur circule entre les quatre vues principales par une navigation qui s'adapte à la largeur de l'écran.
+L'utilisateur circule entre les cinq vues principales par une navigation qui s'adapte à la largeur de l'écran.
 
 ## Exigences
 

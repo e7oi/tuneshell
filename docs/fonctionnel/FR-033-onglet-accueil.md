@@ -34,4 +34,12 @@ Voir UC-014 : playlists (MPL-080), suggestions par moment (MPL-066), liste « R�
 
 ## As-built
 
-À écrire à la livraison.
+Livré par MPL-079 (2026-11-14, à tester sur le Pixel).
+
+- `lib/features/home/home_page.dart` : écran (en-tête et bouton, bandeau de chargement, état vide, colonne étroite, deux colonnes à partir de `TsSize.compactMax` avec 340 dp de pistes) ; lignes `TrackTile`, cartes `AlbumGridCard`.
+- `lib/features/home/home_providers.dart` : `HomeDraw` (tirage gardé en mémoire, `reshuffle()`), `homeContentProvider` (tirage filtré par disponibilité à la lecture).
+- `lib/domain/library/services/rediscovery.dart` : sélection (BR-016) ; `ListeningStore.lastPlayedAt()` et sa requête Drift.
+- `LibraryGroups.tracksByArtist` : file de l'exigence 4. Origine `HomeOrigin`, libellé « Accueil » dans le lecteur.
+- `HomeShell` : cinq destinations, l'accueil d'abord ; Pistes a son propre navigateur pour que le Retour ferme encore la recherche (FR-027), les autres onglets reviennent sur Accueil.
+- Tests : `test/features/home/`, `test/domain/library/rediscovery_test.dart`, `test/features/shell/home_shell_test.dart`.
+- Non testé sur appareil : voir HOWTO §27.

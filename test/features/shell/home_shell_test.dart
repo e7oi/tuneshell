@@ -43,6 +43,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           locale: Locale(locale),
           home: HomeShell(
+            home: const SizedBox(key: Key('home-view')),
             immersive: immersive,
             tracks: const _Probe(),
             playerBar: const SizedBox(key: Key('player'), height: 10),
@@ -101,14 +102,15 @@ void main() {
   });
 
   /// @verifies FR-009.1
-  testWidgets('four tabs in order, starting on Tracks', (tester) async {
+  testWidgets('five tabs in order, starting on Home', (tester) async {
     await pump(tester, size: const Size(412, 915));
 
     final labels = tester
         .widgetList<NavigationDestination>(find.byType(NavigationDestination))
         .map((d) => d.label);
-    expect(labels, ['Tracks', 'Albums', 'Artists', 'Settings']);
-    expect(find.text('taps 0'), findsOneWidget);
+    expect(labels, ['Home', 'Tracks', 'Albums', 'Artists', 'Settings']);
+    expect(find.byKey(const Key('home-view')), findsOneWidget);
+    expect(find.text('taps 0'), findsNothing);
   });
 
   /// @verifies FR-009.9
@@ -118,7 +120,7 @@ void main() {
     final labels = tester
         .widgetList<NavigationDestination>(find.byType(NavigationDestination))
         .map((d) => d.label);
-    expect(labels, ['Pistes', 'Albums', 'Artistes', 'Réglages']);
+    expect(labels, ['Accueil', 'Pistes', 'Albums', 'Artistes', 'Réglages']);
     await tester.tap(find.text('Albums'));
     await tester.pumpAndSettle();
     expect(find.text('Cette vue arrive bientôt.'), findsOneWidget);
@@ -137,7 +139,7 @@ void main() {
   });
 
   /// @verifies FR-023.3
-  testWidgets('a page opened in Settings closes on Back, then Tracks shows', (
+  testWidgets('a page opened in Settings closes on Back, then Home shows', (
     tester,
   ) async {
     tester.view
@@ -151,6 +153,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: HomeShell(
+            home: const SizedBox(key: Key('home-view')),
             tracks: const _Probe(),
             playerBar: const SizedBox(height: 10),
             settings: Builder(
@@ -181,7 +184,7 @@ void main() {
 
     expect(await tester.binding.handlePopRoute(), isTrue);
     await tester.pumpAndSettle();
-    expect(find.text('taps 0'), findsOneWidget);
+    expect(find.byKey(const Key('home-view')), findsOneWidget);
   });
 
   /// @verifies UC-009
@@ -198,6 +201,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: HomeShell(
+          home: const SizedBox(key: Key('home-view')),
           immersive: immersive,
           tracks: const _Probe(),
           playerBar: const SizedBox(height: 10),
@@ -222,6 +226,8 @@ void main() {
   group('state', () {
     testWidgets('a tab keeps its state when another is shown', (tester) async {
       await pump(tester, size: const Size(412, 915));
+      await tester.tap(find.text('Tracks'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('taps 0'));
       await tester.pump();
       expect(find.text('taps 1'), findsOneWidget);
@@ -236,6 +242,8 @@ void main() {
 
     testWidgets('rotating keeps the current tab and its state', (tester) async {
       await pump(tester, size: const Size(412, 915));
+      await tester.tap(find.text('Tracks'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('taps 0'));
       await tester.pump();
       await tester.tap(find.text('Albums'));
@@ -250,7 +258,7 @@ void main() {
         tester
             .widget<NavigationRail>(find.byType(NavigationRail))
             .selectedIndex,
-        1,
+        2,
       );
 
       await tester.tap(find.text('Tracks'));
@@ -275,14 +283,14 @@ void main() {
 
   /// @verifies FR-009.7
   group('system back', () {
-    testWidgets('from another tab goes to Tracks, then leaves', (tester) async {
+    testWidgets('from another tab goes to Home, then leaves', (tester) async {
       await pump(tester, size: const Size(412, 915));
       await tester.tap(find.text('Settings'));
       await tester.pumpAndSettle();
 
       expect(await tester.binding.handlePopRoute(), isTrue);
       await tester.pumpAndSettle();
-      expect(find.text('taps 0'), findsOneWidget);
+      expect(find.byKey(const Key('home-view')), findsOneWidget);
       expect(
         tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
         0,
@@ -307,6 +315,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             locale: const Locale('en'),
             home: HomeShell(
+              home: const SizedBox(key: Key('home-view')),
               tracks: Builder(
                 builder: (context) =>
                     Text('left ${MediaQuery.paddingOf(context).left}'),
@@ -331,6 +340,8 @@ void main() {
       tester,
     ) async {
       await pumpCutout(tester);
+      await tester.tap(find.text('Tracks'));
+      await tester.pumpAndSettle();
 
       expect(find.text('left 0.0'), findsOneWidget);
     });
@@ -359,6 +370,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: HomeShell(
+            home: const SizedBox(key: Key('home-view')),
             tracks: Builder(
               builder: (context) {
                 seen.add(TickerMode.valuesOf(context).enabled);
@@ -370,15 +382,15 @@ void main() {
         ),
       ),
     );
-    expect(seen.last, isTrue);
-
-    await tester.tap(find.text('Settings'));
-    await tester.pumpAndSettle();
     expect(seen.last, isFalse);
 
     await tester.tap(find.text('Tracks'));
     await tester.pumpAndSettle();
     expect(seen.last, isTrue);
+
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    expect(seen.last, isFalse);
   });
 
   /// @verifies FR-032.2
@@ -394,6 +406,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: HomeShell(
+            home: const SizedBox(key: Key('home-view')),
             tracks: const Text('tracks'),
             albums: const Text('albums grid'),
             artists: const Text('artists list'),
@@ -413,7 +426,7 @@ void main() {
       addTearDown(tester.view.reset);
       final handled = <String>[];
       await pumpWith(tester, request: null, handled: handled);
-      expect(find.text('tracks'), findsOneWidget);
+      expect(find.byKey(const Key('home-view')), findsOneWidget);
 
       await pumpWith(
         tester,
@@ -426,7 +439,7 @@ void main() {
       expect(handled, ['done']);
       expect(
         tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
-        1,
+        2,
       );
     });
 

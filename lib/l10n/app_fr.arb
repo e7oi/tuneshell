@@ -239,5 +239,14 @@
   "favoriteAdd": "Ajouter aux favoris",
   "favoriteRemove": "Retirer des favoris",
   "favoriteAdded": "Ajouté aux favoris : {name}",
-  "favoriteRemoved": "Retiré des favoris : {name}"
+  "favoriteRemoved": "Retiré des favoris : {name}",
+  "navHome": "Accueil",
+  "homeTitle": "Accueil",
+  "homeShuffle": "Autres suggestions",
+  "homeTracksTitle": "Pistes oubliées",
+  "homeAlbumsTitle": "Albums oubliés",
+  "homeEmptyTitle": "Rien à afficher pour l'instant",
+  "homeEmptyBody": "Lance une piste, elle reviendra ici.",
+  "homeLoading": "Lecture de la bibliothèque…",
+  "queueOriginHome": "Accueil"
 }

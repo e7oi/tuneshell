@@ -26,6 +26,10 @@ abstract interface class ListeningStore {
   /// (BR-014, rules 6 and 8).
   Future<List<Track>> recent();
 
+  /// The latest listen of each track that has one, for the rediscoveries of
+  /// the home tab (BR-016, ADR-024). Tracks never listened to are absent.
+  Future<Map<Track, DateTime>> lastPlayedAt();
+
   /// Forgets every listen; the favorites stay (BR-014, rule 7).
   Future<void> clearHistory();
 }

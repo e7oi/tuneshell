@@ -6,13 +6,15 @@ import 'package:tuneshell/features/shell/coming_soon_page.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 
-/// The four main views behind a navigation bar (narrow windows) or a rail
+/// The five main views behind a navigation bar (narrow windows) or a rail
 /// (600 dp and more), with the player bar kept above the navigation.
 ///
 /// @implements FR-009
+/// @implements FR-033
 /// @implements UC-004
 class HomeShell extends StatefulWidget {
   const new({
+    required this.home,
     required this.tracks,
     required this.playerBar,
     this.albums,
@@ -24,6 +26,9 @@ class HomeShell extends StatefulWidget {
     this.detailBuilder,
     super.key,
   });
+
+  /// The Home view, the first tab (FR-033).
+  final Widget home;
 
   /// The Tracks view: the library.
   final Widget tracks;
@@ -59,15 +64,25 @@ class HomeShell extends StatefulWidget {
 }
 
 class _HomeShellState extends State<HomeShell> {
-  /// Not kept between two launches (FR-009.10).
-  int _index = 0;
+  /// The tabs, in the order of the navigation (FR-009.1).
+  static const _home = 0;
+  static const _tracks = 1;
+  static const _albums = 2;
+  static const _artists = 3;
+  static const _settings = 4;
+
+  /// Not kept between two launches (FR-009.10). The first-launch screens live
+  /// in the Tracks view, the application opens on Home otherwise.
+  late int _index = widget.immersive ? _tracks : _home;
 
   /// Lets the views move between the bar and rail layouts on rotation without
   /// losing their state (FR-009.4).
   final GlobalKey _contentKey = GlobalKey();
 
-  /// The navigators of the Albums and Artists tabs: the system Back goes
-  /// into them before it leaves the tab (ADR-016).
+  /// The navigators of the Tracks, Albums, Artists and Settings tabs: the
+  /// system Back goes into them before it leaves the tab (ADR-016), which lets
+  /// the Tracks view close its search first (FR-027).
+  final GlobalKey<NavigatorState> _tracksNavigator = GlobalKey();
   final GlobalKey<NavigatorState> _albumsNavigator = GlobalKey();
   final GlobalKey<NavigatorState> _artistsNavigator = GlobalKey();
   final GlobalKey<NavigatorState> _settingsNavigator = GlobalKey();
@@ -82,13 +97,14 @@ class _HomeShellState extends State<HomeShell> {
   /// search it has open (FR-027), before the detail or the tab is left.
   Future<void> _back() async {
     final navigator = switch (_index) {
-      1 => _albumsNavigator.currentState,
-      2 => _artistsNavigator.currentState,
-      3 => _settingsNavigator.currentState,
+      _tracks => _tracksNavigator.currentState,
+      _albums => _albumsNavigator.currentState,
+      _artists => _artistsNavigator.currentState,
+      _settings => _settingsNavigator.currentState,
       _ => null,
     };
     if (navigator != null && await navigator.maybePop()) return;
-    if (mounted) _select(0);
+    if (mounted) _select(_home);
   }
 
   @override
@@ -97,7 +113,7 @@ class _HomeShellState extends State<HomeShell> {
     // The explanation of the access, or the first-launch screens, live in the
     // Tracks view: from another tab (the settings lead there without access)
     // the window would otherwise stay on a tab that has lost its navigation.
-    if (widget.immersive && !oldWidget.immersive) _index = 0;
+    if (widget.immersive && !oldWidget.immersive) _index = _tracks;
     final request = widget.request;
     if (request != null && request != oldWidget.request) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _open(request));
@@ -116,7 +132,7 @@ class _HomeShellState extends State<HomeShell> {
       navigator
         ..popUntil((route) => route.isFirst)
         ..push<void>(MaterialPageRoute(builder: (_) => builder(request)));
-      _select(request.tab == BrowseTab.albums ? 1 : 2);
+      _select(request.tab == BrowseTab.albums ? _albums : _artists);
     }
     widget.onRequestHandled?.call();
   }
@@ -125,6 +141,7 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final destinations = [
+      (Icons.home_rounded, l10n.navHome),
       (Icons.music_note_rounded, l10n.navTracks),
       (Icons.album_rounded, l10n.navAlbums),
       (Icons.person_rounded, l10n.navArtists),
@@ -142,7 +159,11 @@ class _HomeShellState extends State<HomeShell> {
               // about a Back).
               children: [
                 for (final (i, tab) in [
-                  widget.tracks,
+                  widget.home,
+                  _TabNavigator(
+                    navigatorKey: _tracksNavigator,
+                    root: widget.tracks,
+                  ),
                   _TabNavigator(
                     navigatorKey: _albumsNavigator,
                     root:
@@ -170,9 +191,9 @@ class _HomeShellState extends State<HomeShell> {
       ),
     );
     if (widget.immersive) return Scaffold(body: content);
-    // FR-009.7: Back leads to Tracks before it leaves the application.
+    // FR-009.7: Back leads to Home before it leaves the application.
     return PopScope(
-      canPop: _index == 0,
+      canPop: _index == _home,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) unawaited(_back());
       },
