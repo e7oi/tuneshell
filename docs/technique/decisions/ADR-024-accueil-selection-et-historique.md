@@ -1,6 +1,6 @@
 # ADR-024 — Accueil : sélection des redécouvertes et lecture de l'historique
 
-**Statut :** Brouillon · **Date :** 2026-11-13 · **Ticket :** MPL-079 · **Décisions :** D3, D15, D27 · **Fiches :** UC-014, BR-016, FR-033, BR-014, FR-032 · **Complète :** ADR-016, ADR-021, ADR-022
+**Statut :** Active (validée le 2026-11-13) · **Date :** 2026-11-13 · **Ticket :** MPL-079 · **Décisions :** D3, D15, D27 · **Fiches :** UC-014, BR-016, FR-033, BR-014, FR-032 · **Complète :** ADR-016, ADR-021, ADR-022
 
 ## Contexte
 

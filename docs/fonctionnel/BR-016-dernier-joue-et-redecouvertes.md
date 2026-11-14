@@ -1,6 +1,6 @@
 # BR-016 — Dernier joué et redécouvertes de l'accueil
 
-**Statut :** Brouillon · **Créée le :** 2026-11-13 · **Ticket :** MPL-079 · **Décisions :** D15, D23, D27 · **Lié :** UC-014, FR-033, BR-001, BR-004, BR-008, BR-010, BR-012, BR-014, ADR-024
+**Statut :** Active (validée le 2026-11-13) · **Créée le :** 2026-11-13 · **Ticket :** MPL-079 · **Décisions :** D15, D23, D27 · **Lié :** UC-014, FR-033, BR-001, BR-004, BR-008, BR-010, BR-012, BR-014, ADR-024
 
 ## Règle
 

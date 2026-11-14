@@ -1,6 +1,6 @@
 # UC-014 — Arriver sur l'accueil : reprendre ce qu'on écoutait et redécouvrir sa musique
 
-**Statut :** Brouillon · **Créée le :** 2026-11-13 · **Ticket :** MPL-079 · **Lié :** UC-004, UC-007, UC-008, UC-011, UC-013, FR-009, FR-032, FR-033, BR-010, BR-012, BR-014, BR-016, ADR-024 · **Source :** demande du propriétaire du 2026-11-13
+**Statut :** Active (validée le 2026-11-13) · **Créée le :** 2026-11-13 · **Ticket :** MPL-079 · **Lié :** UC-004, UC-007, UC-008, UC-011, UC-013, FR-009, FR-032, FR-033, BR-010, BR-012, BR-014, BR-016, ADR-024 · **Source :** demande du propriétaire du 2026-11-13
 
 > Vocabulaire : dans `FR-014`, « l'accueil » désigne l'écran de bienvenue du premier lancement. Les fiches de MPL-079 appellent « accueil » l'onglet de la bibliothèque et gardent « écran de bienvenue » pour le premier lancement.
 

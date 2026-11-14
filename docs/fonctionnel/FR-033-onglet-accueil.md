@@ -1,6 +1,6 @@
 # FR-033 — Onglet Accueil : reprendre et redécouvrir
 
-**Statut :** Brouillon · **Créée le :** 2026-11-13 · **Ticket :** MPL-079 · **Lié :** UC-014, UC-004, FR-007, FR-009, FR-010, FR-016, FR-017, FR-020, FR-032, BR-007, BR-012, BR-014, BR-016, ADR-010, ADR-022, ADR-024 · **Source :** demande du propriétaire du 2026-11-13 ; pas de maquette (réalisé sans Claude Design si le propriétaire l'accepte, comme FR-031 et FR-032), avec les composants et jetons existants
+**Statut :** Brouillon (cadrage validé le 2026-11-13, en attente de la maquette Claude Design : `docs/design/BRIEF-MPL-079-accueil.md`) · **Créée le :** 2026-11-13 · **Ticket :** MPL-079 · **Lié :** UC-014, UC-004, FR-007, FR-009, FR-010, FR-016, FR-017, FR-020, FR-032, BR-007, BR-012, BR-014, BR-016, ADR-010, ADR-022, ADR-024 · **Source :** demande du propriétaire du 2026-11-13 ; maquette demandée à Claude Design le 2026-11-13 (décision du propriétaire) ; en attendant, composants et jetons existants
 
 ## Besoin
 
