@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-081 · Dernière MAJ : 2026-11-14
+Préfixe : MPL · Prochaine clé : MPL-082 · Dernière MAJ : 2026-11-14
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -49,6 +49,7 @@ Idées sans fiche ni `/cadrer` : à cadrer le moment venu, sans ordre.
 | MPL-077 | Bogue | P2 | « Précédent » suit la file affichée (voisin dans la file, aléatoire compris) au lieu de rejouer le titre réellement écouté avant (retour du propriétaire, 2026-11-10) ; à cadrer : touche FR-001, lien possible avec l'historique de MPL-065 | À faire | MPL-001 | — |
 | MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », à partir de l'historique, sans réseau ; « Redécouvrir » est passé dans MPL-079 (2026-11-13) ; à cadrer | À faire | MPL-001 | MPL-065 |
 | MPL-080 | Récit | P2 | Playlists : manuelles (créées par l'utilisateur) et automatiques (par mood, période, activité…), accessibles depuis l'accueil de MPL-079 ; idée du propriétaire du 2026-11-13, à cadrer le moment venu (modèle de données, identité des pistes BR-004, voiture, lien avec MPL-066) | À faire | MPL-001 | MPL-079 |
+| MPL-081 | Récit | P2 | Identité de la build : l'application affiche la version, le commit court, « modifié » si l'arbre l'était, et la date de compilation (aujourd'hui une constante « 0.1.0 » identique pour toutes les builds) ; demande du propriétaire du 2026-11-14 ; FR-034 et ADR-025 en Brouillon | À faire | MPL-001 | — |
 | MPL-067 | Récit | P2 | Éditeur de tags : modifier titre, artiste, album des fichiers ; à cadrer (écriture SAF sur le SSD, aucune perte de données) | À faire | MPL-001 | — |
 | MPL-068 | Récit | P2 | Liste noire : exclure des morceaux de la bibliothèque et de la lecture ; à cadrer | À faire | MPL-001 | — |
 | MPL-069 | Récit | P2 | Paroles synchronisées mot à mot, voix d'accompagnement sous la ligne qu'elles suivent ; à cadrer : tags intégrés seulement, ou en ligne (D15, D20, D26) | À faire | MPL-004 | D20 |
@@ -350,6 +351,54 @@ Revue QA : ⚠️ → corrigée (sous-agent, aucun bloquant). Dette : `_currentT
 Description de PR : dans la PR de MPL-076.
 Décisions prises en route : validé par le propriétaire le 2026-11-12 sans test en voiture, qui reviendra si cela ne fonctionne pas.
 À valider (PO) : aucun
+
+### MPL-081
+**Description.** Savoir quelle build est installée sur le Pixel. Aujourd'hui `appVersion = '0.1.0'` est écrite en dur (`lib/domain/settings/app_info.dart`) et ne change jamais, alors que D14 demande de tester une build précise. Demande du propriétaire du 2026-11-14.
+
+**Recommandation.** Valeurs de compilation (`--dart-define`) calculées par un script `tool/build-release.sh` : commit court, « modifié », date. Pas de `package_info_plus` (ADR-017) : il ne donnerait que `0.1.0+1`, identique à chaque build. Pas de numéro de build affiché : il ne change pas.
+
+**Inclus.**
+- `BuildInfo` (domaine, test d'abord) et son libellé ; affichage sur la page À propos et la ligne de Réglages ; texte copiable.
+- `tool/build-release.sh` et `HOWTO.md` §7 mis à jour.
+- Textes ARB fr/en ; fiches FR-026 (as-built) et ADR-017 (note) complétées à la livraison.
+
+**Exclusions.** Mise à jour automatique, journal des modifications, numéro de build autoincrémenté, signature de production, compilation par la CI (MPL-026).
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Identité de la build
+
+  Scénario: Build faite par le script
+    Soit une build release compilée par le script sur un arbre propre au commit a1b2c3d
+    Quand j'ouvre la page À propos
+    Alors je lis la version, « a1b2c3d » et la date de compilation
+    Et aucune mention « modifié »
+
+  Scénario: Arbre modifié
+    Soit une build compilée par le script avec des modifications non commitées
+    Quand j'ouvre la page À propos
+    Alors je lis aussi « modifié »
+
+  Scénario: Build sans identité
+    Soit une build lancée sans le script
+    Quand j'ouvre la page À propos
+    Alors je lis « build locale » et aucun commit
+
+  Scénario: Même identité dans Réglages
+    Quand j'ouvre l'onglet Réglages
+    Alors la ligne « TuneShell » montre la même identité que la page À propos
+
+  Scénario: Version juste
+    Quand les tests tournent
+    Alors la version affichée est celle du `pubspec.yaml`
+
+  Scénario: Identité copiable
+    Quand j'appuie longuement sur l'identité
+    Alors je peux la copier
+```
+
+**Fiches liées.** FR-034 (Brouillon), ADR-025 (Brouillon) ; écarts à FR-026 et ADR-017 (Actives) listés en « À valider ». Voir aussi UC-009, D14.
 
 ### MPL-079
 **Description.** Arriver sur une page d'accueil vivante : trois pistes et deux albums « à redécouvrir », tirés une fois par démarrage et refaits sur demande. Demande du propriétaire du 2026-11-13 (« dernier titre, album, artiste joué » et redécouvertes). Cadrage : l'historique de MPL-065 (`play_events`) existe déjà ; ni schéma, ni dépendance, ni permission, seulement une méthode de plus sur `ListeningStore` (ADR-024).
