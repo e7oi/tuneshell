@@ -485,4 +485,71 @@ void groupOfTrackTests() {
       expect(groups.albumOf(t('Other', artist: 'Ann', album: 'A')), isNull);
     });
   });
+
+  /// @verifies FR-033
+  group('tracksByArtist', () {
+    test('orders by artist, album title, disc, track number', () {
+      final tracks = [
+        t('b2', artist: 'Zed', album: 'Beta', number: 2),
+        t('a1', artist: 'Ann', album: 'Alpha', number: 1),
+        t('b1', artist: 'Zed', album: 'Beta', number: 1),
+        t('z-d2', artist: 'Zed', album: 'Alpha', disc: 2, number: 1),
+        t('z-d1', artist: 'Zed', album: 'Alpha', disc: 1, number: 9),
+        t('a2', artist: 'Ann', album: 'Alpha', number: 2),
+      ];
+
+      final order = [
+        for (final track in build(tracks).tracksByArtist) track.displayTitle,
+      ];
+
+      expect(order, ['a1', 'a2', 'z-d1', 'z-d2', 'b1', 'b2']);
+    });
+
+    test('puts the albums of an artist by title, not by year', () {
+      final tracks = [
+        t('late', artist: 'Ann', album: 'Alpha', year: 2020),
+        t('early', artist: 'Ann', album: 'Zulu', year: 1990),
+      ];
+
+      final order = [
+        for (final track in build(tracks).tracksByArtist) track.displayTitle,
+      ];
+
+      expect(order, ['late', 'early']);
+    });
+
+    test('puts the tracks without an album after the albums of the artist', () {
+      final tracks = [
+        t('loose', artist: 'Ann'),
+        t('in-album', artist: 'Ann', album: 'Zulu'),
+      ];
+
+      final order = [
+        for (final track in build(tracks).tracksByArtist) track.displayTitle,
+      ];
+
+      expect(order, ['in-album', 'loose']);
+    });
+
+    test('puts the unknown artist last', () {
+      final tracks = [t('nobody'), t('known', artist: 'Ann', album: 'A')];
+
+      final order = [
+        for (final track in build(tracks).tracksByArtist) track.displayTitle,
+      ];
+
+      expect(order, ['known', 'nobody']);
+    });
+
+    test('keeps every track, available or not, once', () {
+      final tracks = [
+        t('a', artist: 'Ann', album: 'A'),
+        t('b', artist: 'Ann', album: 'A', disk: ssd),
+      ];
+
+      final order = build(tracks, unavailable: {ssd}).tracksByArtist;
+
+      expect(order, hasLength(2));
+    });
+  });
 }

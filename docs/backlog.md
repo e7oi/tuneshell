@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-079 · Dernière MAJ : 2026-11-12
+Préfixe : MPL · Prochaine clé : MPL-081 · Dernière MAJ : 2026-11-14
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -15,6 +15,7 @@ Ordre de travail proposé (réorganisation du 2026-11-01) : épiques, puis les t
 | MPL-074 | Bug | P1 | Android Auto : la liste Pistes (plusieurs milliers de lignes) ne s'affiche pas ou trop lentement ; listes servies par pages, sans dossiers par lettres (demande du propriétaire, 2026-11-02) | À tester | — | — |
 | MPL-075 | Récit | P1 | Android Auto : liste Pistes de nouveau en dossiers par lettre (Albums et Artistes restent entiers, pochettes visibles), avec une recherche globale dans toute la bibliothèque (demande du propriétaire, 2026-11-12, après l'essai de MPL-074) ; fiches BR-015 et ADR-023 Active (validées le 2026-11-12) | À tester | MPL-001 | MPL-074 |
 | MPL-078 | Récit | P2 | Android Auto : dossiers « Album en cours » et « Artiste en cours » à la racine de l'arbre média, après « Reprendre » (ex-partie B de MPL-076, sortie à la demande du propriétaire le 2026-11-12) ; code livré avec la PR de MPL-076, à tester en voiture | À tester | MPL-001 | — |
+| MPL-079 | Récit | P2 | Onglet Accueil, premier onglet : trois pistes et deux albums à redécouvrir (aucun indisponible), tirés à chaque démarrage et sur « Autres suggestions » ; le dernier joué reste le mini-lecteur ; demande du propriétaire du 2026-11-13 ; UC-014, BR-016, ADR-024 Active (révisées le 2026-11-14) ; FR-033 Active (maquette validée le 2026-11-14) | À tester | MPL-001 | — |
 | MPL-035 | Tâche technique | P1 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-072 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-072 | — |
@@ -46,7 +47,8 @@ Idées sans fiche ni `/cadrer` : à cadrer le moment venu, sans ordre.
 | MPL-040 | Récit | P2 | Doublons de la bibliothèque : repérer les pistes présentes plusieurs fois (même morceau sur le téléphone et sur le SSD, copies d'un même fichier) pour les filtrer ou les nettoyer ; à cadrer (critère de doublon, effet sur playlists et statistiques). Demandé par le propriétaire le 2026-10-23 après le test de MPL-037 (7 562 pistes, nombreux doublons) | À faire | MPL-001 | MPL-037 |
 | MPL-058 | Récit | P2 | Gestion « améliorée » de la file enregistrée et de la liste de lecture, si le besoin se confirme à l'usage (idée du propriétaire du 2026-10-28, à propos de MPL-053) ; à cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-077 | Bogue | P2 | « Précédent » suit la file affichée (voisin dans la file, aléatoire compris) au lieu de rejouer le titre réellement écouté avant (retour du propriétaire, 2026-11-10) ; à cadrer : touche FR-001, lien possible avec l'historique de MPL-065 | À faire | MPL-001 | — |
-| MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », « Redécouvrir », à partir de l'historique, sans réseau ; à cadrer | À faire | MPL-001 | MPL-065 |
+| MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », à partir de l'historique, sans réseau ; « Redécouvrir » est passé dans MPL-079 (2026-11-13) ; à cadrer | À faire | MPL-001 | MPL-065 |
+| MPL-080 | Récit | P2 | Playlists : manuelles (créées par l'utilisateur) et automatiques (par mood, période, activité…), accessibles depuis l'accueil de MPL-079 ; idée du propriétaire du 2026-11-13, à cadrer le moment venu (modèle de données, identité des pistes BR-004, voiture, lien avec MPL-066) | À faire | MPL-001 | MPL-079 |
 | MPL-067 | Récit | P2 | Éditeur de tags : modifier titre, artiste, album des fichiers ; à cadrer (écriture SAF sur le SSD, aucune perte de données) | À faire | MPL-001 | — |
 | MPL-068 | Récit | P2 | Liste noire : exclure des morceaux de la bibliothèque et de la lecture ; à cadrer | À faire | MPL-001 | — |
 | MPL-069 | Récit | P2 | Paroles synchronisées mot à mot, voix d'accompagnement sous la ligne qu'elles suivent ; à cadrer : tags intégrés seulement, ou en ligne (D15, D20, D26) | À faire | MPL-004 | D20 |
@@ -348,6 +350,139 @@ Revue QA : ⚠️ → corrigée (sous-agent, aucun bloquant). Dette : `_currentT
 Description de PR : dans la PR de MPL-076.
 Décisions prises en route : validé par le propriétaire le 2026-11-12 sans test en voiture, qui reviendra si cela ne fonctionne pas.
 À valider (PO) : aucun
+
+### MPL-079
+**Description.** Arriver sur une page d'accueil vivante : trois pistes et deux albums « à redécouvrir », tirés une fois par démarrage et refaits sur demande. Demande du propriétaire du 2026-11-13 (« dernier titre, album, artiste joué » et redécouvertes). Cadrage : l'historique de MPL-065 (`play_events`) existe déjà ; ni schéma, ni dépendance, ni permission, seulement une méthode de plus sur `ListeningStore` (ADR-024).
+
+**Décisions du propriétaire (2026-11-13 et 2026-11-14, après la maquette Claude Design).**
+- L'accueil est un nouvel onglet en première place et onglet de départ.
+- Pas de carte « dernier joué » : elle faisait doublon avec le mini-lecteur, qui porte déjà la piste courante restaurée (BR-012). Sa place est donnée à trois pistes à redécouvrir.
+- Deux albums seulement (quatre serraient la page).
+- Une piste ou un album indisponible (disque absent) n'est jamais tiré et n'apparaît pas sur l'accueil ; un album est disponible dès qu'une de ses pistes l'est.
+- Toucher une piste lit la file complète de la bibliothèque, par artiste, album et numéro de piste, à partir d'elle.
+- Tirage au démarrage et sur « Autres suggestions » (bouton dans l'en-tête), pas à chaque affichage de l'onglet.
+- Pas de lien avec MPL-077 : le bogue du « Précédent » demande une trace de lecture en ordre, distincte de `play_events`.
+
+**Inclus.**
+- Onglet Accueil (cinq destinations), états de chargement et vide, Retour vers Accueil.
+- Section « Pistes à redécouvrir » (trois lignes) et section « Albums à redécouvrir » (deux cartes), bouton « Autres suggestions ».
+- `ListeningStore.lastPlayedAt()`, service `Rediscovery` (domaine, test d'abord), notifier du tirage gardé en mémoire.
+- Textes ARB fr/en ; protocole sur le Pixel dans `HOWTO.md`.
+
+**Exclusions.** Playlists (MPL-080), suggestions par moment (MPL-066), carte « dernier joué », voiture, statistiques, « Récemment écoutés », tirer-pour-actualiser sur l'accueil, tirage enregistré.
+
+**Maquette.** Validée le 2026-11-14 (Claude Design, canevas « TuneShell — Onglet Accueil », états 9a à 9h) ; sources dans `docs/design/screens/source/` (`Accueil`, `Lot7-Accueil-clair`, `Lot7-Accueil-sombre`) ; brief initial dans `docs/design/BRIEF-MPL-079-accueil.md` (dépassé). Sections « Pistes oubliées » et « Albums oubliés ».
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Accueil
+
+  Scénario: Ouverture sur l'accueil
+    Soit une bibliothèque lue
+    Quand j'ouvre l'application
+    Alors l'onglet Accueil est affiché en premier, avec quatre autres destinations
+
+  Scénario: Le dernier joué est le mini-lecteur
+    Soit une file restaurée dont la piste courante est connue
+    Quand l'accueil s'affiche
+    Alors le mini-lecteur montre cette piste, en pause, et aucun son ne démarre
+    Et l'accueil n'a pas de carte « dernier joué »
+
+  Scénario: Trois pistes et deux albums
+    Soit assez de pistes et d'albums éligibles
+    Quand l'accueil s'affiche
+    Alors trois pistes et deux albums sont proposés, sans doublon
+
+  Scénario: Éligibilité
+    Soit des pistes et des albums dont certains ont été écoutés il y a moins de 30 jours
+    Quand le tirage est fait
+    Alors ceux-ci ne sont pas tirés, ni la piste ou l'album de la piste en cours
+
+  Scénario: Indisponible jamais tiré
+    Soit une piste et un album d'un disque absent
+    Quand le tirage est fait
+    Alors ils ne sont pas tirés et n'apparaissent pas sur l'accueil
+
+  Scénario: Disque retiré pendant la session
+    Soit un album tiré et affiché dont le disque est éjecté
+    Quand l'accueil se met à jour
+    Alors la carte disparaît, sans remplaçant
+    Et elle revient si le disque revient et que le tirage n'a pas été refait
+
+  Scénario: Un album est disponible dès qu'une piste l'est
+    Soit un album dont une piste est sur un disque absent et une autre disponible
+    Quand le tirage est fait
+    Alors cet album peut être tiré
+    Et son détail grise la piste absente
+
+  Scénario: Priorité aux éléments déjà aimés
+    Soit assez d'éléments éligibles écoutés il y a plus de 30 jours ou en favori
+    Quand le tirage est fait
+    Alors ils sont tirés avant les éléments jamais écoutés
+
+  Scénario: Complément par les jamais écoutés
+    Soit moins d'éléments de premier niveau que la place disponible
+    Quand le tirage est fait
+    Alors la place restante est complétée par des éléments jamais écoutés
+
+  Scénario: Petite bibliothèque
+    Soit une bibliothèque sans album éligible mais avec des pistes éligibles
+    Quand l'accueil s'affiche
+    Alors la section des albums est absente et celle des pistes s'affiche
+
+  Scénario: Lire une piste
+    Soit les trois pistes affichées
+    Quand je touche la deuxième
+    Alors la file est la bibliothèque entière par artiste, album puis numéro de piste
+    Et la lecture démarre sur la deuxième piste
+
+  Scénario: Ouvrir un album
+    Soit un album affiché sur l'accueil
+    Quand je le touche
+    Alors l'onglet Albums ouvre son détail
+
+  Scénario: Tirage stable pendant la session
+    Soit des pistes et des albums affichés
+    Quand je change d'onglet, je tourne l'écran ou je reviens du lecteur
+    Alors la sélection est la même
+
+  Scénario: Autres suggestions
+    Soit une sélection affichée
+    Quand je touche « Autres suggestions »
+    Alors de nouvelles pistes et de nouveaux albums s'affichent, qui évitent si possible les précédents
+
+  Scénario: Nouveau tirage au démarrage
+    Soit une sélection affichée, l'application fermée puis relancée
+    Quand l'accueil s'affiche
+    Alors un nouveau tirage est fait
+
+  Scénario: Rien à montrer
+    Soit une bibliothèque sans élément éligible
+    Quand l'accueil s'affiche
+    Alors un état vide indique quoi faire
+
+  Scénario: Retour système
+    Soit l'onglet Réglages affiché
+    Quand j'utilise le geste Retour
+    Alors l'onglet Accueil s'affiche
+```
+
+**Fiches liées.** UC-014, BR-016, ADR-024, FR-033 (Active) ; FR-009 (exigences 1 et 7) et UC-004 révisées le 2026-11-14 ; écarts à FR-009.10 inchangé. Voir aussi UC-013, BR-014, BR-012, FR-016, FR-032, ADR-021, ADR-022, MPL-066, MPL-077, MPL-080.
+
+**À valider (PO).** Voir « À valider » de BR-016 et FR-033 : niveau 2 = jamais écoutés, détail du tri de la file, Retour d'un détail vers la grille d'Albums, Accueil comme onglet de départ, titres de section.
+
+#### Livraison — 2026-11-14
+Statut : ✅ fait
+Résumé : onglet Accueil en première place et onglet de départ (cinq destinations) : trois pistes et deux albums oubliés, tirés une fois par démarrage et sur « Autres suggestions », jamais indisponibles ; toucher une piste met en file toute la bibliothèque (artiste, album, numéro) sur elle ; toucher un album ouvre son détail dans Albums. Le port `ListeningStore` gagne `lastPlayedAt()` (aucun schéma) ; le choix est fait par le service de domaine `Rediscovery`.
+Fiches touchées : UC-014, BR-016, FR-033 (as-built écrit), ADR-024 ; FR-009 et UC-004 (déjà révisées au cadrage).
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → tout vert, 1 116 tests (service `Rediscovery` : niveaux, 30 jours, indisponible, album courant, graine ; `lastPlayedAt` Drift ; ordre `tracksByArtist` ; notifier du tirage ; écran : sections, lecture, album, autres suggestions, disque absent, vide, large ; coquille à cinq onglets) ; `.github/scripts/check-repo.sh` vert.
+Test appareil (Pixel, release) : non testé (HOWTO §27).
+Revue QA : ⚠️ → corrigée (sous-agent, aucun bloquant). Corrigé : course au démarrage entre le tirage, la restauration de session et la lecture des disques amovibles (le tirage est refait une fois si un élément tiré n'est finalement pas éligible ; test ajouté pour la restauration), jeton `TsSize.homeTrackColumn`, tags FR-033, FR-009 « cinq vues ». Dette : le retour d'un disque amovible avec le même tirage et l'absence de carte « dernier joué » ne sont couverts que par le HOWTO §27 ; le tirage demandé pendant un tirage en cours est ignoré. Non vérifié : ordre réel au démarrage sur l'appareil ; performance à 7 500 pistes. Une revue séparée `>>> REVUE` est possible (lecture d'historique).
+Description de PR : `feat(ui): add the Home tab with forgotten tracks and albums (MPL-079)`.
+Décisions prises en route : l'onglet Pistes est enveloppé dans son propre navigateur (`_TabNavigator`) pour que le Retour ferme encore la recherche (FR-027) maintenant que le Retour d'un onglet ramène sur Accueil ; les deux niveaux de tirage comptent un favori comme « déjà aimé » ; les écoutes futures comptent comme récentes.
+À valider (PO) : niveau 2 = jamais écoutés ; Retour d'un détail ouvert depuis l'accueil → grille Albums ; textes des sections ; Pistes n'est plus l'onglet de départ.
+Dette : le tirage n'est pas testé sur 7 500 pistes ni 20 000 écoutes (mesure à faire sur le Pixel) ; la version de Flutter installée (3.47.9) diffère de l'épingle (3.47.7), les tests ont tourné avec `--no-pub`.
 
 ### MPL-065
 **Description.** Marquer des pistes en favoris et retrouver ce qu'on a écouté récemment, dans l'onglet Pistes, sans nouvel onglet. Cadrage du 2026-11-03 : placement choisi par le propriétaire (pastilles sous le champ de recherche). Prépare MPL-066 (suggestions), qui lit l'historique.

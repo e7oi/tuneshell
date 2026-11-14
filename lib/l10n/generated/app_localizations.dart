@@ -1537,6 +1537,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Removed from favorites: {name}'**
   String favoriteRemoved(String name);
+
+  /// Label of the Home tab (FR-033.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// Title of the Home view (FR-033.3).
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeTitle;
+
+  /// Button that draws other tracks and albums to rediscover (FR-033.3).
+  ///
+  /// In en, this message translates to:
+  /// **'More suggestions'**
+  String get homeShuffle;
+
+  /// Title of the section of three tracks not played for a while (FR-033.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Forgotten tracks'**
+  String get homeTracksTitle;
+
+  /// Title of the section of two albums not played for a while (FR-033.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Forgotten albums'**
+  String get homeAlbumsTitle;
+
+  /// Title of the Home view when there is nothing to propose (FR-033.8).
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to show yet'**
+  String get homeEmptyTitle;
+
+  /// Hint of the empty Home view (FR-033.8).
+  ///
+  /// In en, this message translates to:
+  /// **'Play a track, it will come back here.'**
+  String get homeEmptyBody;
+
+  /// Label of the progress shown while the library is read (FR-033.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the library…'**
+  String get homeLoading;
+
+  /// Origin of a queue started from the Home tab (FR-033.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get queueOriginHome;
 }
 
 class _AppLocalizationsDelegate

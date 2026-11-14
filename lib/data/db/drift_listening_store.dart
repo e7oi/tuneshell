@@ -85,5 +85,25 @@ class DriftListeningStore implements ListeningStore {
   }
 
   @override
+  Future<Map<Track, DateTime>> lastPlayedAt() async {
+    final rows = await _db
+        .customSelect(
+          'SELECT disk_id, relative_path, MAX(played_at) AS last_at '
+          'FROM play_events GROUP BY disk_id, relative_path',
+          readsFrom: {_db.playEvents},
+        )
+        .get();
+    return {
+      for (final r in rows)
+        Track(
+          disk: DiskId(r.read<String>('disk_id')),
+          relativePath: r.read<String>('relative_path'),
+        ): DateTime.fromMillisecondsSinceEpoch(
+          r.read<int>('last_at'),
+        ),
+    };
+  }
+
+  @override
   Future<void> clearHistory() => _db.delete(_db.playEvents).go();
 }

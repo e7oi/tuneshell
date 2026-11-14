@@ -183,6 +183,7 @@ class _Header extends ConsumerWidget {
       SearchOrigin(:final query) => l10n.queueOriginSearch(query.trim()),
       FavoritesOrigin() => '${l10n.navTracks} · ${l10n.filterFavorites}',
       RecentOrigin() => '${l10n.navTracks} · ${l10n.filterRecent}',
+      HomeOrigin() => l10n.queueOriginHome,
       null => null,
     };
     return Padding(

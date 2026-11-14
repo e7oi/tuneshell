@@ -81,6 +81,10 @@ abstract final class TsSize {
   static const double logo = 120; // logo of the welcome screen
   static const double stepDot = 8; // step indicator
   static const double stepDotActive = 24;
+
+  /// Width of the track column of the Home tab when it is wide (FR-033.9).
+  static const double homeTrackColumn = 340;
+
   static const double listBottomInset =
       88; // room under a list so the jump button never hides the last row
 

@@ -533,3 +533,17 @@ Build release (D14), téléphone branché à Android Auto (ou émulateur). Consi
 6. **Aucun résultat :** attendu : une liste vide.
 7. **Délai :** noter le temps d'affichage de « Pistes » et d'une recherche à 7 500 pistes.
 
+## 27. Tester l'accueil (MPL-079)
+
+Build release (D14), bibliothèque d'au moins quelques centaines de pistes dont un disque amovible. Consigner le résultat de chaque étape (testé / non testé).
+
+1. **Démarrage :** lancer l'application. Attendu : l'onglet Accueil d'abord, cinq destinations, « Pistes oubliées » (trois lignes) et « Albums oubliés » (deux cartes) ; le mini-lecteur porte la dernière piste, en pause. Noter le délai d'affichage à 7 500 pistes.
+2. **Stabilité :** changer d'onglet, tourner l'écran, ouvrir et fermer le lecteur. Attendu : la sélection ne change pas.
+3. **Autres suggestions :** toucher le bouton. Attendu : d'autres pistes et albums, différents des précédents.
+4. **Lire une piste :** toucher la deuxième ligne. Attendu : elle joue ; dans la file, la bibliothèque entière par artiste, album, numéro de piste ; le lecteur affiche l'origine « Accueil ».
+5. **Ouvrir un album :** toucher une carte. Attendu : onglet Albums, détail de l'album ; Retour ramène à la grille.
+6. **Disque retiré :** éjecter le disque amovible. Attendu : ses éléments disparaissent de l'accueil sans remplaçant, et reviennent avec le disque.
+7. **Retour système :** depuis Réglages, Albums, Artistes puis Pistes, Retour ramène sur Accueil ; depuis Pistes avec la recherche ouverte, Retour ferme d'abord la recherche ; depuis Accueil, Retour quitte l'application.
+8. **Redémarrage :** fermer et relancer. Attendu : un nouveau tirage.
+9. **Paysage et texte à 200 % :** pistes à gauche, albums à droite ; aucune zone coupée.
+

@@ -1110,4 +1110,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String favoriteRemoved(String name) {
     return 'Retiré des favoris : $name';
   }
+
+  @override
+  String get navHome => 'Accueil';
+
+  @override
+  String get homeTitle => 'Accueil';
+
+  @override
+  String get homeShuffle => 'Autres suggestions';
+
+  @override
+  String get homeTracksTitle => 'Pistes oubliées';
+
+  @override
+  String get homeAlbumsTitle => 'Albums oubliés';
+
+  @override
+  String get homeEmptyTitle => 'Rien à afficher pour l\'instant';
+
+  @override
+  String get homeEmptyBody => 'Lance une piste, elle reviendra ici.';
+
+  @override
+  String get homeLoading => 'Lecture de la bibliothèque…';
+
+  @override
+  String get queueOriginHome => 'Accueil';
 }

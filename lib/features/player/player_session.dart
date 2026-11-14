@@ -52,6 +52,12 @@ final class RecentOrigin extends QueueOrigin {
   const new();
 }
 
+/// A track chosen on the Home tab: the queue is the whole library by artist,
+/// album and track number (FR-033.4).
+final class HomeOrigin extends QueueOrigin {
+  const new();
+}
+
 /// An album; [title] is empty for the unknown album.
 final class AlbumOrigin extends QueueOrigin {
   const new(this.title);

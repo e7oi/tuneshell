@@ -54,6 +54,35 @@ void main() {
     });
   });
 
+  group('last listens', () {
+    test('gives the latest listen of each track, per disk', () async {
+      await store.recordPlay(t('a'), t0);
+      await store.recordPlay(t('a'), t0.add(const Duration(days: 2)));
+      await store.recordPlay(t('a', ssd), t0.add(const Duration(days: 1)));
+
+      final last = await store.lastPlayedAt();
+
+      expect(last, hasLength(2));
+      expect(
+        last[t('a')]!.isAtSameMomentAs(t0.add(const Duration(days: 2))),
+        isTrue,
+      );
+      expect(
+        last[t('a', ssd)]!.isAtSameMomentAs(t0.add(const Duration(days: 1))),
+        isTrue,
+      );
+    });
+
+    test('is empty without history and after it is cleared', () async {
+      expect(await store.lastPlayedAt(), isEmpty);
+
+      await store.recordPlay(t('a'), t0);
+      await store.clearHistory();
+
+      expect(await store.lastPlayedAt(), isEmpty);
+    });
+  });
+
   group('history', () {
     test('lists each track once, the latest listen first', () async {
       await store.recordPlay(t('a'), t0);

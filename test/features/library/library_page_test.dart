@@ -30,6 +30,19 @@ import '../../fakes/fake_listening_store.dart';
 import '../../fakes/fake_settings_store.dart';
 import '../../fakes/fake_storage.dart';
 
+/// The application opens on Home: the tests of the list go to Tracks
+/// (FR-033.1).
+Future<void> _toTracks(WidgetTester tester) async {
+  final bar = find.byWidgetPredicate(
+    (w) => w is NavigationBar || w is NavigationRail,
+  );
+  if (bar.evaluate().isEmpty) return;
+  await tester.tap(
+    find.descendant(of: bar, matching: find.byIcon(Icons.music_note_rounded)),
+  );
+  await tester.pumpAndSettle();
+}
+
 void main() {
   late FakeLibraryRepository repository;
   late FakeInternalAudioSource source;
@@ -78,6 +91,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           locale: locale,
           home: const HomeShell(
+            home: SizedBox(key: Key('home-view')),
             tracks: LibraryPage(),
             playerBar: MiniPlayerBar(),
           ),
@@ -85,6 +99,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await _toTracks(tester);
   }
 
   /// @verifies UC-001
@@ -868,6 +883,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(await tester.binding.handlePopRoute(), isTrue);
       await tester.pumpAndSettle();
+      expect(find.byKey(const Key('home-view')), findsOneWidget);
+      await _toTracks(tester);
 
       expect(find.text('Get started'), findsNothing);
       expect(find.text('Alpha'), findsOneWidget);
@@ -890,6 +907,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(await tester.binding.handlePopRoute(), isTrue);
       await tester.pumpAndSettle();
+      await _toTracks(tester);
 
       expect(find.byType(TextField), findsOneWidget);
     },

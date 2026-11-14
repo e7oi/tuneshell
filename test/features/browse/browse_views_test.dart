@@ -192,6 +192,7 @@ void main() {
             child: child!,
           ),
           home: const HomeShell(
+            home: SizedBox(key: Key('home-view')),
             tracks: SizedBox(),
             albums: AlbumsView(),
             artists: ArtistsView(),
