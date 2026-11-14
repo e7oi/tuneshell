@@ -7,6 +7,7 @@ import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
 import 'package:tuneshell/domain/library/services/removable_indexer.dart';
+import 'package:tuneshell/domain/settings/app_info.dart';
 import 'package:tuneshell/domain/settings/app_settings.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/removable_controller.dart';
@@ -57,6 +58,7 @@ void main() {
     bool indexing = false,
     bool withoutAccess = false,
     Locale locale = const Locale('en'),
+    BuildInfo build = const BuildInfo(),
   }) async {
     tester.view
       ..physicalSize = const Size(412, 915)
@@ -73,6 +75,7 @@ void main() {
     container = ProviderContainer(
       overrides: [
         settingsStoreProvider.overrideWithValue(store),
+        buildInfoProvider.overrideWithValue(build),
         listeningStoreProvider.overrideWithValue(listening),
         chosenFoldersProvider.overrideWith((ref) => folders),
         dynamicColorsSupportedProvider.overrideWith((ref) => dynamicSupported),
@@ -431,13 +434,36 @@ void main() {
     });
   });
 
+  /// @verifies FR-034.1
+  /// @verifies FR-034.4
+  testWidgets('the build identity is the same in Settings and About', (
+    tester,
+  ) async {
+    const identity = 'TuneShell 0.1.0 · a1b2c3d · modified · 2026-11-14';
+    await pump(
+      tester,
+      build: BuildInfo.parse(
+        commit: 'a1b2c3d',
+        dirty: true,
+        date: '2026-11-14',
+      ),
+    );
+    await scrollTo(tester, identity);
+
+    await tester.tap(find.text(identity));
+    await tester.pumpAndSettle();
+
+    expect(find.text(identity), findsOneWidget);
+    expect(find.byType(SelectableText), findsWidgets);
+  });
+
   /// @verifies FR-026.1
   /// @verifies FR-026.2
   testWidgets('the about page', (tester) async {
     await pump(tester);
-    await scrollTo(tester, 'TuneShell 0.1.0');
+    await scrollTo(tester, 'TuneShell 0.1.0 · local build');
 
-    await tester.tap(find.text('TuneShell 0.1.0'));
+    await tester.tap(find.text('TuneShell 0.1.0 · local build'));
     await tester.pumpAndSettle();
 
     expect(find.text('© 2026 Eloi BERTIN'), findsOneWidget);

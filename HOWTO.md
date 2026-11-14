@@ -106,9 +106,11 @@ Toujours valider un item en build release (`flutter run --release`) avant de le 
 ## 7. Compiler et installer une build release (Android)
 
 ```bash
-flutter build apk --release
+tool/build-release.sh
 adb install -r build/app/outputs/flutter-apk/app-release.apk
 ```
+
+Le script ajoute à la build son identité : commit court, « modifié » si l'arbre a des changements non commités, date (FR-034, ADR-025). L'écran À propos la montre ; une build faite sans le script (`flutter build apk --release` nu, `flutter run`) affiche « build locale » et ne compte pas pour un test réel (D14). Les arguments du script vont à `flutter build` (par exemple `--no-pub`). Avant chaque test, vérifier que le commit affiché est celui de la PR testée ; vérifier aussi qu'après une modification non commitée la mention « modifié » apparaît, et qu'une build nue affiche « build locale » (le script n'a pas de test automatique).
 
 Variante directe : `flutter run --release -d <id_appareil_android>` (`flutter devices` donne l'id).
 

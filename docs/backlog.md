@@ -49,7 +49,7 @@ Idées sans fiche ni `/cadrer` : à cadrer le moment venu, sans ordre.
 | MPL-077 | Bogue | P2 | « Précédent » suit la file affichée (voisin dans la file, aléatoire compris) au lieu de rejouer le titre réellement écouté avant (retour du propriétaire, 2026-11-10) ; à cadrer : touche FR-001, lien possible avec l'historique de MPL-065 | À faire | MPL-001 | — |
 | MPL-066 | Récit | P2 | Suggestions : « Mix du soir », « Pour vous maintenant », à partir de l'historique, sans réseau ; « Redécouvrir » est passé dans MPL-079 (2026-11-13) ; à cadrer | À faire | MPL-001 | MPL-065 |
 | MPL-080 | Récit | P2 | Playlists : manuelles (créées par l'utilisateur) et automatiques (par mood, période, activité…), accessibles depuis l'accueil de MPL-079 ; idée du propriétaire du 2026-11-13, à cadrer le moment venu (modèle de données, identité des pistes BR-004, voiture, lien avec MPL-066) | À faire | MPL-001 | MPL-079 |
-| MPL-081 | Récit | P2 | Identité de la build : l'application affiche la version, le commit court, « modifié » si l'arbre l'était, et la date de compilation (aujourd'hui une constante « 0.1.0 » identique pour toutes les builds) ; demande du propriétaire du 2026-11-14 ; FR-034 et ADR-025 en Brouillon | À faire | MPL-001 | — |
+| MPL-081 | Récit | P2 | Identité de la build : l'application affiche la version, le commit court, « modifié » si l'arbre l'était, et la date de compilation (aujourd'hui une constante « 0.1.0 » identique pour toutes les builds) ; demande du propriétaire du 2026-11-14 ; FR-034 et ADR-025 Active (validées le 2026-11-14) | À tester | MPL-001 | — |
 | MPL-067 | Récit | P2 | Éditeur de tags : modifier titre, artiste, album des fichiers ; à cadrer (écriture SAF sur le SSD, aucune perte de données) | À faire | MPL-001 | — |
 | MPL-068 | Récit | P2 | Liste noire : exclure des morceaux de la bibliothèque et de la lecture ; à cadrer | À faire | MPL-001 | — |
 | MPL-069 | Récit | P2 | Paroles synchronisées mot à mot, voix d'accompagnement sous la ligne qu'elles suivent ; à cadrer : tags intégrés seulement, ou en ligne (D15, D20, D26) | À faire | MPL-004 | D20 |
@@ -360,7 +360,7 @@ Décisions prises en route : validé par le propriétaire le 2026-11-12 sans tes
 **Inclus.**
 - `BuildInfo` (domaine, test d'abord) et son libellé ; affichage sur la page À propos et la ligne de Réglages ; texte copiable.
 - `tool/build-release.sh` et `HOWTO.md` §7 mis à jour.
-- Textes ARB fr/en ; fiches FR-026 (as-built) et ADR-017 (note) complétées à la livraison.
+- Textes ARB fr/en ; FR-034 (as-built) ; FR-026 et ADR-017 restent inchangées.
 
 **Exclusions.** Mise à jour automatique, journal des modifications, numéro de build autoincrémenté, signature de production, compilation par la CI (MPL-026).
 
@@ -398,7 +398,18 @@ Fonctionnalité: Identité de la build
     Alors je peux la copier
 ```
 
-**Fiches liées.** FR-034 (Brouillon), ADR-025 (Brouillon) ; écarts à FR-026 et ADR-017 (Actives) listés en « À valider ». Voir aussi UC-009, D14.
+**Fiches liées.** FR-034 (Active), ADR-025 (Active) ; écarts à FR-026 et ADR-017 (Actives) listés en « À valider ». Voir aussi UC-009, D14.
+
+#### Livraison — 2026-11-14
+Statut : ⚠️ partiel (script de build non testé automatiquement : exception au test d'abord, procédure dans HOWTO §7, à vérifier sur le Pixel)
+Résumé : l'application affiche son identité de build : « 0.1.0 · a1b2c3d · modifié · 2026-11-14 », ou « 0.1.0 · build locale » sans le script. Commit, état de l'arbre et date arrivent par `--dart-define` calculés par `tool/build-release.sh` ; `BuildInfo` (domaine) valide ce qu'il reçoit. Aucune dépendance, permission ni code natif.
+Fiches touchées : FR-034 (as-built), ADR-025 (écarts d'implémentation) ; FR-026 et ADR-017 inchangées (la version reste celle de `pubspec.yaml`, testée).
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → tout vert, 1 123 tests (BuildInfo : local, commit court, valeurs mal formées ; libellé ; Réglages et À propos) ; `.github/scripts/check-repo.sh` vert ; `tool/build-release.sh` compile l'APK.
+Test appareil (Pixel, release) : non testé (HOWTO §7 : compiler avec le script, lire À propos).
+Revue QA : ⚠️ → corrigée (sous-agent, aucun bloquant). Corrigé : message clair du script hors dépôt Git, tests des cas limites (hash entier, dirty, blancs, date seule), `@implements`, ADR-025 (écarts d'implémentation consignés), FR-034 « tranché ». Dette : pas de test de rendu à 200 % ni en sombre ; `_isoDay` n'accepte que la forme d'une date ; le script n'a pas de test (exception). Non vérifié : `--dart-define` réel sur appareil ; la build du script laisse l'arbre inchangé.
+Description de PR : `feat(ui): show the exact build in the about page (MPL-081)`.
+Décisions prises en route : un commit ou une date mal formés donnent « build locale » plutôt qu'une valeur douteuse ; la page des licences de Flutter reçoit aussi l'identité ; les fichiers non suivis comptent pour « modifié ».
+À valider (PO) : aucun
 
 ### MPL-079
 **Description.** Arriver sur une page d'accueil vivante : trois pistes et deux albums « à redécouvrir », tirés une fois par démarrage et refaits sur demande. Demande du propriétaire du 2026-11-13 (« dernier titre, album, artiste joué » et redécouvertes). Cadrage : l'historique de MPL-065 (`play_events`) existe déjà ; ni schéma, ni dépendance, ni permission, seulement une méthode de plus sur `ListeningStore` (ADR-024).

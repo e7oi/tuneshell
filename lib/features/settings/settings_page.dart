@@ -14,6 +14,7 @@ import 'package:tuneshell/features/library/library_controller.dart';
 import 'package:tuneshell/features/library/removable_controller.dart';
 import 'package:tuneshell/features/library/removable_page.dart';
 import 'package:tuneshell/features/settings/about_page.dart';
+import 'package:tuneshell/features/settings/build_identity.dart';
 import 'package:tuneshell/features/settings/privacy_page.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/demo/component_gallery.dart';
@@ -148,7 +149,13 @@ class SettingsPage extends ConsumerWidget {
                     ),
                     SettingsSectionHeader(l10n.settingsSectionAbout),
                     SettingsNavTile(
-                      title: l10n.settingsAbout(appVersion),
+                      title: l10n.settingsAbout(
+                        buildIdentity(
+                          l10n,
+                          appVersion,
+                          ref.watch(buildInfoProvider),
+                        ),
+                      ),
                       subtitle: l10n.settingsAboutSub,
                       onTap: () => _open(context, const AboutPage()),
                     ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tuneshell/app/providers/settings_providers.dart';
 import 'package:tuneshell/domain/settings/app_info.dart';
+import 'package:tuneshell/features/settings/build_identity.dart';
 import 'package:tuneshell/l10n/generated/app_localizations.dart';
 import 'package:tuneshell/ui/theme/tuneshell_tokens.dart';
 import 'package:tuneshell/ui/widgets/settings_tiles.dart';
@@ -8,11 +11,17 @@ import 'package:tuneshell/ui/widgets/settings_tiles.dart';
 /// the licences of the components that Flutter lists.
 ///
 /// @implements FR-026
-class AboutPage extends StatelessWidget {
+/// @implements FR-034
+class AboutPage extends ConsumerWidget {
   const new({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final identity = buildIdentity(
+      AppLocalizations.of(context),
+      appVersion,
+      ref.watch(buildInfoProvider),
+    );
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
@@ -33,8 +42,8 @@ class AboutPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('TuneShell', style: text.headlineSmall),
-                    Text(
-                      l10n.settingsAbout(appVersion),
+                    SelectableText(
+                      l10n.settingsAbout(identity),
                       style: text.titleMedium,
                     ),
                     const SizedBox(height: TsSpace.s),
@@ -58,7 +67,7 @@ class AboutPage extends StatelessWidget {
                 onTap: () => showLicensePage(
                   context: context,
                   applicationName: 'TuneShell',
-                  applicationVersion: appVersion,
+                  applicationVersion: identity,
                   applicationLegalese: l10n.aboutCopyright,
                 ),
               ),

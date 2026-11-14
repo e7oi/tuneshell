@@ -1,6 +1,6 @@
 # FR-034 — Identité de la build : version, commit et état de l'arbre
 
-**Statut :** Brouillon · **Créée le :** 2026-11-14 · **Ticket :** MPL-081 · **Décisions :** D14, D15, D26, D27 · **Lié :** FR-026, FR-023, UC-009, ADR-017, ADR-025 · **Source :** demande du propriétaire du 2026-11-14 (« la version affichée n'est pas assez précise pour savoir exactement la version utilisée/testée »)
+**Statut :** Active (validée le 2026-11-14) · **Créée le :** 2026-11-14 · **Ticket :** MPL-081 · **Décisions :** D14, D15, D26, D27 · **Lié :** FR-026, FR-023, UC-009, ADR-017, ADR-025 · **Source :** demande du propriétaire du 2026-11-14 (« la version affichée n'est pas assez précise pour savoir exactement la version utilisée/testée »)
 
 ## Besoin
 
@@ -19,13 +19,22 @@ Savoir, depuis l'écran du téléphone, quelle build exacte est installée : deu
 
 Mise à jour automatique, vérification d'une version plus récente, journal des modifications dans l'application, numéro de build autoincrémenté (voir ADR-025, « Alternatives »), signature de production (D5).
 
-## À valider (PO)
+## Tranché le 2026-11-14 (PO)
 
 - **Écart à FR-026 (`Active`)** : l'exigence 1 dit « la version est celle de `pubspec.yaml` » et l'exigence 5 « un test les compare » ; elles restent vraies, l'identité s'y ajoute. Aucune n'est modifiée avant validation.
 - **Écart à ADR-017 (`Active`)** : « pas de `package_info_plus`, pas de code natif » reste respecté ; la ligne « Version » est complétée, pas remplacée.
 - **Numéro de build** (`+1` du `pubspec.yaml`) : non affiché, car il ne change pas d'une build à l'autre ; le commit joue ce rôle. Autre choix : augmenter le `+N` à la main à chaque test.
 - **Date de compilation** : proposée, retirable sans conséquence si le commit suffit.
 
+Le propriétaire a validé la fiche avec ces trois points.
+
 ## As-built
 
-À écrire à la livraison.
+Livré par MPL-081 (2026-11-14, à tester sur le Pixel).
+
+- `BuildInfo` (`lib/domain/settings/app_info.dart`) : `BuildInfo.parse` ne garde qu'un commit hexadécimal de 7 à 40 caractères (réduit à 7, minuscules) et une date `AAAA-MM-JJ`, sinon la build est locale ; `BuildInfo.compiled` lit `BUILD_COMMIT`, `BUILD_DIRTY`, `BUILD_DATE` (`--dart-define`). Une mention « modifié » ou une date sans commit sont ignorées.
+- `buildIdentity` (`lib/features/settings/build_identity.dart`) : « version · commit [· modifié] [· date] » ou « version · build locale » ; textes `buildLocal` et `buildModified` dans les ARB.
+- `buildInfoProvider` (`settings_providers.dart`) ; la ligne de Réglages et la page À propos (texte sélectionnable) l'utilisent ; la page des licences de Flutter reçoit la même identité.
+- `tool/build-release.sh` : calcule commit, état de l'arbre (`git status --porcelain`, fichiers non suivis compris) et date UTC, puis `flutter build apk --release --dart-define=…` ; `HOWTO.md` §7.
+- Tests : `test/domain/settings/build_info_test.dart`, `test/features/settings/build_identity_test.dart`, `settings_page_test.dart`.
+- Non testé sur appareil (D14).

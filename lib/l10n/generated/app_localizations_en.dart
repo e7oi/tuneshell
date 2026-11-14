@@ -991,6 +991,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPrivacySub => 'No data collected, no account, no network';
 
   @override
+  String get buildLocal => 'local build';
+
+  @override
+  String get buildModified => 'modified';
+
+  @override
   String get aboutTitle => 'About';
 
   @override

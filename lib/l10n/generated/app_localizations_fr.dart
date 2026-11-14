@@ -1004,6 +1004,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune donnée collectée, aucun compte, aucun réseau';
 
   @override
+  String get buildLocal => 'build locale';
+
+  @override
+  String get buildModified => 'modifié';
+
+  @override
   String get aboutTitle => 'À propos';
 
   @override

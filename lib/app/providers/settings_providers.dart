@@ -6,9 +6,15 @@ import 'package:flutter/material.dart' show Brightness, ColorScheme;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tuneshell/app/providers/library_providers.dart';
 import 'package:tuneshell/data/db/drift_settings_store.dart';
+import 'package:tuneshell/domain/settings/app_info.dart';
 import 'package:tuneshell/domain/settings/app_settings.dart';
 import 'package:tuneshell/domain/settings/ports/settings_store.dart';
 import 'package:tuneshell/features/library/library_controller.dart';
+
+/// Which build is running; replaced in tests.
+///
+/// @implements FR-034
+final buildInfoProvider = Provider<BuildInfo>((_) => BuildInfo.compiled);
 
 final settingsStoreProvider = Provider<SettingsStore>(
   (ref) => DriftSettingsStore(ref.watch(libraryDatabaseProvider)),

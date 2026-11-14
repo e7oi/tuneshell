@@ -1,6 +1,6 @@
 # ADR-025 — Identité de la build : valeurs de compilation, script de build, pas de plugin
 
-**Statut :** Brouillon · **Date :** 2026-11-14 · **Ticket :** MPL-081 · **Décisions :** D14, D15, D27, D30 · **Fiches :** FR-034, FR-026, UC-009 · **Complète :** ADR-017
+**Statut :** Active (validée le 2026-11-14) · **Date :** 2026-11-14 · **Ticket :** MPL-081 · **Décisions :** D14, D15, D27, D30 · **Fiches :** FR-034, FR-026, UC-009 · **Complète :** ADR-017
 
 ## Contexte
 
@@ -36,3 +36,8 @@
 
 - Le script comme chemin normal de compilation pour les tests sur le Pixel.
 - L'absence de numéro de build affiché (voir FR-034, « À valider »).
+
+## Écarts d'implémentation (MPL-081)
+
+- Le script ne vérifie pas que `flutter` voit le même arbre : il calcule les valeurs puis compile ; hors d'un dépôt Git il s'arrête avec un message. Un contrôle de plus n'apporterait rien (les deux lisent le même dossier).
+- Le libellé est `buildIdentity()` (`features/settings/`, il utilise les textes ARB), pas `BuildInfo.label` : le domaine ne connaît pas les langues.
