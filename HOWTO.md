@@ -549,3 +549,15 @@ Build release (D14), bibliothèque d'au moins quelques centaines de pistes dont 
 8. **Redémarrage :** fermer et relancer. Attendu : un nouveau tirage.
 9. **Paysage et texte à 200 % :** pistes à gauche, albums à droite ; aucune zone coupée.
 
+## 28. Tester les albums rattachés (MPL-082)
+
+Build release (D14), stockage interne avec des bandes originales rangées un dossier par album. Consigner le résultat de chaque étape (testé / non testé).
+
+1. **Un seul exemplaire :** dans l'onglet Albums, chercher chacune des bandes originales citées dans la demande du ticket (liste hors dépôt, D27). Attendu : un seul album chacune, avec toutes ses pistes, sous-titre « Artistes divers » ; deux volumes d'une même série (titres différents) restent deux albums.
+2. **Détail :** ouvrir un de ces albums. Attendu : l'interprète de chaque piste sous son titre, l'ordre par numéro de piste.
+3. **Artistes :** l'entrée « Artistes divers » est la deuxième de la liste (après « Artiste inconnu »), avec tous ces albums.
+4. **Lecteur :** lire une piste d'une bande originale, ouvrir le lecteur. Attendu : le lien d'album ouvre l'album entier ; le nom de l'artiste n'est pas un lien.
+5. **Non-régression :** un album normal (artiste d'album renseigné) et deux albums de même titre dans deux dossiers restent séparés ; les favoris et l'historique sont intacts.
+6. **Accueil :** une bande originale tirée est une seule carte, sous-titre « Artistes divers ».
+7. **Voiture :** Albums et Artistes montrent la bande originale une fois ; « Album en cours » existe, « Artiste en cours » est absent. Les dossiers mémorisés par la voiture avant la mise à jour reviennent à la racine (attendu, ADR-026).
+8. **Délai :** à 7 500 pistes, noter le délai d'affichage des onglets (cible : moins de deux secondes de calcul).

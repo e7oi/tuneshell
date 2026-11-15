@@ -36,6 +36,7 @@ var _id = 0;
 
 LibraryTrack t(
   String title, {
+  String? artist,
   String? albumArtist,
   String? album,
   int? disc,
@@ -52,7 +53,7 @@ LibraryTrack t(
     modifiedAt: DateTime.fromMillisecondsSinceEpoch(0),
     title: title,
     albumArtist: albumArtist,
-    artist: albumArtist,
+    artist: artist ?? albumArtist,
     album: album,
     discNumber: disc,
     trackNumber: number,
@@ -324,6 +325,29 @@ void main() {
       expect(order, [...order]..sort());
     });
 
+    /// @verifies FR-035
+    flow('an album of various artists shows the artist of each track', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        tracks: [
+          t('s1', artist: 'Singer One', album: 'Score', number: 1),
+          t('s2', artist: 'Singer Two', album: 'Score', number: 2),
+        ],
+      );
+      await tab(tester, 'Albums');
+      expect(find.text('Various artists'), findsOneWidget);
+      await tester.tap(find.text('Score'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Singer One'), findsOneWidget);
+      expect(find.text('Singer Two'), findsOneWidget);
+      // The header names the album artist and each row its own singer.
+      expect(find.text('Various artists'), findsOneWidget);
+      expect(find.text('Singer One'), findsOneWidget);
+    });
+
     flow('Play queues the album in disc then track order', (tester) async {
       await open(tester);
 
@@ -458,6 +482,24 @@ void main() {
       expect(find.text('#'), findsOneWidget);
       expect(find.text('C'), findsWidgets);
       expect(find.byType(ArtistTile), findsNWidgets(3));
+    });
+
+    /// @verifies FR-035
+    flow('the various artists have one entry holding the albums', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        tracks: [
+          t('s1', artist: 'Singer One', album: 'Score', number: 1),
+          t('s2', artist: 'Singer Two', album: 'Score', number: 2),
+        ],
+      );
+      await tab(tester, 'Artists');
+
+      expect(find.text('Various artists'), findsOneWidget);
+      expect(find.text('1 album · 2 tracks'), findsOneWidget);
+      expect(find.byType(ArtistTile), findsOneWidget);
     });
 
     flow('an artist of an absent disk is greyed and names the disk', (

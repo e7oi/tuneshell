@@ -291,6 +291,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bannerDismiss => 'Hide this message';
 
   @override
+  String get artistVarious => 'Various artists';
+
+  @override
   String get trackUnknownArtist => 'Unknown artist';
 
   @override

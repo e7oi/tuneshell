@@ -37,11 +37,16 @@ final class MediaArtist {
     required this.name,
     required this.albums,
     this.unknown = false,
+    this.various = false,
   });
 
   final String key;
   final String name;
   final bool unknown;
+
+  /// The one artist "Various artists" (BR-017): [name] is already its words,
+  /// and no "current artist" folder leads to it (FR-035.6).
+  final bool various;
   final List<MediaAlbum> albums;
 }
 
@@ -440,7 +445,8 @@ class LibraryMediaTree implements MediaTree {
 
   /// The album or the artist of the current track, the same group the list
   /// shows (BR-013, rule 3), or null: no current track, a track of an absent
-  /// disk, an unknown album or an unknown artist (FR-032.7).
+  /// disk, an unknown album, an unknown artist or the various artists
+  /// (FR-032.7, FR-035.6).
   ///
   /// @implements FR-032
   MediaNode? _currentTarget(String kind) {
@@ -458,7 +464,7 @@ class LibraryMediaTree implements MediaTree {
     if (album == null || album.unknownAlbum) return null;
     if (kind == _albumKind) return _albumNode(album);
     for (final artist in _artists) {
-      if (artist.unknown) continue;
+      if (artist.unknown || artist.various) continue;
       if (artist.albums.any((a) => a.key == album!.key)) {
         return _artistNode(artist);
       }

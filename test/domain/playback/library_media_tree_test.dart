@@ -202,6 +202,34 @@ void main() {
       ]);
     });
 
+    /// @verifies FR-035.6
+    test('the various artists have an album folder but no artist folder', () {
+      final song = track('z/1.flac', title: 'Song', artist: 'Someone');
+      final other = track('z/2.flac', title: 'Other', artist: 'Else');
+      final mix = album('mix', 'Mix', 'Various artists', [song, other]);
+      final tree = treeOf(
+        albums: [mix],
+        artists: [
+          MediaArtist(
+            key: 'various',
+            name: 'Various artists',
+            various: true,
+            albums: [mix],
+          ),
+        ],
+        tracks: [song, other],
+        current: song,
+      );
+
+      expect(titles(tree.children(MediaTree.rootId)), [
+        'Song',
+        'Current album',
+        'Albums',
+        'Artists',
+        'Tracks',
+      ]);
+    });
+
     /// @verifies FR-032.7
     test('a current folder of no known kind is empty', () {
       final tree = library(current: a1);

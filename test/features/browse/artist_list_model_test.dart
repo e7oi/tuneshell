@@ -44,6 +44,32 @@ void main() {
       );
     });
 
+    /// @verifies FR-035.3
+    test('the various artists sit under # after the unknown artist', () {
+      final m = model([
+        t('Various Artists', 'mix', 1),
+        t(null, 'b', 2),
+        t('10cc', 'e', 5),
+        t('Anouk', 'c', 3),
+      ]);
+
+      expect(
+        [
+          for (final item in m.items)
+            switch (item) {
+              ArtistHeader(:final letter) => '[$letter]',
+              ArtistEntry(:final artist) =>
+                artist.unknown
+                    ? '?'
+                    : artist.various
+                    ? '*'
+                    : artist.name,
+            },
+        ],
+        ['[#]', '?', '*', '10cc', '[A]', 'Anouk'],
+      );
+    });
+
     test('accents fold into their letter', () {
       final m = model([t('Émile', 'a', 1), t('Edgar', 'b', 2)]);
 

@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-10-23) · **Créée le :** 2026-10-23 · **Ticket :** MPL-048 · **Décisions :** D23 · **Lié :** UC-008, FR-020, FR-021, BR-004, BR-008 · **Source :** `docs/design/HANDOFF.md` §4 (« Albums groupés… », « Artistes groupés… »)
 
+> **Complété le 2026-11-14 (MPL-082, validé par le propriétaire) :** voir BR-017 (rattachement des albums sans artiste d'album, clé normalisée, artiste « Artistes divers »), FR-035 et ADR-026. Ce qui précède reste vrai hors de ces cas.
+
 ## Règles
 
 1. **Artiste de l'album** d'une piste : son `albumArtist` s'il est renseigné, sinon son `artist`, sinon « Artiste inconnu ». Les espaces autour sont ignorés.

@@ -325,6 +325,10 @@
   "@bannerDismiss": {
     "description": "Tooltip of the close button of the sources banner (BR-008.3)."
   },
+  "artistVarious": "Various artists",
+  "@artistVarious": {
+    "description": "The one artist of the albums by various artists, such as soundtracks and compilations (BR-017, FR-035)."
+  },
   "trackUnknownArtist": "Unknown artist",
   "@trackUnknownArtist": {
     "description": "Shown for a track without an artist tag (FR-011.6)."

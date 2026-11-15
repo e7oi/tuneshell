@@ -36,7 +36,9 @@ class ArtistListModel {
     String? current;
     for (var i = 0; i < artists.length; i++) {
       final artist = artists[i];
-      final letter = artist.unknown ? '#' : alphabetKey(artist.name);
+      final letter = artist.unknown || artist.various
+          ? '#'
+          : alphabetKey(artist.name);
       if (letter != current) {
         current = letter;
         firstItem[letter] = items.length;

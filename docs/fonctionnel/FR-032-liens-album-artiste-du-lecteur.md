@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-11-12) · **Créée le :** 2026-11-12 · **Tickets :** MPL-076 (liens), MPL-078 (voiture, exigence 7) · **Lié :** UC-007, UC-008, UC-012, FR-017, FR-020, FR-021, FR-029, BR-007, BR-010, BR-013, ADR-016, ADR-022 · **Source :** demande du propriétaire du 2026-11-10 ; pas de maquette (réalisé sans Claude Design si le propriétaire l'accepte)
 
+> **Complété le 2026-11-14 (MPL-082, validé par le propriétaire) :** voir BR-017 (rattachement des albums sans artiste d'album, clé normalisée, artiste « Artistes divers »), FR-035 et ADR-026. Ce qui précède reste vrai hors de ces cas.
+
 ## Besoin
 
 Depuis la piste en cours, passer en un geste à son album ou à son artiste, pour enchaîner les titres sans retourner chercher dans les onglets.

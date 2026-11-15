@@ -61,7 +61,7 @@ class _Detail extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     final id = album.artwork;
-    final artist = album.unknownArtist ? l10n.trackUnknownArtist : album.artist;
+    final artist = albumArtistName(l10n, album);
     final disks = ref.watch(disksByIdProvider);
     final unavailable = ref.watch(unavailableDiskIdsProvider);
     final current = ref.watch(
@@ -95,6 +95,7 @@ class _Detail extends ConsumerWidget {
         playing: track.track == current,
         unavailable: unavailable.contains(track.disk),
         showMark: album.disks.length > 1,
+        showArtist: album.variousArtists,
         disk: disks[track.disk],
         onTap: () {
           if (unavailable.contains(track.disk)) {
@@ -269,6 +270,7 @@ class _TrackRow extends StatelessWidget {
     required this.playing,
     required this.unavailable,
     required this.showMark,
+    required this.showArtist,
     required this.disk,
     required this.onTap,
     required this.onLongPress,
@@ -280,6 +282,10 @@ class _TrackRow extends StatelessWidget {
   final bool playing;
   final bool unavailable;
   final bool showMark;
+
+  /// The track artist under the title, for an album of various artists
+  /// (FR-035.2).
+  final bool showArtist;
   final Disk? disk;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
@@ -304,9 +310,12 @@ class _TrackRow extends StatelessWidget {
     final duration = track.info.duration;
     final name = sourceName(disk, l10n);
     final mark = showMark ? sourceMarkOf(disk, colors) : null;
+    final artist = showArtist ? track.info.artist?.trim() : null;
+    final artistLine = artist == null || artist.isEmpty ? null : artist;
     final label = [
       l10n.playerTrackNumber(number),
       track.displayTitle,
+      ?artistLine,
       if (duration != null) formatClock(duration),
       if (playing) l10n.trackPlaying,
       if (unavailable && name != null) l10n.trackNeedsDisk(name),
@@ -356,14 +365,29 @@ class _TrackRow extends StatelessWidget {
                     const SizedBox(width: TsSpace.xs),
                   ],
                   Expanded(
-                    child: Text(
-                      track.displayTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: text.titleMedium?.copyWith(
-                        color: titleColor,
-                        fontWeight: playing ? FontWeight.w600 : null,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          track.displayTitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: text.titleMedium?.copyWith(
+                            color: titleColor,
+                            fontWeight: playing ? FontWeight.w600 : null,
+                          ),
+                        ),
+                        if (artistLine != null)
+                          Text(
+                            artistLine,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: text.bodyMedium?.copyWith(
+                              color: numberColor,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   if (mark != null) ...[const SizedBox(width: TsSpace.s), mark],

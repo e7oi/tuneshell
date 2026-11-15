@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-10-23) · **Créée le :** 2026-10-23 · **Ticket :** MPL-048 · **Lié :** UC-008, FR-009, FR-010, FR-012, FR-013, FR-022, BR-007, BR-008, BR-010, ADR-016 · **Source :** `docs/design/HANDOFF.md` §5 (écran 8, 8a et 8b), `Albums.dc.html`
 
+> **Complété le 2026-11-14 (MPL-082, validé par le propriétaire) :** voir BR-017 (rattachement des albums sans artiste d'album, clé normalisée, artiste « Artistes divers »), FR-035 et ADR-026. Ce qui précède reste vrai hors de ces cas.
+
 ## Besoin
 
 Parcourir la bibliothèque par albums, sous forme de pochettes, et voir un album piste par piste.

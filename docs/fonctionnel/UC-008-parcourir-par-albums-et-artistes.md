@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-10-23) · **Créée le :** 2026-10-23 · **Ticket :** MPL-048 · **Lié :** UC-004, UC-005, UC-007, FR-020, FR-021, FR-022, BR-010, ADR-016 · **Source :** `docs/design/HANDOFF.md` §4, §5 (écran 8, états 8a à 8d)
 
+> **Complété le 2026-11-14 (MPL-082, validé par le propriétaire) :** voir BR-017 (rattachement des albums sans artiste d'album, clé normalisée, artiste « Artistes divers »), FR-035 et ADR-026. Ce qui précède reste vrai hors de ces cas.
+
 ## Acteur et but
 
 L'utilisateur veut retrouver sa musique autrement que par titre : un album précis, tout ce qu'un artiste a dans la bibliothèque, et lancer l'un ou l'autre en entier.

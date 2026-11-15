@@ -1,5 +1,5 @@
 # Backlog — TuneShell
-Préfixe : MPL · Prochaine clé : MPL-082 · Dernière MAJ : 2026-11-14
+Préfixe : MPL · Prochaine clé : MPL-083 · Dernière MAJ : 2026-11-14
 
 > Importé le 2026-10-14 depuis `docs/sprints/sprint-2/SPRINT-2-START.md` v5 (§3 snapshot du backlog, §4 registre des décisions), copie fidèle du tableau, des détails de MPL-029 et du registre : aucun libellé reformulé, seuls les icônes de type et de priorité sont remplacées par du texte. Le snapshot de sprint reste figé ; ce fichier est désormais la référence vivante, écrite par Claude Code, relue et validée par le propriétaire. Format : `backlog-methodology.md` §13 (dépôt AI-tools). MPL-032 est absent du snapshot : sa clé reste réservée.
 > Statuts : À faire → En cours → À tester → Terminé (+ Bloqué). Un ticket n'est « Terminé » que sur l'ordre « validé » du propriétaire, après un test réel en build release sur le Pixel (D14), et après le merge de sa PR.
@@ -15,6 +15,7 @@ Ordre de travail proposé (réorganisation du 2026-11-01) : épiques, puis les t
 | MPL-074 | Bug | P1 | Android Auto : la liste Pistes (plusieurs milliers de lignes) ne s'affiche pas ou trop lentement ; listes servies par pages, sans dossiers par lettres (demande du propriétaire, 2026-11-02) | À tester | — | — |
 | MPL-075 | Récit | P1 | Android Auto : liste Pistes de nouveau en dossiers par lettre (Albums et Artistes restent entiers, pochettes visibles), avec une recherche globale dans toute la bibliothèque (demande du propriétaire, 2026-11-12, après l'essai de MPL-074) ; fiches BR-015 et ADR-023 Active (validées le 2026-11-12) | À tester | MPL-001 | MPL-074 |
 | MPL-078 | Récit | P2 | Android Auto : dossiers « Album en cours » et « Artiste en cours » à la racine de l'arbre média, après « Reprendre » (ex-partie B de MPL-076, sortie à la demande du propriétaire le 2026-11-12) ; code livré avec la PR de MPL-076, à tester en voiture | À tester | MPL-001 | — |
+| MPL-082 | Bug | P1 | Albums scindés : un même album apparaît plusieurs fois, avec une ou quelques chansons chacun (bandes originales, un interprète par chanson) ; clé d'album normalisée, rattachement des albums sans artiste d'album et artiste « Artistes divers » (demande du propriétaire, 2026-11-14) ; à cadrer, fiches en Brouillon | À tester | MPL-001 | — |
 | MPL-035 | Tâche technique | P1 | Retrait du stockage amovible pendant la lecture : écouteur natif d'éjection puis `stop()` et fermeture du descripteur dans `PlayerController` (indépendant du moteur) ; vérifier la marge sous charge et avec d'autres descripteurs ouverts ; retirer le récepteur `ACTION_MEDIA_*` ; pas de reprise au rebranchement (décidé le 2026-10-15) ; descripteur proxy gardé comme alternative non testée. Voir `docs/sprints/sprint-2/RESULTS-PROTOTYPE-ANDROID.md` §4.3 🔗 MPL-017, D25. Depuis le 2026-10-15 : MPL-017 livre le port `VolumeEvents` et la réaction du contrôleur (BR-002) ; ce ticket livre l'adaptateur natif et le test sur le Pixel. À couvrir aussi (2026-10-15) : mesurer sur le Pixel le temps entre l'annonce d'éjection et la fermeture du fichier par mpv ; décider si l'éjection doit passer avant la commande en cours (elle attend aujourd'hui dans la file de `PlayerController`) ; garder le descripteur proxy comme plan B si la marge d'environ 1 s ne suffit pas | À faire | MPL-072 | — |
 | MPL-050 | Bug | P1 | Deux cartes de TuneShell dans les applications récentes : toucher la notification de lecture (action `NOTIFICATION_CLICK` d'`audio_service`, drapeau « nouvelle tâche ») crée une seconde tâche, car `MainActivity` a `taskAffinity=""` (réglage par défaut de Flutter) et Android ne retrouve pas la tâche ouverte ; plus de deux cartes possibles. Pistes : retirer `taskAffinity=""` ou passer en `launchMode="singleTask"` ; à retester avec `HOWTO.md` §12 (étapes 9 et 12). **Ordre voulu par le propriétaire le 2026-10-23 : juste après le design complet (MPL-044 à MPL-049).** Origine : MPL-036. À cadrer le moment venu | À faire | MPL-001 | — |
 | MPL-056 | Récit | P1 | Désactiver un disque amovible et ses sous-dossiers, comme les dossiers du téléphone (choix des dossiers, FR-003, FR-015) : décocher un disque ou un sous-dossier sans le retirer ; un disque désactivé et absent n'affiche plus l'alerte « disque absent » (bandeau, badge « N absent » de la pastille Disques, messages) ; au branchement d'un disque désactivé, proposer de le réactiver ; **décidé le 2026-10-24 :** les pistes, albums et artistes d'un emplacement restent affichés tant qu'il est sélectionné et sont masqués dès qu'il ne l'est plus, que le disque soit présent ou absent (un emplacement sélectionné mais absent reste grisé, BR-008) ; reste à trancher : l'effet sur la file en cours et sur les compteurs, et si une désélection retire les pistes de la base ou les masque seulement. **Constaté le 2026-10-27 :** on ne peut pas retirer un dossier d'un disque amovible tant que celui-ci n'est pas connecté (aujourd'hui le retrait relance un parcours des dossiers restants et échoue sans disque, FR-006.2) ; décocher doit marcher disque absent. Recoupe MPL-046 (écran Disques) et MPL-038 (retrait d'un disque). Demande du propriétaire du 2026-10-24. À cadrer | À faire | MPL-072 | — |
@@ -309,6 +310,112 @@ Revue QA : ⚠️ → corrigée (sous-agent, aucun bloquant ; la partie voiture 
 Description de PR : `feat(ui): link player names, add car folders (MPL-076, MPL-078)` ; liens du lecteur et dossiers de la voiture (code des deux dans la même PR) ; testé par les tests automatiques, « not tested » sur appareil ; limites : voir la dette ci-dessus.
 Décisions prises en route : lien d'artiste = artiste de l'album, sans lien si l'artiste de la piste est inconnu ; la demande vide la pile de l'onglet avant d'ouvrir le détail.
 À valider (PO) : aucun
+
+### MPL-082
+**Description.** Un même album apparaît plusieurs fois, chaque exemplaire avec une ou quelques chansons, « comme si les métadonnées avaient des différences invisibles » (demande du propriétaire du 2026-11-14). Exemples cités, vraisemblablement des bandes originales de films : douze albums (dont deux volumes de la même série, qui sont des titres réellement différents). Aucune donnée réelle dans le dépôt (D27).
+
+**Diagnostic (code, sans données).** La clé d'un album est `artiste de l'album` + `titre`, repliés (`LibraryGroups.build`, `lib/features/browse/library_groups.dart`) ; l'artiste de l'album est l'étiquette `albumArtist`, sinon l'`artist` de la **piste**. Une bande originale sans étiquette « artiste de l'album » et avec un interprète par chanson donne donc un album par interprète : cause la plus probable (BR-010 l'avait notée comme « limite connue »). Causes secondaires : étiquette d'artiste de l'album sur une partie des pistes seulement, écritures qui paraissent identiques mais que le repli ne ramène pas (accents combinants, apostrophe courbe, « … », espaces insécables ou de largeur nulle), deux sources étiquetées différemment (MediaStore et lecteur du fichier). Détail dans BR-017.
+
+**Recommandation.** (1) clé normalisée plus complète, pour l'album seulement ; (2) rattachement des albums de **même titre dans le même dossier du même disque** quand l'artiste de l'album vient de l'artiste de piste (ou « divers ») ; (3) l'album rattaché a pour artiste « Artistes divers ». **Pas** de regroupement par titre seul (fusionnerait tous les « Greatest Hits »), **pas** de réglage manuel de fusion dans ce ticket (schéma 7, écran, clés stables : lourd ; à rouvrir si le diagnostic laisse des albums), **pas** de changement de la recherche ni des lettres. Aucun schéma, aucun code natif.
+
+**Procédure de diagnostic (propriétaire, hors dépôt, D27). Non exécutée par Claude, à valider.**
+1. Dans un dossier hors dépôt (par exemple `~/diag-albums/`), exporter ce que MediaStore connaît du stockage interne, téléphone branché, `ANDROID_SERIAL` si besoin :
+```bash
+adb shell content query --uri content://media/external/audio/media \
+  --projection album:album_artist:artist:year:disc_number:cd_track_number:_data \
+  > ~/diag-albums/internal.txt
+```
+2. Pour le disque amovible, qui n'est pas dans MediaStore, lister les fichiers puis les étiquettes avec `ffprobe` sur le Mac, dans le même dossier hors dépôt, par exemple `adb pull` d'un sous-ensemble des albums suspects, ou me donner le nom de dossier à analyser.
+3. Me dire dans quelle session déposer les fichiers (le dossier reste hors dépôt, D27) ; l'analyse produit : albums à clé normalisée commune mais clés d'origine différentes, albums de même titre avec plusieurs artistes d'album, répartition par dossier (un dossier par album, ou un dossier par artiste, ou plat), présence de l'étiquette d'artiste de l'album, caractères invisibles ou combinants détectés. Seuls des **comptages** et des cas **génériques** reviennent dans les fiches.
+4. D'après les chiffres : choix (a) dossier obligatoire ou (b) titre seul, option dossier parent commun (BR-017, À valider).
+
+**Résultat du diagnostic, stockage interne (2026-11-14, Pixel en USB, export hors dépôt ; le disque amovible n'est pas diagnostiqué).** 1 622 pistes, toutes avec un titre d'album, 1 045 avec l'étiquette « artiste de l'album ». Regroupement actuel : 389 albums, dont 253 d'une seule piste. 20 titres d'album sont répartis sur plusieurs artistes ; 17 d'entre eux, sans étiquette « artiste de l'album » et dans un seul dossier, sont des bandes originales (de 2 à 23 pistes, jusqu'à 16 artistes différents). Les onze albums cités par le propriétaire (sauf un, absent du stockage interne) sont tous dans ce cas : un dossier par album, aucune étiquette « artiste de l'album ». **La normalisation renforcée de la clé ne change rien sur ces données** (0 album fusionné par elle) : la cause est uniquement l'artiste de piste. Simulation du garde-fou (a), même titre et même dossier : 17 albums rattachés pour 206 pistes, aucun faux rapprochement repéré parmi les 20 titres (les trois autres titres partagés sont de vrais albums distincts : un même titre chez des artistes qui ne partagent pas de dossier). Le titre seul (b) donne les mêmes 17 groupes ; il n'apporte rien ici et garde le risque. Conclusion : **(a) retenu** ; l'option « dossier parent commun » est inutile sur ces données.
+
+**Inclus.**
+- `albumKeyText` (normalisation dédiée à l'album), second passage de rattachement dans `LibraryGroups.build`, indicateur `variousArtists`, artiste « Artistes divers » (ADR-026).
+- Vues : Albums, détail (interprète sur chaque ligne), Artistes, lecteur (pas de lien artiste pour un album « divers »), voiture (identifiants de dossiers changés une fois), Accueil, recherche d'albums (FR-035).
+- Textes ARB fr/en ; tests d'abord (`library_groups_test.dart`, cas synthétiques de BR-017) ; protocole sur le Pixel dans `HOWTO.md`.
+
+**Exclusions.** Réglage manuel de fusion (idée à rouvrir), éditeur d'étiquettes (MPL-067), lecture du drapeau « compilation », fusion entre disques par le dossier, doublons de pistes (MPL-040), titres qui diffèrent visiblement (« vol.1 », « volume 1 »), recherche et lettres (BR-011, FR-013), schéma de base, scanner et code natif.
+
+**Fiches liées.** BR-017, FR-035, ADR-026 (`Active`, validées le 2026-11-14) ; complète à la validation BR-010, UC-008, FR-020, FR-021, FR-029, FR-032, FR-033, BR-013 (`Active`, non modifiées pour l'instant).
+
+**Décision proposée (le propriétaire attribue le Dn).** « Un album est identifié par sa clé normalisée ; les albums sans artiste d'album et de même titre dans le même dossier d'un même disque sont rattachés sous l'artiste « Artistes divers » ; le réglage manuel de fusion est écarté pour l'instant. » : à passer dans la section Décisions après validation.
+
+**Critères d'acceptation.**
+```gherkin
+# language: fr
+Fonctionnalité: Albums rattachés
+
+  Scénario: Bande originale sans artiste d'album
+    Soit quatre pistes de l'album « Album A », d'artistes 1 à 4, sans artiste d'album, dans le même dossier
+    Quand la bibliothèque est groupée
+    Alors un seul album « Album A » de quatre pistes est affiché
+    Et son artiste est « Artistes divers »
+
+  Scénario: Une piste étiquetée « Various Artists »
+    Soit trois pistes d'« Album A » sans artiste d'album et une étiquetée « Various Artists », dans le même dossier
+    Quand la bibliothèque est groupée
+    Alors un seul album de quatre pistes est affiché, sous « Artistes divers »
+
+  Scénario: Un seul interprète
+    Soit trois pistes d'« Album A » du même artiste sans artiste d'album, dans le même dossier
+    Quand la bibliothèque est groupée
+    Alors l'album reste à cet artiste, non « Artistes divers »
+
+  Scénario: Même titre dans deux dossiers
+    Soit « Album A » d'artiste 1 dans un dossier et « Album A » d'artiste 2 dans un autre, sans artiste d'album
+    Quand la bibliothèque est groupée
+    Alors deux albums sont affichés
+
+  Scénario: L'étiquette du propriétaire fait foi
+    Soit « Album A » étiqueté « Artiste 1 » et « Album A » étiqueté « Artiste 2 » comme artiste d'album, dans le même dossier
+    Quand la bibliothèque est groupée
+    Alors deux albums sont affichés
+
+  Scénario: Écritures invisiblement différentes
+    Soit des titres d'album qui ne diffèrent que par la forme de l'accent, de l'apostrophe, des points de suspension, des espaces ou des caractères invisibles
+    Quand la bibliothèque est groupée
+    Alors ils forment un seul album
+    Et l'écriture affichée est la plus fréquente
+
+  Scénario: Titres réellement différents
+    Soit « Album A vol.1 » et « Album A volume 1 »
+    Quand la bibliothèque est groupée
+    Alors deux albums sont affichés
+
+  Scénario: Un seul exemplaire de l'album partout
+    Soit un album rattaché
+    Quand je consulte l'onglet Albums, l'onglet Artistes, l'accueil et la voiture
+    Alors il n'apparaît qu'une fois, avec toutes ses pistes, et l'entrée « Artistes divers » le contient
+
+  Scénario: Lecteur plein écran
+    Soit une piste d'un album « Artistes divers » en cours
+    Quand j'ouvre le lecteur
+    Alors le lien d'album ouvre l'album complet
+    Et le nom de l'artiste n'est pas un lien
+
+  Scénario: Les favoris et l'historique restent
+    Soit une piste favorite d'un album qui devient rattaché
+    Quand la bibliothèque est groupée
+    Alors la piste reste favorite et son historique est intact
+
+  Scénario: Taille
+    Soit 7 500 pistes
+    Quand la bibliothèque est groupée
+    Alors le calcul prend moins de deux secondes
+```
+
+#### Livraison — 2026-11-14
+Statut : ✅ fait (test appareil en attente)
+Résumé : un album dont chaque chanson a son interprète n'est plus scindé : les pistes sans artiste d'album, de même titre dans le même dossier du même disque, forment un seul album « Artistes divers » ; la clé d'album est normalisée (accents combinants, apostrophes, tirets, « … », espaces invisibles). Albums, détail (interprète par ligne), Artistes, lecteur (pas de lien artiste), voiture et Accueil suivent.
+Fiches touchées : BR-017, FR-035, ADR-026 (as-built et écarts ajoutés) ; renvois ajoutés dans BR-010, UC-008, FR-020, FR-021, FR-029, FR-032, FR-033, BR-013.
+Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → tout au vert (1 158 tests, dont `album_key_text_test`, groupe BR-017 de `library_groups_test`, arbre voiture, vues). Lancé avec le Flutter 3.47.9 installé et un pin local provisoire, rétabli : le dépôt épingle 3.47.7.
+Test appareil (Pixel, release) : non testé (procédure : `HOWTO.md` §28). Disque amovible non diagnostiqué.
+Revue QA : ✅ après un tour — bloquants corrigés : deux dossiers rattachés de même titre fusionnaient (identité par dossier ajoutée, test), titre réel dans `HOWTO.md` (D27). Non vérifié : rendu réel (TalkBack, ligne à deux lignes), disque amovible, faux positifs de « VA » et « Divers ».
+Description de PR : `fix(library): group albums split by track artist (MPL-082)` ; clé d'album normalisée, rattachement par dossier, artiste « Artistes divers » ; testé : suite complète, appareil non testé ; limites : album en plusieurs dossiers non rattaché, disque amovible non diagnostiqué.
+Décisions prises en route : aucune.
+À valider (PO) : (1) « Artistes divers » trié en tête de l'onglet Artistes, non alphabétique (ADR-026) ; (2) la recherche d'albums ne trouve pas « Artistes divers » (FR-035.8, ADR-026).
 
 ### MPL-078
 **Description.** Depuis la voiture, retrouver les autres titres de ce qui joue : « Album en cours » et « Artiste en cours » à la racine de l'arbre média, après « Reprendre ». Android Auto dessine son propre lecteur, sans liens (FR-032.7). Sortie de MPL-076 à la demande du propriétaire le 2026-11-12 ; le code est dans la même PR, le test en voiture reste à faire.

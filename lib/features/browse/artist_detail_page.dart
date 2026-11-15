@@ -69,8 +69,8 @@ class _Detail extends ConsumerWidget {
     final current = ref.watch(
       playerStateProvider.select((s) => s.value?.currentTrack),
     );
-    final name = artist.unknown ? l10n.trackUnknownArtist : artist.name;
-    final origin = artistOrigin(artist);
+    final name = artistName(l10n, artist);
+    final origin = artistOrigin(artist, name);
     final meta = [
       l10n.artistSummary(artist.albums.length, artist.trackCount),
       durationText(l10n, artist.duration),
@@ -165,9 +165,7 @@ class _Detail extends ConsumerWidget {
                 child: Row(
                   children: [
                     ArtistAvatar(
-                      initial: artist.unknown
-                          ? '?'
-                          : alphabetInitial(artist.name),
+                      initial: artist.unknown ? '?' : alphabetInitial(name),
                       size: TsSize.coverPanel,
                       unavailable: !artist.available,
                     ),
