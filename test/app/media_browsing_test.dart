@@ -21,6 +21,7 @@ TrackInfo tagged(
   required String artist,
   required String album,
   int number = 1,
+  bool albumArtist = true,
 }) => TrackInfo(
   relativePath: path,
   size: 1,
@@ -28,7 +29,7 @@ TrackInfo tagged(
   title: title,
   artist: artist,
   album: album,
-  albumArtist: artist,
+  albumArtist: albumArtist ? artist : null,
   trackNumber: number,
 );
 
@@ -96,6 +97,39 @@ void main() {
       expect(titles(tree.children(albums.last.id)), ['One', 'Two']);
       expect(titles(tree.children('artists')), ['Ann', 'Bob']);
       expect(titles(tree.children('tracks')), ['One', 'Solo', 'Two']);
+    });
+
+    /// @verifies FR-035.6
+    test('a soundtrack is one album under the various artists', () async {
+      await library.applyIndex(internalDisk, [
+        tagged(
+          'S/1.flac',
+          title: 'One',
+          artist: 'Singer 1',
+          album: 'Score',
+          albumArtist: false,
+        ),
+        tagged(
+          'S/2.flac',
+          title: 'Two',
+          artist: 'Singer 2',
+          album: 'Score',
+          number: 2,
+          albumArtist: false,
+        ),
+      ]);
+      final container = await start();
+
+      final tree = await currentMediaTree(container);
+
+      final albums = tree.children('albums');
+      expect(titles(albums), ['Score']);
+      final artists = tree.children('artists');
+      expect(artists, hasLength(1));
+      expect(albums.single.subtitle, artists.single.title);
+      expect(artists.single.title, isNot('Unknown artist'));
+      expect(titles(tree.children(albums.single.id)), ['One', 'Two']);
+      expect(titles(tree.children(artists.single.id)), ['Score']);
     });
 
     /// @verifies BR-015

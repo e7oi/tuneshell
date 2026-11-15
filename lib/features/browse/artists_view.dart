@@ -194,11 +194,11 @@ class _ArtistsViewState extends ConsumerState<ArtistsView> {
     final subtitle = diskName == null
         ? summary
         : l10n.artistNotConnected(summary, diskName);
-    final name = artist.unknown ? l10n.trackUnknownArtist : artist.name;
+    final name = artistName(l10n, artist);
     return ArtistTile(
       name: name,
       subtitle: subtitle,
-      initial: artist.unknown ? '?' : alphabetInitial(artist.name),
+      initial: artist.unknown ? '?' : alphabetInitial(name),
       tint: position,
       unavailable: !artist.available,
       semanticsLabel: '$name, $subtitle',
@@ -209,7 +209,7 @@ class _ArtistsViewState extends ConsumerState<ArtistsView> {
           ref,
           name: name,
           tracks: artist.tracks,
-          origin: artistOrigin(artist),
+          origin: artistOrigin(artist, name),
         ),
       ),
       customActions: menuSemanticsActions(
@@ -217,7 +217,7 @@ class _ArtistsViewState extends ConsumerState<ArtistsView> {
         ref,
         name: name,
         tracks: artist.tracks,
-        origin: artistOrigin(artist),
+        origin: artistOrigin(artist, name),
       ),
     );
   }
@@ -231,7 +231,17 @@ String artistSummaryText(AppLocalizations l10n, ArtistGroup artist) =>
     : l10n.artistSummary(artist.albums.length, artist.trackCount);
 
 /// Where the queue of an artist says it comes from (FR-022.6).
-QueueOrigin artistOrigin(ArtistGroup artist) => ArtistOrigin(artist.name);
+QueueOrigin artistOrigin(ArtistGroup artist, String name) =>
+    ArtistOrigin(artist.various ? name : artist.name);
+
+/// The name shown for [artist]: its own, or the words for the unknown artist
+/// and for the various artists (BR-017, rule 5).
+///
+/// @implements FR-035
+String artistName(AppLocalizations l10n, ArtistGroup artist) {
+  if (artist.unknown) return l10n.trackUnknownArtist;
+  return artist.various ? l10n.artistVarious : artist.name;
+}
 
 /// The first letter of a name, upper case, for an avatar.
 String alphabetInitial(String name) {

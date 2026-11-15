@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-10-28) · **Créée le :** 2026-10-28 · **Ticket :** MPL-060 · **Décisions :** D6, D12, D15 · **Lié :** UC-012, BR-013, FR-005, FR-022, ADR-020
 
+> **Complété le 2026-11-14 (MPL-082, validé par le propriétaire) :** voir BR-017 (rattachement des albums sans artiste d'album, clé normalisée, artiste « Artistes divers »), FR-035 et ADR-026. Ce qui précède reste vrai hors de ces cas.
+
 ## Besoin
 
 TuneShell apparaît dans Android Auto, se parcourt à l'écran de la voiture et se commande au volant. L'interface est fournie par Android Auto ; TuneShell ne fournit que l'arbre et la lecture.

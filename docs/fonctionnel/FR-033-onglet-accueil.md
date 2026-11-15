@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-11-14, maquette validée par le propriétaire) · **Créée le :** 2026-11-13 · **Ticket :** MPL-079 · **Lié :** UC-014, UC-004, FR-007, FR-009, FR-010, FR-011, FR-016, FR-017, FR-020, BR-007, BR-014, BR-016, ADR-010, ADR-022, ADR-024 · **Source :** demande du propriétaire du 2026-11-13 ; maquette Claude Design, canevas « TuneShell — Onglet Accueil » (écrans 9a à 9h), sources dans `docs/design/screens/source/` (`Accueil.dc.html`, `Lot7-Accueil-clair.dc.html`, `Lot7-Accueil-sombre.dc.html`)
 
+> **Complété le 2026-11-14 (MPL-082, validé par le propriétaire) :** voir BR-017 (rattachement des albums sans artiste d'album, clé normalisée, artiste « Artistes divers »), FR-035 et ADR-026. Ce qui précède reste vrai hors de ces cas.
+
 ## Besoin
 
 Arriver sur une vue vivante : de la musique à redécouvrir, à un geste.

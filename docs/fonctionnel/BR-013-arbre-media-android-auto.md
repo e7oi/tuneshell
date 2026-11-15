@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-10-28) · **Créée le :** 2026-10-28 · **Ticket :** MPL-060 · **Décisions :** D6, D12, D27 · **Lié :** UC-012, FR-029, BR-001, BR-004, BR-009, BR-010, BR-012, ADR-020
 
+> **Complété le 2026-11-14 (MPL-082, validé par le propriétaire) :** voir BR-017 (rattachement des albums sans artiste d'album, clé normalisée, artiste « Artistes divers »), FR-035 et ADR-026. Ce qui précède reste vrai hors de ces cas.
+
 ## Règles
 
 1. **Racine fixe.** Trois dossiers : « Albums », « Artistes », « Pistes », précédés de la piste courante quand une file existe (règle 2), puis de « Album en cours » et « Artiste en cours » quand la piste courante a un album et un artiste connus (FR-032.7, MPL-076). Pas de « Dossiers » : choisir des dossiers est une action du téléphone.

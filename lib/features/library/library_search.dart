@@ -65,8 +65,14 @@ Iterable<String?> trackTexts(LibraryTrack track) => [
   track.info.album,
 ];
 
-/// BR-011, rule 1: the title and the artist, empty when unknown (rule 2).
-Iterable<String?> albumTexts(AlbumGroup album) => [album.title, album.artist];
+/// BR-011, rule 1: the title and the artist, empty when unknown (rule 2),
+/// and the title and the artist of each track: an album of various artists
+/// is found by the singer of one of its songs.
+Iterable<String?> albumTexts(AlbumGroup album) => [
+  album.title,
+  album.artist,
+  for (final track in album.tracks) ...[track.displayTitle, track.info.artist],
+];
 
 /// BR-011, rule 1: the name, empty when unknown (rule 2).
 Iterable<String?> artistTexts(ArtistGroup artist) => [artist.name];

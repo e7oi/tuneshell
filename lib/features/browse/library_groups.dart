@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:tuneshell/domain/library/model/library_track.dart';
 import 'package:tuneshell/domain/library/model/track.dart';
+import 'package:tuneshell/features/browse/album_key_text.dart';
 import 'package:tuneshell/ui/widgets/alphabet_index.dart';
 
 /// An album: the tracks that share an album artist and a title (BR-010).
@@ -14,6 +15,7 @@ final class AlbumGroup {
     required this.artist,
     required this.unknownAlbum,
     required this.unknownArtist,
+    required this.variousArtists,
     required this.tracks,
     required this.duration,
     required this.discCount,
@@ -40,6 +42,10 @@ final class AlbumGroup {
   final String artist;
   final bool unknownAlbum;
   final bool unknownArtist;
+
+  /// True when the album is by various artists (BR-017, rule 4): its artist
+  /// is the one "Various artists", whose name the interface writes.
+  final bool variousArtists;
 
   /// In the order of BR-010, rule 6: disc, then track number. The one order
   /// of an album, shown, played and queued alike.
@@ -72,6 +78,7 @@ final class ArtistGroup {
     required this.key,
     required this.name,
     required this.unknown,
+    required this.various,
     required this.albums,
     required this.tracks,
     required this.duration,
@@ -83,6 +90,9 @@ final class ArtistGroup {
   /// The most frequent spelling; empty when [unknown].
   final String name;
   final bool unknown;
+
+  /// The one artist "Various artists" (BR-017, rule 5); its [name] is empty.
+  final bool various;
 
   /// In the order of BR-010, rule 7.
   final List<AlbumGroup> albums;
@@ -116,11 +126,21 @@ final class LibraryGroups {
   }) {
     final byAlbum = <String, List<LibraryTrack>>{};
     final artistKeys = <String, String>{};
+    final merged = _mergedKeys(tracks);
     for (final track in tracks) {
-      final artist = _albumArtist(track);
       final album = _text(track.info.album);
-      final artistKey = artist == null ? '' : _fold(artist);
-      final key = '$artistKey\u0000${album == null ? '' : _fold(album)}';
+      final String artistKey;
+      final bucket = merged[track.id];
+      if (_isVarious(track) || bucket != null) {
+        artistKey = _variousKey;
+      } else {
+        final artist = _albumArtist(track);
+        artistKey = artist == null ? '' : _fold(artist);
+      }
+      // BR-017, rule 8: the untagged tracks of a folder are an album of their
+      // own, even when another folder holds an album of the same title.
+      final key =
+          '$artistKey\u0000${album == null ? '' : _fold(album)}${bucket ?? ''}';
       artistKeys[key] = artistKey;
       (byAlbum[key] ??= []).add(track);
     }
@@ -198,13 +218,14 @@ final class LibraryGroups {
   }
 
   /// The artist group [track] belongs to, that of its album artist (BR-010,
-  /// rule 1), or null when it is unknown (FR-032.1).
+  /// rule 1), or null when it is unknown or the various artist, which no
+  /// track is by (FR-032.1, FR-035.5).
   ///
   /// @implements FR-032
   ArtistGroup? artistOf(LibraryTrack track) {
     final album = _albumOfTrack[track.id];
     final artist = album == null ? null : _artistByKey[album.artistKey];
-    return artist == null || artist.unknown ? null : artist;
+    return artist == null || artist.unknown || artist.various ? null : artist;
   }
 }
 
@@ -240,10 +261,9 @@ String? _text(String? value) {
 String? _albumArtist(LibraryTrack track) =>
     _text(track.info.albumArtist) ?? _text(track.info.artist);
 
-/// BR-010, rule 3: case, accents and runs of spaces do not count.
-final _spaces = RegExp(r'\s+');
-
-String _fold(String text) => sortKey(text.trim().replaceAll(_spaces, ' '));
+/// BR-010, rule 3 and BR-017, rule 1: case, accents, spaces and the shapes of
+/// the punctuation do not count.
+String _fold(String text) => albumKeyText(text);
 
 AlbumGroup _album(
   String key,
@@ -262,6 +282,7 @@ AlbumGroup _album(
       ),
   ]..sort(_compareKeyed);
   final tracks = [for (final k in keyed) k.track];
+  final various = artistKey == _variousKey;
   final artist = _mostFrequent([for (final t in tracks) ?_albumArtist(t)]);
   final title = _mostFrequent([for (final t in tracks) ?_text(t.info.album)]);
   final years = [
@@ -282,9 +303,10 @@ AlbumGroup _album(
     artistKey: artistKey,
     titleKey: key.substring(artistKey.length + 1),
     title: title ?? '',
-    artist: artist ?? '',
+    artist: various ? '' : artist ?? '',
     unknownAlbum: title == null,
-    unknownArtist: artist == null,
+    unknownArtist: artist == null && !various,
+    variousArtists: various,
     tracks: List.unmodifiable(tracks),
     duration: duration,
     discCount: discs.length,
@@ -297,6 +319,7 @@ AlbumGroup _album(
 }
 
 ArtistGroup _artist(String key, List<AlbumGroup> found) {
+  final various = key == _variousKey;
   final albums = [...found]..sort(_compareInArtist);
   final names = <String>[
     for (final album in albums)
@@ -309,8 +332,9 @@ ArtistGroup _artist(String key, List<AlbumGroup> found) {
   }
   return ArtistGroup(
     key: key,
-    name: _mostFrequent(names) ?? '',
-    unknown: names.isEmpty,
+    name: various ? '' : _mostFrequent(names) ?? '',
+    unknown: names.isEmpty && !various,
+    various: various,
     albums: List.unmodifiable(albums),
     tracks: List.unmodifiable([for (final a in albums) ...a.tracks]),
     duration: duration,
@@ -361,8 +385,12 @@ int _compareKeyed(_Keyed a, _Keyed b) {
   return a.track.info.relativePath.compareTo(b.track.info.relativePath);
 }
 
-/// The unknown artist leads: its key is shorter than any other.
-String _artistSort(ArtistGroup artist) => artist.unknown ? '0' : artist.key;
+/// The unknown artist leads: its key is shorter than any other; the various
+/// artist comes right after it, before the names that start with a symbol.
+const _variousSort = '0\u0000';
+
+String _artistSort(ArtistGroup artist) =>
+    artist.unknown ? '0' : (artist.various ? _variousSort : artist.key);
 
 /// BR-010, rule 7: the albums by title (the unknown album leads, in the "#"
 /// group), then artist, then year (none last).
@@ -395,5 +423,71 @@ int _compareYears(int? a, int? b) {
   return a.compareTo(b);
 }
 
-String _artistKey(AlbumGroup album) =>
-    album.unknownArtist ? '0' : album.artistKey;
+String _artistKey(AlbumGroup album) => album.unknownArtist
+    ? '0'
+    : (album.variousArtists ? _variousSort : album.artistKey);
+
+/// The folded artist of the one artist "Various artists" (BR-017, rule 5);
+/// no real name folds to it, the control character cannot be typed in a tag.
+const _variousKey = '\u0001';
+
+/// BR-017, rule 2: what an album artist tag says to mean "various artists".
+final Set<String> _variousNames = {
+  for (final name in const [
+    'Various Artists',
+    'Various',
+    'VA',
+    'Artistes divers',
+    'Divers',
+  ])
+    albumKeyText(name),
+};
+
+/// @implements BR-017
+bool _isVarious(LibraryTrack track) {
+  final artist = _text(track.info.albumArtist);
+  return artist != null && _variousNames.contains(albumKeyText(artist));
+}
+
+/// BR-017, rule 3: the tracks without an album artist that are put together
+/// by the title, the folder and the disk they share. A folder holds an album
+/// of various artists when its untagged tracks of one title are by two
+/// artists or more, or when one track of that title says "various artists".
+/// The result gives each of those tracks the identity of its folder, empty
+/// when the folder has a track tagged "various artists": the tag says the
+/// album is the one of that title, whatever the folder (BR-017, rule 5).
+///
+/// @implements BR-017
+Map<int, String> _mergedKeys(List<LibraryTrack> tracks) {
+  final buckets = <String, ({List<LibraryTrack> untagged, bool various})>{};
+  for (final track in tracks) {
+    final album = _text(track.info.album);
+    if (album == null) continue;
+    final various = _isVarious(track);
+    if (_text(track.info.albumArtist) != null && !various) continue;
+    final path = track.info.relativePath;
+    final folder = path.substring(0, path.lastIndexOf('/') + 1);
+    final key = '${track.disk.value}\u0000$folder\u0000${_fold(album)}';
+    final bucket = buckets[key] ?? (untagged: <LibraryTrack>[], various: false);
+    if (!various) bucket.untagged.add(track);
+    buckets[key] = (
+      untagged: bucket.untagged,
+      various: bucket.various || various,
+    );
+  }
+  final merged = <int, String>{};
+  for (final entry in buckets.entries) {
+    final bucket = entry.value;
+    final artists = {
+      for (final t in bucket.untagged)
+        if (_albumArtist(t) != null) _fold(_albumArtist(t)!),
+    };
+    if (bucket.various || artists.length >= 2) {
+      final identity = bucket.various ? '' : '\u0002${entry.key}';
+      for (final t in bucket.untagged) {
+        merged[t.id] = identity;
+      }
+    }
+  }
+  return merged;
+}

@@ -78,14 +78,20 @@ Future<MediaTree> currentMediaTree(ProviderContainer container) async {
   final made = _memo[container];
   if (made != null && _same(made.inputs, inputs)) return made.tree;
   final tree = LibraryMediaTree(
-    albums: [for (final a in groups?.albums ?? const <AlbumGroup>[]) _album(a)],
+    albums: [
+      for (final a in groups?.albums ?? const <AlbumGroup>[])
+        _album(a, l10n.artistVarious),
+    ],
     artists: [
       for (final a in groups?.artists ?? const <ArtistGroup>[])
         MediaArtist(
           key: a.key,
-          name: a.name,
+          name: a.various ? l10n.artistVarious : a.name,
           unknown: a.unknown,
-          albums: [for (final album in a.albums) _album(album)],
+          various: a.various,
+          albums: [
+            for (final album in a.albums) _album(album, l10n.artistVarious),
+          ],
         ),
     ],
     tracks: sorted,
@@ -127,10 +133,10 @@ bool _same(List<Object?> a, List<Object?> b) {
   return true;
 }
 
-MediaAlbum _album(AlbumGroup a) => MediaAlbum(
+MediaAlbum _album(AlbumGroup a, String variousArtists) => MediaAlbum(
   key: a.key,
   title: a.title,
-  artist: a.artist,
+  artist: a.variousArtists ? variousArtists : a.artist,
   tracks: a.tracks,
   unknownAlbum: a.unknownAlbum,
   unknownArtist: a.unknownArtist,

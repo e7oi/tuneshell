@@ -60,6 +60,7 @@
   "bannerSee": "Voir",
   "bannerDismiss": "Masquer ce message",
   "trackUnknownArtist": "Artiste inconnu",
+  "artistVarious": "Artistes divers",
   "trackNotConnected": "{artist} · non connecté",
   "trackUnreadable": "Fichier illisible",
   "trackPlaying": "en lecture",

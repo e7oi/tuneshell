@@ -452,6 +452,12 @@ abstract class AppLocalizations {
   /// **'Hide this message'**
   String get bannerDismiss;
 
+  /// The one artist of the albums by various artists, such as soundtracks and compilations (BR-017, FR-035).
+  ///
+  /// In en, this message translates to:
+  /// **'Various artists'**
+  String get artistVarious;
+
   /// Shown for a track without an artist tag (FR-011.6).
   ///
   /// In en, this message translates to:

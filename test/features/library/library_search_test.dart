@@ -174,6 +174,51 @@ void main() {
     });
 
     /// @verifies BR-011
+    test(
+      'an album is found by the title or the artist of one of its tracks',
+      () {
+        final index = SearchIndex(groups.albums, albumTexts);
+
+        expect(
+          [for (final a in index.filter(SearchQuery.of('two'))) a.title],
+          ['Le sac des filles'],
+        );
+        expect(
+          [for (final a in index.filter(SearchQuery.of('one hilary'))) a.title],
+          ['Plays Bach'],
+        );
+      },
+    );
+
+    /// @verifies BR-011
+    /// @verifies FR-035.8
+    test('a soundtrack is found by the singer of a song, not by the words', () {
+      final mix = LibraryGroups.build(
+        tracks: [
+          track(
+            'Music/a/1.mp3',
+            title: 'Opening',
+            artist: 'Singer One',
+            album: 'Score',
+          ),
+          track(
+            'Music/a/2.mp3',
+            title: 'Finale',
+            artist: 'Singer Two',
+            album: 'Score',
+          ),
+        ],
+        unavailableDisks: const {},
+      );
+      final index = SearchIndex(mix.albums, albumTexts);
+
+      expect(index.filter(SearchQuery.of('singer two')), hasLength(1));
+      expect(index.filter(SearchQuery.of('finale')), hasLength(1));
+      expect(index.filter(SearchQuery.of('score')), hasLength(1));
+      expect(index.filter(SearchQuery.of('divers')), isEmpty);
+    });
+
+    /// @verifies BR-011
     test('the unknown album and artist are not searched', () {
       final index = SearchIndex(groups.albums, albumTexts);
 

@@ -51,6 +51,7 @@ List<String> titles(AlbumGroup album) => [
 
 void main() {
   groupOfTrackTests();
+  rattachementTests();
 
   /// @verifies BR-010
   group('BR-010 rule 1: artist of the album', () {
@@ -142,14 +143,15 @@ void main() {
       expect(unknown.map((a) => a.tracks.length), unorderedEquals([2, 1, 2]));
     });
 
-    test('a compilation without album artist splits by track artist', () {
+    test('a compilation without album artist is split only across folders', () {
       final groups = build([
-        t('a', artist: 'One', album: 'Compil'),
-        t('b', artist: 'Two', album: 'Compil'),
+        t('a', artist: 'One', album: 'Compil', path: 'Music/x/a.mp3'),
+        t('b', artist: 'Two', album: 'Compil', path: 'Music/y/b.mp3'),
         t('c', albumArtist: 'Various Artists', artist: 'Three', album: 'Mix'),
         t('d', albumArtist: 'Various Artists', artist: 'Four', album: 'Mix'),
       ]);
 
+      // BR-017 rule 3 puts the ones of a folder together; two folders do not.
       expect(groups.albums.where((a) => a.title == 'Compil'), hasLength(2));
       expect(groups.albums.where((a) => a.title == 'Mix'), hasLength(1));
     });
@@ -422,6 +424,25 @@ void main() {
     expect(groups.albumLetters.every((l) => !l.hasItems), isTrue);
   });
 
+  /// @verifies BR-017
+  test('rule 9: 7 500 tracks without album artist group quickly', () {
+    final tracks = [
+      for (var i = 0; i < 7500; i++)
+        t(
+          'Track $i',
+          artist: 'Artist ${i % 300}',
+          album: 'Album ${i % 700}',
+          path: 'Music/${i % 700}/Track $i.mp3',
+        ),
+    ];
+    final watch = Stopwatch()..start();
+
+    final groups = build(tracks);
+
+    expect(groups.albums, hasLength(700));
+    expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
+  });
+
   /// @verifies BR-010
   test('rule 10: 7 500 tracks group quickly', () {
     final tracks = [
@@ -552,4 +573,256 @@ void groupOfTrackTests() {
       expect(order, hasLength(2));
     });
   });
+}
+
+/// @verifies BR-017
+void rattachementTests() {
+  group('BR-017: albums without an album artist', () {
+    LibraryTrack song(
+      String title,
+      String? artist, {
+      String album = 'Album A',
+      String dir = 'Music/a',
+      String? albumArtist,
+      DiskId disk = internalDisk,
+      int? number,
+    }) => t(
+      title,
+      artist: artist,
+      album: album,
+      albumArtist: albumArtist,
+      disk: disk,
+      number: number,
+      path: '$dir/$title.mp3',
+    );
+
+    test('rule 3, 4: one artist per song in one folder is one album', () {
+      final groups = build([
+        song('a', 'Artist 1', number: 1),
+        song('b', 'Artist 2', number: 2),
+        song('c', 'Artist 3', number: 3),
+        song('d', 'Artist 4', number: 4),
+      ]);
+
+      final album = groups.albums.single;
+      expect(titles(album), ['a', 'b', 'c', 'd']);
+      expect(album.variousArtists, isTrue);
+      expect(album.unknownArtist, isFalse);
+      expect(groups.artists.single.various, isTrue);
+      expect(groups.artists.single.albums.single, album);
+    });
+
+    test('rule 2: a "Various Artists" tag joins the untagged songs', () {
+      final groups = build([
+        song('a', 'Artist 1'),
+        song('b', 'Artist 1'),
+        song('c', 'Artist 2', albumArtist: ' Various  ARTISTS '),
+      ]);
+
+      expect(groups.albums.single.trackCount, 3);
+      expect(groups.albums.single.variousArtists, isTrue);
+    });
+
+    test('rule 2: every synonym of "various" is the various artist', () {
+      for (final name in [
+        'Various Artists',
+        'VA',
+        'Artistes divers',
+        'Divers',
+      ]) {
+        final groups = build([song('a', 'X', albumArtist: name)]);
+        expect(groups.albums.single.variousArtists, isTrue, reason: name);
+      }
+    });
+
+    test(
+      'rule 5: a various-tagged album of another folder joins the artist',
+      () {
+        final groups = build([
+          song('a', 'X', albumArtist: 'Various Artists'),
+          song('b', 'Y', albumArtist: 'Various Artists', dir: 'Music/b'),
+          song('c', 'Z', album: 'Album B', dir: 'Music/c'),
+          song('d', 'W', album: 'Album B', dir: 'Music/c'),
+        ]);
+
+        expect(groups.albums, hasLength(2));
+        expect(groups.artists, hasLength(1));
+        expect(groups.artists.single.albums, hasLength(2));
+      },
+    );
+
+    test('rule 4: a single artist keeps the album', () {
+      final groups = build([
+        song('a', 'Artist 1'),
+        song('b', 'Artist 1'),
+        song('c', 'Artist 1'),
+      ]);
+
+      expect(groups.albums.single.variousArtists, isFalse);
+      expect(groups.albums.single.artist, 'Artist 1');
+      expect(groups.artists.single.various, isFalse);
+    });
+
+    test('rule 8: the same title in two folders is two albums', () {
+      final groups = build([
+        song('a', 'Artist 1'),
+        song('b', 'Artist 2', dir: 'Music/b'),
+      ]);
+
+      expect(groups.albums, hasLength(2));
+      expect(groups.albums.every((a) => !a.variousArtists), isTrue);
+    });
+
+    test('rule 8: two merged folders of one title stay two albums', () {
+      final groups = build([
+        song('a', 'Artist 1'),
+        song('b', 'Artist 2'),
+        song('c', 'Artist 3', dir: 'Music/b'),
+        song('d', 'Artist 4', dir: 'Music/b'),
+        song('e', 'Artist 5', disk: ssd),
+        song('f', 'Artist 6', disk: ssd),
+      ]);
+
+      expect(groups.albums, hasLength(3));
+      expect(groups.albums.every((a) => a.variousArtists), isTrue);
+      expect(groups.artists.single.albums, hasLength(3));
+    });
+
+    test('rule 5: a "various" tag makes one album of its title', () {
+      final groups = build([
+        song('a', 'X', albumArtist: 'Various Artists'),
+        song('b', 'Y', albumArtist: 'Various Artists', dir: 'Music/b'),
+      ]);
+
+      expect(groups.albums.single.trackCount, 2);
+    });
+
+    test('rule 8: the same folder on two disks is two albums', () {
+      final groups = build([
+        song('a', 'Artist 1'),
+        song('b', 'Artist 2', disk: ssd),
+      ]);
+
+      expect(groups.albums, hasLength(2));
+    });
+
+    test('rule 3: a filled album artist is never merged', () {
+      final groups = build([
+        song('a', 'X', albumArtist: 'Artist 1'),
+        song('b', 'Y', albumArtist: 'Artist 2'),
+      ]);
+
+      expect(groups.albums, hasLength(2));
+      expect(groups.albums.every((a) => !a.variousArtists), isTrue);
+    });
+
+    test('rule 3: tagged songs do not count as distinct artists', () {
+      final groups = build([
+        song('a', 'X', albumArtist: 'Artist 1'),
+        song('b', 'Y'),
+        song('c', 'Y'),
+      ]);
+
+      expect(groups.albums, hasLength(2));
+    });
+
+    test('rule 8: titles that differ visibly are two albums', () {
+      final groups = build([
+        song('a', 'Artist 1', album: 'Album A vol.1'),
+        song('b', 'Artist 2', album: 'Album A volume 1'),
+      ]);
+
+      expect(groups.albums, hasLength(2));
+    });
+
+    test('rule 1: invisible differences of the title do not split', () {
+      final groups = build([
+        song('a', 'Artist 1', album: "L'Album\u00a0A\u2026"),
+        song('b', 'Artist 1', album: 'L\u2019album A...'),
+        song('c', 'Artist 1', album: 'Cafe\u0301'),
+        song('d', 'Artist 1', album: 'Caf\u00e9'),
+      ]);
+
+      expect(groups.albums, hasLength(2));
+    });
+
+    test('a song without any artist joins an album that is various anyway', () {
+      final groups = build([song('a', 'Artist 1'), song('b', null)]);
+
+      expect(groups.albums, hasLength(2));
+      final merged = build([
+        song('a', 'Artist 1'),
+        song('b', 'Artist 2'),
+        song('c', null),
+      ]);
+      expect(merged.albums.single.trackCount, 3);
+      expect(merged.albums.single.variousArtists, isTrue);
+    });
+
+    test('a song without album is never merged', () {
+      final groups = build([
+        t('a', artist: 'X', path: 'Music/a/a.mp3'),
+        t('b', artist: 'Y', path: 'Music/a/b.mp3'),
+      ]);
+
+      expect(groups.albums, hasLength(2));
+      expect(groups.albums.every((a) => a.unknownAlbum), isTrue);
+    });
+
+    test('rule 5: the various artist leads the artists after the unknown', () {
+      final groups = build([
+        song('a', 'Artist 1'),
+        song('b', 'Artist 2'),
+        t('c', artist: 'Aaron', album: 'Solo', path: 'Music/s/c.mp3'),
+        t('d', album: 'Nobody', path: 'Music/n/d.mp3'),
+        t('e', artist: '1999', album: 'Digits', path: 'Music/g/e.mp3'),
+      ]);
+
+      expect(
+        [for (final a in groups.artists) _label(a)],
+        ['unknown', 'various', '1999', 'Aaron'],
+      );
+    });
+
+    test('FR-035.5: no artist link for a various album, an album link', () {
+      final tracks = [song('a', 'Artist 1'), song('b', 'Artist 2')];
+      final groups = build(tracks);
+
+      expect(groups.artistOf(tracks.first), isNull);
+      expect(groups.albumOf(tracks.first), isNotNull);
+      expect(groups.albumOf(tracks.last), groups.albumOf(tracks.first));
+    });
+
+    test('rule 6: the merge keeps the order, year and cover of rule 7', () {
+      final groups = build([
+        t(
+          'b',
+          artist: 'X',
+          album: 'Album A',
+          number: 2,
+          year: 2001,
+          path: 'Music/a/b.mp3',
+        ),
+        t(
+          'a',
+          artist: 'Y',
+          album: 'Album A',
+          number: 1,
+          year: 2000,
+          artwork: 'cover',
+          path: 'Music/a/a.mp3',
+        ),
+      ]);
+
+      final album = groups.albums.single;
+      expect(titles(album), ['a', 'b']);
+      expect(album.year, 2000);
+      expect(album.artwork, 'cover');
+    });
+  });
+}
+
+String _label(ArtistGroup a) {
+  if (a.unknown) return 'unknown';
+  return a.various ? 'various' : a.name;
 }

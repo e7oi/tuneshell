@@ -300,6 +300,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get bannerDismiss => 'Masquer ce message';
 
   @override
+  String get artistVarious => 'Artistes divers';
+
+  @override
   String get trackUnknownArtist => 'Artiste inconnu';
 
   @override

@@ -229,7 +229,7 @@ class AlbumGridCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final title = album.unknownAlbum ? l10n.albumUnknown : album.title;
-    final artist = album.unknownArtist ? l10n.trackUnknownArtist : album.artist;
+    final artist = albumArtistName(l10n, album);
     final subtitle = [
       if (showArtist) artist,
       ?album.year?.toString(),
@@ -304,6 +304,14 @@ class _AlbumGridCard extends ConsumerWidget {
 /// What the confirmations and the origin call an album.
 String albumName(AppLocalizations l10n, AlbumGroup album) =>
     album.unknownAlbum ? l10n.albumUnknown : album.title;
+
+/// The album artist shown on an album (BR-017, rule 4).
+///
+/// @implements FR-035
+String albumArtistName(AppLocalizations l10n, AlbumGroup album) {
+  if (album.unknownArtist) return l10n.trackUnknownArtist;
+  return album.variousArtists ? l10n.artistVarious : album.artist;
+}
 
 /// Where the queue of an album says it comes from (FR-022.6).
 QueueOrigin albumOrigin(AlbumGroup album) => AlbumOrigin(album.title);
