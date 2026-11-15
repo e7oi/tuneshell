@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-10-28) · **Créée le :** 2026-10-28 · **Ticket :** MPL-055 · **Décisions :** D3 · **Lié :** UC-010, FR-011, FR-027, BR-010, ADR-018 · **Source :** demande du propriétaire du 2026-10-24
 
+> **Complété le 2026-11-14 (MPL-082, demande du propriétaire) :** la recherche d'**albums** cherche aussi le titre et l'artiste de chaque piste de l'album, pour retrouver une bande originale par un interprète ou une chanson (FR-035.8). Les autres règles ne changent pas.
+
 ## Règles
 
 1. **Portée selon la vue.** Pistes : le titre affiché (le nom de fichier s'il manque, FR-003.5), l'artiste, l'artiste de l'album et l'album. Albums : le titre de l'album et son artiste (BR-010, règle 1). Artistes : le nom de l'artiste (BR-010, règle 5). Un champ absent ne correspond à rien.

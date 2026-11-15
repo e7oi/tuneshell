@@ -561,3 +561,4 @@ Build release (D14), stockage interne avec des bandes originales rangées un dos
 6. **Accueil :** une bande originale tirée est une seule carte, sous-titre « Artistes divers ».
 7. **Voiture :** Albums et Artistes montrent la bande originale une fois ; « Album en cours » existe, « Artiste en cours » est absent. Les dossiers mémorisés par la voiture avant la mise à jour reviennent à la racine (attendu, ADR-026).
 8. **Délai :** à 7 500 pistes, noter le délai d'affichage des onglets (cible : moins de deux secondes de calcul).
+9. **Recherche d'albums :** dans l'onglet Albums, ouvrir la recherche et taper le nom d'un interprète ou le titre d'une chanson d'une bande originale. Attendu : l'album apparaît ; taper « divers » ne ramène rien.

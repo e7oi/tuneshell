@@ -2,6 +2,8 @@
 
 **Statut :** Active (validée le 2026-10-28) · **Créée le :** 2026-10-28 · **Ticket :** MPL-055 · **Décisions :** D3 · **Lié :** UC-010, UC-005, UC-008, FR-009, FR-010, FR-011, FR-013, FR-018, FR-020, FR-021, FR-022, BR-007, BR-008, BR-011, ADR-010, ADR-016, ADR-018 · **Source :** demande du propriétaire du 2026-10-24 ; **la conception ne montre pas d'écran de recherche** (`docs/design/HANDOFF.md` §4 : emplacement discret ; §8 : hors périmètre)
 
+> **Complété le 2026-11-14 (MPL-082, demande du propriétaire) :** la recherche d'**albums** cherche aussi le titre et l'artiste de chaque piste de l'album, pour retrouver une bande originale par un interprète ou une chanson (FR-035.8). Les autres règles ne changent pas.
+
 ## Besoin
 
 Retrouver vite une piste, un album ou un artiste en tapant quelques lettres, dans la vue où l'on se trouve.

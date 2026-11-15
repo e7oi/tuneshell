@@ -15,7 +15,7 @@ Voir chaque album **une seule fois**, avec toutes ses chansons, même quand chaq
 5. **Lecteur plein écran (FR-032).** Le lien **album** ouvre l'album rattaché. Le lien **artiste** n'existe pas pour une piste d'un album « Artistes divers » (BR-010, règle 5 : un interprète de piste sans album propre n'a pas d'entrée) ; le nom reste en texte simple.
 6. **Voiture (BR-013, FR-029).** L'arbre montre l'album rattaché une seule fois, avec son artiste « Artistes divers », et l'entrée « Artistes divers » dans la liste des artistes. « Artiste en cours » est absent pour une piste d'un album « Artistes divers » (comme FR-032.7 quand le groupe n'existe pas). Les identifiants de dossiers changent une fois à la mise à jour de l'application (voir ADR-026).
 7. **Accueil (FR-033, BR-016).** Un album rattaché est une seule carte « à redécouvrir », éligible et indisponible comme tout album (BR-016) ; son sous-titre est « Artistes divers ».
-8. **Recherche (FR-027, BR-011).** La recherche d'albums trouve par titre et par « Artistes divers » ; les artistes de piste d'un album rattaché sont trouvés par la recherche de **pistes**, comme aujourd'hui. L'index et les lettres ne changent pas.
+8. **Recherche (FR-027, BR-011).** La recherche d'albums trouve par titre, par artiste de l'album et par **titre ou artiste de n'importe quelle piste** de l'album (BR-011, règle 1 complétée) ; le mot « Artistes divers » n'est pas cherché. L'index et les lettres ne changent pas.
 9. **Textes** dans les fichiers ARB, en français et en anglais ; le libellé TalkBack de la carte reprend le sous-titre.
 
 ## Hors périmètre
@@ -34,6 +34,6 @@ Les points ci-dessous sont validés avec la recommandation : garde-fou du dossie
 
 MPL-082, 2026-11-14, test appareil : non testé (D14). `AlbumGroup.variousArtists`, `ArtistGroup.various` (`library_groups.dart`) ; texte « Artistes divers » (`artistVarious`, ARB) par `artistName` (`artists_view.dart`) et `albumArtistName` (`albums_view.dart`) ; interprète par ligne dans `album_detail_page.dart` ; voiture : `MediaArtist.various`, nom traduit dans `media_browsing.dart`, « Artiste en cours » absent. Tests : `browse_views_test.dart` (détail et onglet Artistes), `library_groups_test.dart`, `library_media_tree_test.dart` (FR-035.6).
 
-- **Écart avec l'exigence 8 :** la recherche d'albums ne trouve pas « Artistes divers » : comme pour l'artiste inconnu (BR-011, règle 2), le texte d'un artiste « divers » est vide ; les artistes de piste se cherchent par la recherche de pistes. Voir « À valider » de l'ADR-026.
+- Exigence 8 : la recherche d'albums cherche le titre de l'album, son artiste et **le titre et l'artiste de chaque piste** (`albumTexts`, `library_search.dart`) ; « Artistes divers » lui-même n'est pas un texte cherché (comme l'artiste inconnu, BR-011 règle 2). Demande du propriétaire du 2026-11-14, validée.
 - Lien d'artiste du lecteur : absent pour un album « Artistes divers » (`artistOf` rend null), le lien d'album reste.
 - Accueil : aucune retouche, la carte reprend `albumArtistName`.

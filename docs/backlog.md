@@ -408,14 +408,14 @@ Fonctionnalité: Albums rattachés
 
 #### Livraison — 2026-11-14
 Statut : ✅ fait (test appareil en attente)
-Résumé : un album dont chaque chanson a son interprète n'est plus scindé : les pistes sans artiste d'album, de même titre dans le même dossier du même disque, forment un seul album « Artistes divers » ; la clé d'album est normalisée (accents combinants, apostrophes, tirets, « … », espaces invisibles). Albums, détail (interprète par ligne), Artistes, lecteur (pas de lien artiste), voiture et Accueil suivent.
+Résumé : un album dont chaque chanson a son interprète n'est plus scindé : les pistes sans artiste d'album, de même titre dans le même dossier du même disque, forment un seul album « Artistes divers » ; la clé d'album est normalisée (accents combinants, apostrophes, tirets, « … », espaces invisibles). Albums, détail (interprète par ligne), Artistes, lecteur (pas de lien artiste), voiture et Accueil suivent ; la recherche d'albums trouve aussi par titre et artiste des pistes.
 Fiches touchées : BR-017, FR-035, ADR-026 (as-built et écarts ajoutés) ; renvois ajoutés dans BR-010, UC-008, FR-020, FR-021, FR-029, FR-032, FR-033, BR-013.
 Vérification : `dart format --set-exit-if-changed . && flutter analyze --fatal-infos && dart analyze --fatal-infos && flutter test` → tout au vert (1 158 tests, dont `album_key_text_test`, groupe BR-017 de `library_groups_test`, arbre voiture, vues). Lancé avec le Flutter 3.47.9 installé et un pin local provisoire, rétabli : le dépôt épingle 3.47.7.
 Test appareil (Pixel, release) : non testé (procédure : `HOWTO.md` §28). Disque amovible non diagnostiqué.
 Revue QA : ✅ après un tour — bloquants corrigés : deux dossiers rattachés de même titre fusionnaient (identité par dossier ajoutée, test), titre réel dans `HOWTO.md` (D27). Non vérifié : rendu réel (TalkBack, ligne à deux lignes), disque amovible, faux positifs de « VA » et « Divers ».
 Description de PR : `fix(library): group albums split by track artist (MPL-082)` ; clé d'album normalisée, rattachement par dossier, artiste « Artistes divers » ; testé : suite complète, appareil non testé ; limites : album en plusieurs dossiers non rattaché, disque amovible non diagnostiqué.
 Décisions prises en route : aucune.
-À valider (PO) : (1) « Artistes divers » trié en tête de l'onglet Artistes, non alphabétique (ADR-026) ; (2) la recherche d'albums ne trouve pas « Artistes divers » (FR-035.8, ADR-026).
+À valider (PO) : aucun ; le tri en tête de l'onglet Artistes et la recherche d'albums par titre et artiste des pistes ont été validés par le propriétaire le 2026-11-14 (ADR-026, BR-011, FR-027, FR-035.8).
 
 ### MPL-078
 **Description.** Depuis la voiture, retrouver les autres titres de ce qui joue : « Album en cours » et « Artiste en cours » à la racine de l'arbre média, après « Reprendre ». Android Auto dessine son propre lecteur, sans liens (FR-032.7). Sortie de MPL-076 à la demande du propriétaire le 2026-11-12 ; le code est dans la même PR, le test en voiture reste à faire.

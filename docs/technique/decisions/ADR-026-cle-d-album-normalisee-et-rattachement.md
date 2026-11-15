@@ -38,7 +38,7 @@ Les points ci-dessous sont validés avec la recommandation : garde-fou du dossie
 - Le choix (a) ou (b) du garde-fou et l'option « dossier parent commun » (BR-017).
 - Le changement unique des identifiants de dossiers de la voiture (décision 5).
 
-## Écarts constatés à l'implémentation (À valider, PO)
+## Écarts constatés à l'implémentation (validés par le propriétaire, 2026-11-14)
 
-- **Tri de l'entrée « Artistes divers ».** La décision 3 prévoyait de passer le libellé à `LibraryGroups.build` pour la trier par ordre alphabétique. Le groupe est calculé sans accès à la langue ; l'entrée est donc placée **en tête, juste après « Artiste inconnu »**, dans le groupe « # » de l'onglet Artistes. Autre choix : passer le libellé (provider lié à la langue).
-- **Recherche.** « Artistes divers » n'est pas un texte cherché (même règle que l'artiste inconnu, BR-011 règle 2), pour la même raison. FR-035.8 en dit plus : à confirmer ou à compléter.
+- **Tri de l'entrée « Artistes divers ».** La décision 3 prévoyait de passer le libellé à `LibraryGroups.build` pour la trier alphabétiquement. Le groupe est calculé sans accès à la langue ; l'entrée est **en tête, juste après « Artiste inconnu »**, dans le groupe « # » de l'onglet Artistes. Validé : « garde la tête de liste ».
+- **Recherche d'albums.** Plutôt que de chercher le libellé « Artistes divers » (qui demanderait la langue dans l'index), la recherche d'albums cherche le titre et l'artiste de **chaque piste** de l'album (BR-011 et FR-027 complétées). Validé par le propriétaire.
