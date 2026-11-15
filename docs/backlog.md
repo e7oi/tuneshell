@@ -319,12 +319,12 @@ Décisions prises en route : lien d'artiste = artiste de l'album, sans lien si l
 **Recommandation.** (1) clé normalisée plus complète, pour l'album seulement ; (2) rattachement des albums de **même titre dans le même dossier du même disque** quand l'artiste de l'album vient de l'artiste de piste (ou « divers ») ; (3) l'album rattaché a pour artiste « Artistes divers ». **Pas** de regroupement par titre seul (fusionnerait tous les « Greatest Hits »), **pas** de réglage manuel de fusion dans ce ticket (schéma 7, écran, clés stables : lourd ; à rouvrir si le diagnostic laisse des albums), **pas** de changement de la recherche ni des lettres. Aucun schéma, aucun code natif.
 
 **Procédure de diagnostic (propriétaire, hors dépôt, D27). Non exécutée par Claude, à valider.**
-   1. Dans un dossier hors dépôt (par exemple `~/diag-albums/`), exporter ce que MediaStore connaît du stockage interne, téléphone branché, `ANDROID_SERIAL` si besoin :
+1. Dans un dossier hors dépôt (par exemple `~/diag-albums/`), exporter ce que MediaStore connaît du stockage interne, téléphone branché, `ANDROID_SERIAL` si besoin :
    ```bash
    adb shell content query --uri content://media/external/audio/media \
      --projection album:album_artist:artist:year:disc_number:cd_track_number:_data \
-  > ~/diag-albums/internal.txt
-```
+     > ~/diag-albums/internal.txt
+   ```
 2. Pour le disque amovible, qui n'est pas dans MediaStore, lister les fichiers puis les étiquettes avec `ffprobe` sur le Mac, dans le même dossier hors dépôt, par exemple `adb pull` d'un sous-ensemble des albums suspects, ou me donner le nom de dossier à analyser.
 3. Me dire dans quelle session déposer les fichiers (le dossier reste hors dépôt, D27) ; l'analyse produit : albums à clé normalisée commune mais clés d'origine différentes, albums de même titre avec plusieurs artistes d'album, répartition par dossier (un dossier par album, ou un dossier par artiste, ou plat), présence de l'étiquette d'artiste de l'album, caractères invisibles ou combinants détectés. Seuls des **comptages** et des cas **génériques** reviennent dans les fiches.
 4. D'après les chiffres : choix (a) dossier obligatoire ou (b) titre seul, option dossier parent commun (BR-017, À valider).
